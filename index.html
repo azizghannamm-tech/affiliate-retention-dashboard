@@ -1,296 +1,224 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Affiliate Retention Dashboard</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <title>Knowledge Hub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<style>
-body{
-  margin:0;
-  font-family: "Inter", Arial, sans-serif;
-  background:#f4f6f9;
-  color:#1f2937;
-}
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f4f6f9;
+    }
 
-.container{
-  max-width:1200px;
-  margin:auto;
-  padding:40px 20px;
-}
+    header {
+      background: #1f2d3d;
+      color: white;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-h1{
-  margin-bottom:30px;
-}
+    nav button {
+      margin-right: 15px;
+      padding: 8px 14px;
+      background: transparent;
+      color: white;
+      border: 1px solid white;
+      cursor: pointer;
+    }
 
-.card{
-  background:white;
-  padding:25px;
-  border-radius:12px;
-  box-shadow:0 4px 12px rgba(0,0,0,0.05);
-  margin-bottom:25px;
-}
+    nav button:hover {
+      background: white;
+      color: #1f2d3d;
+    }
 
-input{
-  width:100%;
-  padding:12px;
-  margin-bottom:10px;
-  border-radius:8px;
-  border:1px solid #d1d5db;
-}
+    .container {
+      padding: 30px;
+    }
 
-button{
-  padding:10px 16px;
-  border-radius:8px;
-  border:none;
-  cursor:pointer;
-  font-weight:500;
-}
+    .card {
+      background: white;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
 
-.primary{
-  background:#2563eb;
-  color:white;
-}
+    .hidden {
+      display: none;
+    }
 
-.primary:hover{
-  background:#1d4ed8;
-}
+    textarea {
+      width: 100%;
+      height: 100px;
+      margin-top: 10px;
+    }
 
-.secondary{
-  background:#e5e7eb;
-}
+    .login-container {
+      text-align: center;
+      margin-top: 150px;
+    }
 
-.secondary:hover{
-  background:#d1d5db;
-}
+    .btn-primary {
+      padding: 10px 20px;
+      background: #1f2d3d;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
 
-.google-btn{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:10px;
-  border:1px solid #d1d5db;
-  background:white;
-  width:100%;
-  font-weight:500;
-}
-
-.google-btn img{
-  width:18px;
-}
-
-table{
-  width:100%;
-  border-collapse:collapse;
-}
-
-th{
-  text-align:left;
-  padding:12px;
-  border-bottom:2px solid #e5e7eb;
-}
-
-td{
-  padding:12px;
-  border-bottom:1px solid #f3f4f6;
-}
-
-.actions button{
-  margin-right:6px;
-}
-
-.kpis{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-  gap:20px;
-  margin-bottom:25px;
-}
-
-.kpi-box{
-  background:white;
-  padding:20px;
-  border-radius:12px;
-  box-shadow:0 4px 12px rgba(0,0,0,0.05);
-}
-
-.kpi-value{
-  font-size:28px;
-  font-weight:bold;
-}
-
-.hidden{display:none;}
-.logout{
-  float:right;
-}
-</style>
+    .btn-primary:hover {
+      background: #324a63;
+    }
+  </style>
 </head>
+
 <body>
 
-<div class="container">
+<header>
+  <h2>Knowledge Hub</h2>
+  <div id="userInfo"></div>
+</header>
 
-<h1>Affiliate Retention Dashboard</h1>
-
-<div id="authSection" class="card">
-<h2>Sign In</h2>
-<input type="email" id="email" placeholder="Email">
-<input type="password" id="password" placeholder="Password">
-
-<button class="primary" onclick="login()">Login</button>
-<button class="secondary" onclick="register()">Register</button>
-
-<br><br>
-
-<button class="google-btn" onclick="googleLogin()">
-<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg">
-Sign in with Google
-</button>
-
+<div class="login-container" id="loginSection">
+  <h2>Company Knowledge Hub</h2>
+  <button class="btn-primary" id="googleLogin">Sign in with Google</button>
 </div>
 
-<div id="dashboard" class="hidden">
+<div class="container hidden" id="mainApp">
 
-<button class="secondary logout" onclick="logout()">Logout</button>
+  <nav>
+    <button onclick="showHome()">Home</button>
+    <button onclick="showUpdates()">Updates</button>
+  </nav>
 
-<div class="kpis">
-<div class="kpi-box">
-<div>Total Affiliates</div>
-<div class="kpi-value" id="totalAffiliates">0</div>
-</div>
+  <div id="homeSection">
+    <div class="card">
+      <h3>Welcome to the Internal Knowledge Hub</h3>
+      <p>All company updates and resources are stored here.</p>
+    </div>
+  </div>
 
-<div class="kpi-box">
-<div>Average Retention</div>
-<div class="kpi-value" id="avgScore">0%</div>
-</div>
-</div>
+  <div id="updatesSection" class="hidden">
+    <div id="adminEditor" class="card hidden">
+      <h3>Create Update</h3>
+      <input type="text" id="updateTitle" placeholder="Update Title" style="width:100%; padding:8px;">
+      <textarea id="updateContent" placeholder="Write update..."></textarea>
+      <button class="btn-primary" onclick="addUpdate()">Publish</button>
+    </div>
 
-<div class="card">
-<h2>Add Affiliate</h2>
-<input type="text" id="name" placeholder="Affiliate Name">
-<input type="number" id="score" placeholder="Retention Score (0-100)">
-<button class="primary" onclick="addAffiliate()">Add Affiliate</button>
-</div>
+    <div id="updatesList"></div>
+  </div>
 
-<div class="card">
-<h2>Affiliates</h2>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Score</th>
-<th>Actions</th>
-</tr>
-</thead>
-<tbody id="affiliateTable"></tbody>
-</table>
-</div>
-
-<div class="card">
-<h2>Retention Analytics</h2>
-<canvas id="chartCanvas"></canvas>
-</div>
-
-</div>
 </div>
 
 <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+  import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut }
+    from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc, collection, addDoc, getDocs, query, orderBy, serverTimestamp }
+    from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } 
-from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc } 
-from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "affiliate-relations-17687.firebaseapp.com",
+    projectId: "affiliate-relations-17687",
+    storageBucket: "affiliate-relations-17687.firebasestorage.app",
+    messagingSenderId: "642027131905",
+    appId: "1:642027131905:web:5f0076ee7b34578b9f9c00"
+  };
 
-const firebaseConfig = {
-  apiKey: "AIzaSyB8dDTnpPQVRAs7dkfc8QU3L5qUJtm-2jg",
-  authDomain: "affiliate-relations-17687.firebaseapp.com",
-  projectId: "affiliate-relations-17687",
-  storageBucket: "affiliate-relations-17687.firebasestorage.app",
-  messagingSenderId: "642027131905",
-  appId: "1:642027131905:web:5f0076ee7b34578b9f9c00"
-};
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const provider = new GoogleAuthProvider();
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const provider = new GoogleAuthProvider();
+  const loginBtn = document.getElementById("googleLogin");
+  const loginSection = document.getElementById("loginSection");
+  const mainApp = document.getElementById("mainApp");
+  const userInfo = document.getElementById("userInfo");
+  const adminEditor = document.getElementById("adminEditor");
+  const updatesList = document.getElementById("updatesList");
 
-let currentUser;
-let chart;
+  let currentRole = "user";
 
-window.register = ()=>createUserWithEmailAndPassword(auth,email.value,password.value);
-window.login = ()=>signInWithEmailAndPassword(auth,email.value,password.value);
-window.googleLogin = ()=>signInWithPopup(auth,provider);
-window.logout = ()=>signOut(auth);
+  loginBtn.onclick = async () => {
+    await signInWithPopup(auth, provider);
+  };
 
-onAuthStateChanged(auth,user=>{
-  if(user){
-    currentUser=user;
-    authSection.classList.add("hidden");
-    dashboard.classList.remove("hidden");
-    loadAffiliates();
-  }else{
-    authSection.classList.remove("hidden");
-    dashboard.classList.add("hidden");
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      loginSection.classList.add("hidden");
+      mainApp.classList.remove("hidden");
+
+      userInfo.innerHTML = `
+        ${user.email} 
+        <button onclick="logout()">Logout</button>
+      `;
+
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+
+      if (userDoc.exists()) {
+        currentRole = userDoc.data().role;
+        if (currentRole === "superadmin" || currentRole === "admin") {
+          adminEditor.classList.remove("hidden");
+        }
+      }
+
+      loadUpdates();
+    }
+  });
+
+  window.logout = () => {
+    signOut(auth);
+    location.reload();
+  };
+
+  window.showHome = () => {
+    document.getElementById("homeSection").classList.remove("hidden");
+    document.getElementById("updatesSection").classList.add("hidden");
+  };
+
+  window.showUpdates = () => {
+    document.getElementById("homeSection").classList.add("hidden");
+    document.getElementById("updatesSection").classList.remove("hidden");
+  };
+
+  window.addUpdate = async () => {
+    const title = document.getElementById("updateTitle").value;
+    const content = document.getElementById("updateContent").value;
+
+    if (!title || !content) return alert("Fill all fields");
+
+    await addDoc(collection(db, "updates"), {
+      title,
+      content,
+      createdAt: serverTimestamp()
+    });
+
+    document.getElementById("updateTitle").value = "";
+    document.getElementById("updateContent").value = "";
+
+    loadUpdates();
+  };
+
+  async function loadUpdates() {
+    updatesList.innerHTML = "";
+    const q = query(collection(db, "updates"), orderBy("createdAt", "desc"));
+    const querySnapshot = await getDocs(q);
+
+    querySnapshot.forEach((docSnap) => {
+      const data = docSnap.data();
+      updatesList.innerHTML += `
+        <div class="card">
+          <h3>${data.title}</h3>
+          <p>${data.content}</p>
+        </div>
+      `;
+    });
   }
-});
-
-window.addAffiliate = async ()=>{
-  await addDoc(collection(db,"users",currentUser.uid,"affiliates"),{
-    name:name.value,
-    score:parseInt(score.value)
-  });
-};
-
-function loadAffiliates(){
-  const ref=collection(db,"users",currentUser.uid,"affiliates");
-
-  onSnapshot(ref,snap=>{
-    affiliateTable.innerHTML="";
-    let labels=[];
-    let data=[];
-    let total=0;
-
-    snap.forEach(docSnap=>{
-      const d=docSnap.data();
-      total+=d.score;
-      labels.push(d.name);
-      data.push(d.score);
-
-      affiliateTable.innerHTML+=`
-      <tr>
-        <td>${d.name}</td>
-        <td>${d.score}%</td>
-        <td class="actions">
-          <button onclick="editAffiliate('${docSnap.id}','${d.name}',${d.score})">Edit</button>
-          <button onclick="deleteAffiliate('${docSnap.id}')">Delete</button>
-        </td>
-      </tr>`;
-    });
-
-    totalAffiliates.textContent = snap.size;
-    avgScore.textContent = snap.size ? Math.round(total/snap.size) + "%" : "0%";
-
-    if(chart) chart.destroy();
-    chart=new Chart(document.getElementById("chartCanvas"),{
-      type:"bar",
-      data:{labels,datasets:[{label:"Retention %",data}]},
-      options:{responsive:true}
-    });
-  });
-}
-
-window.deleteAffiliate = id =>
-  deleteDoc(doc(db,"users",currentUser.uid,"affiliates",id));
-
-window.editAffiliate = async(id,n,s)=>{
-  const newName=prompt("Name",n);
-  const newScore=prompt("Score",s);
-  await updateDoc(doc(db,"users",currentUser.uid,"affiliates",id),{
-    name:newName,
-    score:parseInt(newScore)
-  });
-};
-
 </script>
 
 </body>
