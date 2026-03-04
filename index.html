@@ -2,105 +2,138 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Affiliate Retention System</title>
+<title>Affiliate Retention Pro</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
+
 body{
-  font-family: Arial, sans-serif;
-  background: linear-gradient(135deg,#1e1e2f,#2a2a40);
-  color:white;
   margin:0;
-  padding:0;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(-45deg,#6c5ce7,#00cec9,#0984e3,#fd79a8);
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+  color:white;
 }
+
+@keyframes gradient{
+  0%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+  100%{background-position:0% 50%;}
+}
+
 .container{
   max-width:1100px;
   margin:auto;
-  padding:20px;
+  padding:40px 20px;
 }
+
 .card{
-  background:#2f2f4a;
-  padding:20px;
-  border-radius:15px;
-  margin-bottom:20px;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(15px);
+  border-radius:20px;
+  padding:25px;
+  margin-bottom:25px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.2);
 }
-input,button{
-  padding:10px;
-  border-radius:8px;
+
+input{
+  width:100%;
+  padding:12px;
+  border-radius:10px;
   border:none;
-  margin:5px 0;
+  margin-bottom:10px;
 }
+
 button{
+  padding:12px 18px;
+  border:none;
+  border-radius:12px;
+  font-weight:bold;
   cursor:pointer;
-  background:#6c5ce7;
+  margin-right:10px;
+  background:linear-gradient(45deg,#ff6ec4,#7873f5);
   color:white;
+  transition:0.3s;
 }
+
 button:hover{
-  background:#8e7dff;
+  transform:scale(1.05);
 }
+
 table{
   width:100%;
   border-collapse:collapse;
-  margin-top:10px;
 }
+
 th,td{
-  padding:10px;
-  border-bottom:1px solid #444;
+  padding:12px;
+  text-align:left;
 }
-.actions button{
-  margin-right:5px;
+
+th{
+  border-bottom:1px solid rgba(255,255,255,0.3);
 }
+
 .hidden{display:none;}
+
+.logout{
+  float:right;
+}
+
 </style>
 </head>
 <body>
+
 <div class="container">
 
-<h1>🔥 Affiliate Retention Dashboard</h1>
+<h1>🚀 Affiliate Retention Pro</h1>
 
 <div id="authSection" class="card">
-  <h2>Login / Register</h2>
-  <input type="email" id="email" placeholder="Email"><br>
-  <input type="password" id="password" placeholder="Password"><br>
-  <button onclick="register()">Register</button>
-  <button onclick="login()">Login</button>
+<h2>Login / Register</h2>
+<input type="email" id="email" placeholder="Email">
+<input type="password" id="password" placeholder="Password">
+<button onclick="register()">Register</button>
+<button onclick="login()">Login</button>
+<button onclick="googleLogin()">Sign in with Google</button>
 </div>
 
 <div id="dashboard" class="hidden">
 
 <div class="card">
-  <h2>Add Affiliate</h2>
-  <input type="text" id="name" placeholder="Affiliate Name"><br>
-  <input type="number" id="score" placeholder="Retention Score (0-100)"><br>
-  <button onclick="addAffiliate()">Add</button>
-  <button onclick="logout()">Logout</button>
+<button class="logout" onclick="logout()">Logout</button>
+<h2>Add Affiliate</h2>
+<input type="text" id="name" placeholder="Affiliate Name">
+<input type="number" id="score" placeholder="Retention Score (0-100)">
+<button onclick="addAffiliate()">Add Affiliate</button>
 </div>
 
 <div class="card">
-  <h2>Affiliates</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Score</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody id="affiliateTable"></tbody>
-  </table>
+<h2>Affiliates</h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Score</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody id="affiliateTable"></tbody>
+</table>
 </div>
 
 <div class="card">
-  <h2>Retention Analytics</h2>
-  <canvas id="chart"></canvas>
+<h2>Analytics</h2>
+<canvas id="chart"></canvas>
 </div>
 
 </div>
+
 </div>
 
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } 
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } 
 from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc } 
 from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
@@ -117,98 +150,90 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
 
-let currentUser = null;
+let currentUser;
 let chart;
 
-window.register = async function(){
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-  await createUserWithEmailAndPassword(auth,email,password);
-}
+window.register = async ()=>{
+  await createUserWithEmailAndPassword(auth,email.value,password.value);
+};
 
-window.login = async function(){
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-  await signInWithEmailAndPassword(auth,email,password);
-}
+window.login = async ()=>{
+  await signInWithEmailAndPassword(auth,email.value,password.value);
+};
 
-window.logout = async function(){
+window.googleLogin = async ()=>{
+  await signInWithPopup(auth,provider);
+};
+
+window.logout = async ()=>{
   await signOut(auth);
-}
+};
 
-onAuthStateChanged(auth,(user)=>{
+onAuthStateChanged(auth,user=>{
   if(user){
     currentUser=user;
-    document.getElementById("authSection").classList.add("hidden");
-    document.getElementById("dashboard").classList.remove("hidden");
+    authSection.classList.add("hidden");
+    dashboard.classList.remove("hidden");
     loadAffiliates();
   }else{
-    document.getElementById("authSection").classList.remove("hidden");
-    document.getElementById("dashboard").classList.add("hidden");
+    authSection.classList.remove("hidden");
+    dashboard.classList.add("hidden");
   }
 });
 
-window.addAffiliate = async function(){
-  const name = document.getElementById("name").value;
-  const score = parseInt(document.getElementById("score").value);
+window.addAffiliate = async ()=>{
   await addDoc(collection(db,"users",currentUser.uid,"affiliates"),{
-    name,
-    score
+    name:name.value,
+    score:parseInt(score.value)
   });
-}
+};
 
 function loadAffiliates(){
-  const table = document.getElementById("affiliateTable");
-  const ref = collection(db,"users",currentUser.uid,"affiliates");
-
-  onSnapshot(ref,(snapshot)=>{
-    table.innerHTML="";
+  const ref=collection(db,"users",currentUser.uid,"affiliates");
+  onSnapshot(ref,snap=>{
+    affiliateTable.innerHTML="";
     let labels=[];
     let data=[];
-    snapshot.forEach(docSnap=>{
+    snap.forEach(docSnap=>{
       const d=docSnap.data();
       labels.push(d.name);
       data.push(d.score);
 
-      table.innerHTML+=`
-        <tr>
-          <td>${d.name}</td>
-          <td>${d.score}</td>
-          <td class="actions">
-            <button onclick="editAffiliate('${docSnap.id}','${d.name}',${d.score})">Edit</button>
-            <button onclick="deleteAffiliate('${docSnap.id}')">Delete</button>
-          </td>
-        </tr>`;
+      affiliateTable.innerHTML+=`
+      <tr>
+        <td>${d.name}</td>
+        <td>${d.score}</td>
+        <td>
+          <button onclick="editAffiliate('${docSnap.id}','${d.name}',${d.score})">Edit</button>
+          <button onclick="deleteAffiliate('${docSnap.id}')">Delete</button>
+        </td>
+      </tr>`;
     });
 
     if(chart) chart.destroy();
-    chart=new Chart(document.getElementById("chart"),{
+    chart=new Chart(chart,{
       type:"bar",
-      data:{
-        labels:labels,
-        datasets:[{
-          label:"Retention Score",
-          data:data
-        }]
-      }
+      data:{labels,datasets:[{label:"Retention",data}]}
     });
   });
 }
 
-window.deleteAffiliate = async function(id){
+window.deleteAffiliate = async(id)=>{
   await deleteDoc(doc(db,"users",currentUser.uid,"affiliates",id));
-}
+};
 
-window.editAffiliate = async function(id,name,score){
-  const newName = prompt("Edit Name",name);
-  const newScore = prompt("Edit Score",score);
+window.editAffiliate = async(id,n,s)=>{
+  const newName=prompt("Name",n);
+  const newScore=prompt("Score",s);
   await updateDoc(doc(db,"users",currentUser.uid,"affiliates",id),{
     name:newName,
     score:parseInt(newScore)
   });
-}
+};
 
 </script>
+
 </body>
 </html>
