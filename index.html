@@ -1,1 +1,153 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <iomanip>
 
+using namespace std;
+
+class Affiliate {
+private:
+    string name;
+    int monthlyLeads;
+    int conversions;
+    int complaints;
+    double retentionScore;
+
+public:
+    Affiliate(string n, int leads, int conv, int comp) {
+        name = n;
+        monthlyLeads = leads;
+        conversions = conv;
+        complaints = comp;
+        calculateScore();
+    }
+
+    void calculateScore() {
+        double conversionRate = monthlyLeads == 0 ? 0 : (double)conversions / monthlyLeads;
+        retentionScore = (conversionRate * 70) - (complaints * 5);
+    }
+
+    void updateData(int leads, int conv, int comp) {
+        monthlyLeads = leads;
+        conversions = conv;
+        complaints = comp;
+        calculateScore();
+    }
+
+    string getName() const { return name; }
+    double getScore() const { return retentionScore; }
+
+    void display() const {
+        cout << left << setw(20) << name
+             << setw(15) << monthlyLeads
+             << setw(15) << conversions
+             << setw(15) << complaints
+             << setw(15) << fixed << setprecision(2) << retentionScore;
+
+        if (retentionScore < 10)
+            cout << " ⚠ HIGH RISK";
+        else if (retentionScore < 25)
+            cout << " ⚡ Moderate";
+        else
+            cout << " ✅ Stable";
+
+        cout << endl;
+    }
+};
+
+vector<Affiliate> affiliates;
+
+void addAffiliate() {
+    string name;
+    int leads, conv, comp;
+
+    cout << "Enter Affiliate Name: ";
+    cin.ignore();
+    getline(cin, name);
+
+    cout << "Monthly Leads: ";
+    cin >> leads;
+
+    cout << "Conversions: ";
+    cin >> conv;
+
+    cout << "Complaints: ";
+    cin >> comp;
+
+    affiliates.push_back(Affiliate(name, leads, conv, comp));
+    cout << "Affiliate Added Successfully!\n\n";
+}
+
+void displayAll() {
+    cout << "\n--- Affiliate Dashboard ---\n";
+    cout << left << setw(20) << "Name"
+         << setw(15) << "Leads"
+         << setw(15) << "Conversions"
+         << setw(15) << "Complaints"
+         << setw(15) << "Score"
+         << "Status\n";
+
+    for (const auto &a : affiliates) {
+        a.display();
+    }
+    cout << endl;
+}
+
+void sortByScore() {
+    sort(affiliates.begin(), affiliates.end(),
+         [](const Affiliate &a, const Affiliate &b) {
+             return a.getScore() > b.getScore();
+         });
+
+    cout << "Affiliates Sorted by Retention Score!\n";
+}
+
+void searchAffiliate() {
+    string searchName;
+    cout << "Enter name to search: ";
+    cin.ignore();
+    getline(cin, searchName);
+
+    bool found = false;
+    for (const auto &a : affiliates) {
+        if (a.getName() == searchName) {
+            cout << "\nAffiliate Found:\n";
+            a.display();
+            found = true;
+        }
+    }
+
+    if (!found)
+        cout << "Affiliate Not Found.\n";
+}
+
+void menu() {
+    cout << "\n====== AFFILIATE RETENTION SYSTEM ======\n";
+    cout << "1. Add Affiliate\n";
+    cout << "2. View All Affiliates\n";
+    cout << "3. Sort by Retention Score\n";
+    cout << "4. Search Affiliate\n";
+    cout << "5. Exit\n";
+    cout << "Choose Option: ";
+}
+
+int main() {
+    int choice;
+
+    do {
+        menu();
+        cin >> choice;
+
+        switch (choice) {
+            case 1: addAffiliate(); break;
+            case 2: displayAll(); break;
+            case 3: sortByScore(); break;
+            case 4: searchAffiliate(); break;
+            case 5: cout << "Exiting System...\n"; break;
+            default: cout << "Invalid Option!\n";
+        }
+
+    } while (choice != 5);
+
+    return 0;
+}
