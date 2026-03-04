@@ -11,25 +11,17 @@
       padding: 30px;
     }
 
-    h1 {
-      margin-bottom: 20px;
-    }
-
-    input, button {
-      padding: 10px;
+    input, button, select {
+      padding: 8px;
       margin: 5px;
       border: none;
-      border-radius: 8px;
-    }
-
-    input {
-      width: 150px;
+      border-radius: 6px;
     }
 
     button {
       background: #00ffcc;
-      cursor: pointer;
       font-weight: bold;
+      cursor: pointer;
     }
 
     button:hover {
@@ -53,81 +45,154 @@
 
 <h1>🚀 Affiliate Retention Dashboard</h1>
 
-<div>
+<h3>👤 Create / Select Profile</h3>
+
+<input type="text" id="profileName" placeholder="New Profile Name">
+<button onclick="createProfile()">Create Profile</button>
+
+<br>
+
+<select id="profileSelect" onchange="loadProfile()">
+  <option value="">Select Profile</option>
+</select>
+
+<hr>
+
+<div id="appSection" style="display:none;">
+
+  <h3>Add Affiliate</h3>
+
   <input type="text" id="name" placeholder="Name">
   <input type="number" id="leads" placeholder="Leads">
   <input type="number" id="conv" placeholder="Conversions">
   <input type="number" id="complaints" placeholder="Complaints">
-  <button onclick="addAffiliate()">Add Affiliate</button>
-</div>
+  <button onclick="addAffiliate()">Add</button>
 
-<div>
+  <br><br>
   <button onclick="sortByScore()">Sort by Score</button>
-  <button onclick="displayAffiliates()">Refresh</button>
-</div>
 
-<div id="output"></div>
+  <div id="output"></div>
+
+</div>
 
 <script>
-  let affiliates = [];
 
-  function calculateScore(leads, conv, complaints) {
-    let conversionRate = leads === 0 ? 0 : conv / leads;
-    return (conversionRate * 70) - (complaints * 5);
+let currentProfile = null;
+let affiliates = [];
+
+function saveProfiles(profiles) {
+  localStorage.setItem("profiles", JSON.stringify(profiles));
+}
+
+function getProfiles() {
+  return JSON.parse(localStorage.getItem("profiles")) || {};
+}
+
+function createProfile() {
+  let name = document.getElementById("profileName").value.trim();
+  if (!name) return alert("Enter profile name");
+
+  let profiles = getProfiles();
+
+  if (profiles[name]) {
+    alert("Profile already exists");
+    return;
   }
 
-  function getStatus(score) {
-    if (score < 10) return {text: "🔥 HIGH RISK", class: "danger"};
-    if (score < 25) return {text: "⚠ Moderate", class: "warning"};
-    return {text: "✅ Stable", class: "good"};
-  }
+  profiles[name] = [];
+  saveProfiles(profiles);
+  updateProfileDropdown();
+  alert("Profile Created!");
+}
 
-  function addAffiliate() {
-    let name = document.getElementById("name").value;
-    let leads = parseInt(document.getElementById("leads").value);
-    let conv = parseInt(document.getElementById("conv").value);
-    let complaints = parseInt(document.getElementById("complaints").value);
+function updateProfileDropdown() {
+  let profiles = getProfiles();
+  let select = document.getElementById("profileSelect");
+  select.innerHTML = '<option value="">Select Profile</option>';
 
-    if (!name) return alert("Enter a name");
+  Object.keys(profiles).forEach(p => {
+    select.innerHTML += `<option value="${p}">${p}</option>`;
+  });
+}
 
-    let score = calculateScore(leads, conv, complaints);
+function loadProfile() {
+  let name = document.getElementById("profileSelect").value;
+  if (!name) return;
 
-    affiliates.push({
-      name,
-      leads,
-      conv,
-      complaints,
-      score
-    });
+  currentProfile = name;
+  let profiles = getProfiles();
+  affiliates = profiles[name] || [];
 
-    displayAffiliates();
-  }
+  document.getElementById("appSection").style.display = "block";
+  displayAffiliates();
+}
 
-  function displayAffiliates() {
-    let output = document.getElementById("output");
-    output.innerHTML = "";
+function saveCurrentProfile() {
+  if (!currentProfile) return;
 
-    affiliates.forEach(a => {
-      let status = getStatus(a.score);
+  let profiles = getProfiles();
+  profiles[currentProfile] = affiliates;
+  saveProfiles(profiles);
+}
 
-      output.innerHTML += `
-        <div class="card">
-          <h3>${a.name}</h3>
-          Leads: ${a.leads} |
-          Conversions: ${a.conv} |
-          Complaints: ${a.complaints}
-          <br><br>
-          Score: ${a.score.toFixed(2)} <br>
-          <span class="${status.class}">${status.text}</span>
-        </div>
-      `;
-    });
-  }
+function calculateScore(leads, conv, complaints) {
+  let conversionRate = leads === 0 ? 0 : conv / leads;
+  return (conversionRate * 70) - (complaints * 5);
+}
 
-  function sortByScore() {
-    affiliates.sort((a, b) => b.score - a.score);
-    displayAffiliates();
-  }
+function getStatus(score) {
+  if (score < 10) return {text: "🔥 HIGH RISK", class: "danger"};
+  if (score < 25) return {text: "⚠ Moderate", class: "warning"};
+  return {text: "✅ Stable", class: "good"};
+}
+
+function addAffiliate() {
+  if (!currentProfile) return alert("Select a profile first");
+
+  let name = document.getElementById("name").value;
+  let leads = parseInt(document.getElementById("leads").value);
+  let conv = parseInt(document.getElementById("conv").value);
+  let complaints = parseInt(document.getElementById("complaints").value);
+
+  if (!name) return alert("Enter affiliate name");
+
+  let score = calculateScore(leads, conv, complaints);
+
+  affiliates.push({ name, leads, conv, complaints, score });
+
+  saveCurrentProfile();
+  displayAffiliates();
+}
+
+function displayAffiliates() {
+  let output = document.getElementById("output");
+  output.innerHTML = "";
+
+  affiliates.forEach(a => {
+    let status = getStatus(a.score);
+
+    output.innerHTML += `
+      <div class="card">
+        <h3>${a.name}</h3>
+        Leads: ${a.leads} |
+        Conversions: ${a.conv} |
+        Complaints: ${a.complaints}
+        <br><br>
+        Score: ${a.score.toFixed(2)} <br>
+        <span class="${status.class}">${status.text}</span>
+      </div>
+    `;
+  });
+}
+
+function sortByScore() {
+  affiliates.sort((a, b) => b.score - a.score);
+  saveCurrentProfile();
+  displayAffiliates();
+}
+
+updateProfileDropdown();
+
 </script>
 
 </body>
