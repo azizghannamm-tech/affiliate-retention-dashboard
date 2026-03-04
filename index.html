@@ -1,172 +1,122 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Knowledge Hub</title>
+  <title>Company Knowledge Hub</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body { margin:0; font-family:Arial; background:#f4f6f9; }
-    header { background:#1f2d3d; color:white; padding:15px 30px; display:flex; justify-content:space-between; }
-    .container { padding:30px; }
-    .card { background:white; padding:20px; margin-bottom:20px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.1); }
-    .hidden { display:none; }
-    .btn { padding:10px 20px; background:#1f2d3d; color:white; border:none; cursor:pointer; }
-    .btn:hover { background:#324a63; }
-    nav button { margin-right:10px; padding:8px 12px; cursor:pointer; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+      text-align: center;
+    }
+
+    header {
+      background: #1f2d3d;
+      color: white;
+      padding: 20px;
+      font-size: 22px;
+    }
+
+    #loginSection {
+      margin-top: 150px;
+    }
+
+    button {
+      padding: 12px 25px;
+      font-size: 16px;
+      background: #1f2d3d;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    button:hover {
+      background: #324a63;
+    }
+
+    #mainApp {
+      display: none;
+      margin-top: 80px;
+    }
   </style>
 </head>
 <body>
 
 <header>
-  <h2>Company Knowledge Hub</h2>
-  <div id="userInfo"></div>
+  Company Knowledge Hub
 </header>
 
-<div id="loginSection" style="text-align:center; margin-top:150px;">
+<div id="loginSection">
   <h2>Internal Access</h2>
-  <button class="btn" id="googleLogin">Sign in with Google</button>
+  <button id="googleLoginBtn">Sign in with Google</button>
 </div>
 
-<div class="container hidden" id="mainApp">
-  <nav>
-    <button onclick="showHome()">Home</button>
-    <button onclick="showUpdates()">Updates</button>
-  </nav>
-
-  <div id="homeSection">
-    <div class="card">
-      <h3>Welcome</h3>
-      <p>Internal company knowledge center.</p>
-    </div>
-  </div>
-
-  <div id="updatesSection" class="hidden">
-    <div id="editor" class="card hidden">
-      <h3>Create Update</h3>
-      <input id="title" placeholder="Title" style="width:100%; padding:8px;">
-      <textarea id="content" placeholder="Content" style="width:100%; height:100px; margin-top:10px;"></textarea>
-      <button class="btn" onclick="addUpdate()">Publish</button>
-    </div>
-    <div id="updatesList"></div>
-  </div>
+<div id="mainApp">
+  <h2>Welcome 🎉</h2>
+  <p id="userEmail"></p>
+  <button id="logoutBtn">Logout</button>
 </div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-import { 
-  getAuth, GoogleAuthProvider, signInWithPopup, 
-  onAuthStateChanged, signOut 
-} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
-import { 
-  getFirestore, doc, getDoc, collection, addDoc, 
-  getDocs, query, orderBy, serverTimestamp 
-} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { 
+    getAuth, 
+    GoogleAuthProvider, 
+    signInWithPopup, 
+    onAuthStateChanged, 
+    signOut 
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyB8dDTnpPQVRAs7dkfc8QU3L5qUJtm-2jg,
-  authDomain: "affiliate-relations-17687.firebaseapp.com",
-  projectId: "affiliate-relations-17687",
-  storageBucket: "affiliate-relations-17687.appspot.com",
-  messagingSenderId: "642027131905",
-  appId: "1:642027131905:web:5f0076ee7b34578b9f9c00"
-};
+  // 🔥 YOUR REAL FIREBASE CONFIG
+  const firebaseConfig = {
+    apiKey: "AIzaSyB8dDInPQRVAs7dkfc8QU3L5qUJtm-2jg",
+    authDomain: "affiliate-relations-17687.firebaseapp.com",
+    projectId: "affiliate-relations-17687",
+    storageBucket: "affiliate-relations-17687.firebasestorage.app",
+    messagingSenderId: "642027131905",
+    appId: "1:642027131905:web:5f0076ee7b34578b9f9c00",
+    measurementId: "G-DVSF596RV0"
+  };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const provider = new GoogleAuthProvider();
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
 
-const loginBtn = document.getElementById("googleLogin");
-const loginSection = document.getElementById("loginSection");
-const mainApp = document.getElementById("mainApp");
-const userInfo = document.getElementById("userInfo");
-const editor = document.getElementById("editor");
-const updatesList = document.getElementById("updatesList");
+  const loginBtn = document.getElementById("googleLoginBtn");
+  const logoutBtn = document.getElementById("logoutBtn");
+  const loginSection = document.getElementById("loginSection");
+  const mainApp = document.getElementById("mainApp");
+  const userEmail = document.getElementById("userEmail");
 
-let currentRole = "user";
-
-loginBtn.addEventListener("click", async () => {
-  try {
-    await signInWithPopup(auth, provider);
-  } catch (error) {
-    console.error("LOGIN ERROR:", error);
-    alert(error.message);
-  }
-});
-
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    loginSection.classList.add("hidden");
-    mainApp.classList.remove("hidden");
-
-    userInfo.innerHTML = `
-      ${user.email} 
-      <button onclick="logout()">Logout</button>
-    `;
-
+  // 🔑 LOGIN
+  loginBtn.addEventListener("click", async () => {
     try {
-      const userDoc = await getDoc(doc(db, "users", user.uid));
-      if (userDoc.exists()) {
-        currentRole = userDoc.data().role;
-        if (currentRole === "superadmin" || currentRole === "admin") {
-          editor.classList.remove("hidden");
-        }
-      }
-    } catch (err) {
-      console.error("ROLE FETCH ERROR:", err);
+      await signInWithPopup(auth, provider);
+    } catch (error) {
+      console.error("LOGIN ERROR:", error);
+      alert(error.message);
     }
-
-    loadUpdates();
-  }
-});
-
-window.logout = () => {
-  signOut(auth);
-  location.reload();
-};
-
-window.showHome = () => {
-  document.getElementById("homeSection").classList.remove("hidden");
-  document.getElementById("updatesSection").classList.add("hidden");
-};
-
-window.showUpdates = () => {
-  document.getElementById("homeSection").classList.add("hidden");
-  document.getElementById("updatesSection").classList.remove("hidden");
-};
-
-window.addUpdate = async () => {
-  const title = document.getElementById("title").value;
-  const content = document.getElementById("content").value;
-
-  if (!title || !content) return alert("Fill all fields");
-
-  try {
-    await addDoc(collection(db, "updates"), {
-      title,
-      content,
-      createdAt: serverTimestamp()
-    });
-    loadUpdates();
-  } catch (err) {
-    console.error("ADD UPDATE ERROR:", err);
-  }
-};
-
-async function loadUpdates() {
-  updatesList.innerHTML = "";
-  const q = query(collection(db, "updates"), orderBy("createdAt", "desc"));
-  const snapshot = await getDocs(q);
-
-  snapshot.forEach(doc => {
-    const data = doc.data();
-    updatesList.innerHTML += `
-      <div class="card">
-        <h3>${data.title}</h3>
-        <p>${data.content}</p>
-      </div>
-    `;
   });
-}
+
+  // 🔄 AUTH STATE LISTENER
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      loginSection.style.display = "none";
+      mainApp.style.display = "block";
+      userEmail.textContent = "Logged in as: " + user.email;
+    } else {
+      loginSection.style.display = "block";
+      mainApp.style.display = "none";
+    }
+  });
+
+  // 🚪 LOGOUT
+  logoutBtn.addEventListener("click", async () => {
+    await signOut(auth);
+  });
+
 </script>
 
 </body>
