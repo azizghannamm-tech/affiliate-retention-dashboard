@@ -1,199 +1,214 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Affiliate Retention System</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #667eea, #764ba2);
-      color: white;
-      text-align: center;
-      padding: 30px;
-    }
-
-    input, button, select {
-      padding: 8px;
-      margin: 5px;
-      border: none;
-      border-radius: 6px;
-    }
-
-    button {
-      background: #00ffcc;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background: #00ccaa;
-    }
-
-    .card {
-      background: rgba(255,255,255,0.1);
-      padding: 15px;
-      margin: 10px auto;
-      border-radius: 10px;
-      width: 60%;
-    }
-
-    .danger { color: #ff4d4d; }
-    .warning { color: #ffd633; }
-    .good { color: #66ff99; }
-  </style>
+<meta charset="UTF-8">
+<title>Affiliate Retention System</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+body{
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg,#1e1e2f,#2a2a40);
+  color:white;
+  margin:0;
+  padding:0;
+}
+.container{
+  max-width:1100px;
+  margin:auto;
+  padding:20px;
+}
+.card{
+  background:#2f2f4a;
+  padding:20px;
+  border-radius:15px;
+  margin-bottom:20px;
+}
+input,button{
+  padding:10px;
+  border-radius:8px;
+  border:none;
+  margin:5px 0;
+}
+button{
+  cursor:pointer;
+  background:#6c5ce7;
+  color:white;
+}
+button:hover{
+  background:#8e7dff;
+}
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:10px;
+}
+th,td{
+  padding:10px;
+  border-bottom:1px solid #444;
+}
+.actions button{
+  margin-right:5px;
+}
+.hidden{display:none;}
+</style>
 </head>
 <body>
+<div class="container">
 
-<h1>🚀 Affiliate Retention Dashboard</h1>
+<h1>🔥 Affiliate Retention Dashboard</h1>
 
-<h3>👤 Create / Select Profile</h3>
-
-<input type="text" id="profileName" placeholder="New Profile Name">
-<button onclick="createProfile()">Create Profile</button>
-
-<br>
-
-<select id="profileSelect" onchange="loadProfile()">
-  <option value="">Select Profile</option>
-</select>
-
-<hr>
-
-<div id="appSection" style="display:none;">
-
-  <h3>Add Affiliate</h3>
-
-  <input type="text" id="name" placeholder="Name">
-  <input type="number" id="leads" placeholder="Leads">
-  <input type="number" id="conv" placeholder="Conversions">
-  <input type="number" id="complaints" placeholder="Complaints">
-  <button onclick="addAffiliate()">Add</button>
-
-  <br><br>
-  <button onclick="sortByScore()">Sort by Score</button>
-
-  <div id="output"></div>
-
+<div id="authSection" class="card">
+  <h2>Login / Register</h2>
+  <input type="email" id="email" placeholder="Email"><br>
+  <input type="password" id="password" placeholder="Password"><br>
+  <button onclick="register()">Register</button>
+  <button onclick="login()">Login</button>
 </div>
 
-<script>
+<div id="dashboard" class="hidden">
 
-let currentProfile = null;
-let affiliates = [];
+<div class="card">
+  <h2>Add Affiliate</h2>
+  <input type="text" id="name" placeholder="Affiliate Name"><br>
+  <input type="number" id="score" placeholder="Retention Score (0-100)"><br>
+  <button onclick="addAffiliate()">Add</button>
+  <button onclick="logout()">Logout</button>
+</div>
 
-function saveProfiles(profiles) {
-  localStorage.setItem("profiles", JSON.stringify(profiles));
+<div class="card">
+  <h2>Affiliates</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Score</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="affiliateTable"></tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2>Retention Analytics</h2>
+  <canvas id="chart"></canvas>
+</div>
+
+</div>
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } 
+from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc } 
+from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB8dDTnpPQVRAs7dkfc8QU3L5qUJtm-2jg",
+  authDomain: "affiliate-relations-17687.firebaseapp.com",
+  projectId: "affiliate-relations-17687",
+  storageBucket: "affiliate-relations-17687.firebasestorage.app",
+  messagingSenderId: "642027131905",
+  appId: "1:642027131905:web:5f0076ee7b34578b9f9c00"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let currentUser = null;
+let chart;
+
+window.register = async function(){
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  await createUserWithEmailAndPassword(auth,email,password);
 }
 
-function getProfiles() {
-  return JSON.parse(localStorage.getItem("profiles")) || {};
+window.login = async function(){
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  await signInWithEmailAndPassword(auth,email,password);
 }
 
-function createProfile() {
-  let name = document.getElementById("profileName").value.trim();
-  if (!name) return alert("Enter profile name");
+window.logout = async function(){
+  await signOut(auth);
+}
 
-  let profiles = getProfiles();
-
-  if (profiles[name]) {
-    alert("Profile already exists");
-    return;
+onAuthStateChanged(auth,(user)=>{
+  if(user){
+    currentUser=user;
+    document.getElementById("authSection").classList.add("hidden");
+    document.getElementById("dashboard").classList.remove("hidden");
+    loadAffiliates();
+  }else{
+    document.getElementById("authSection").classList.remove("hidden");
+    document.getElementById("dashboard").classList.add("hidden");
   }
+});
 
-  profiles[name] = [];
-  saveProfiles(profiles);
-  updateProfileDropdown();
-  alert("Profile Created!");
-}
-
-function updateProfileDropdown() {
-  let profiles = getProfiles();
-  let select = document.getElementById("profileSelect");
-  select.innerHTML = '<option value="">Select Profile</option>';
-
-  Object.keys(profiles).forEach(p => {
-    select.innerHTML += `<option value="${p}">${p}</option>`;
+window.addAffiliate = async function(){
+  const name = document.getElementById("name").value;
+  const score = parseInt(document.getElementById("score").value);
+  await addDoc(collection(db,"users",currentUser.uid,"affiliates"),{
+    name,
+    score
   });
 }
 
-function loadProfile() {
-  let name = document.getElementById("profileSelect").value;
-  if (!name) return;
+function loadAffiliates(){
+  const table = document.getElementById("affiliateTable");
+  const ref = collection(db,"users",currentUser.uid,"affiliates");
 
-  currentProfile = name;
-  let profiles = getProfiles();
-  affiliates = profiles[name] || [];
+  onSnapshot(ref,(snapshot)=>{
+    table.innerHTML="";
+    let labels=[];
+    let data=[];
+    snapshot.forEach(docSnap=>{
+      const d=docSnap.data();
+      labels.push(d.name);
+      data.push(d.score);
 
-  document.getElementById("appSection").style.display = "block";
-  displayAffiliates();
-}
+      table.innerHTML+=`
+        <tr>
+          <td>${d.name}</td>
+          <td>${d.score}</td>
+          <td class="actions">
+            <button onclick="editAffiliate('${docSnap.id}','${d.name}',${d.score})">Edit</button>
+            <button onclick="deleteAffiliate('${docSnap.id}')">Delete</button>
+          </td>
+        </tr>`;
+    });
 
-function saveCurrentProfile() {
-  if (!currentProfile) return;
-
-  let profiles = getProfiles();
-  profiles[currentProfile] = affiliates;
-  saveProfiles(profiles);
-}
-
-function calculateScore(leads, conv, complaints) {
-  let conversionRate = leads === 0 ? 0 : conv / leads;
-  return (conversionRate * 70) - (complaints * 5);
-}
-
-function getStatus(score) {
-  if (score < 10) return {text: "🔥 HIGH RISK", class: "danger"};
-  if (score < 25) return {text: "⚠ Moderate", class: "warning"};
-  return {text: "✅ Stable", class: "good"};
-}
-
-function addAffiliate() {
-  if (!currentProfile) return alert("Select a profile first");
-
-  let name = document.getElementById("name").value;
-  let leads = parseInt(document.getElementById("leads").value);
-  let conv = parseInt(document.getElementById("conv").value);
-  let complaints = parseInt(document.getElementById("complaints").value);
-
-  if (!name) return alert("Enter affiliate name");
-
-  let score = calculateScore(leads, conv, complaints);
-
-  affiliates.push({ name, leads, conv, complaints, score });
-
-  saveCurrentProfile();
-  displayAffiliates();
-}
-
-function displayAffiliates() {
-  let output = document.getElementById("output");
-  output.innerHTML = "";
-
-  affiliates.forEach(a => {
-    let status = getStatus(a.score);
-
-    output.innerHTML += `
-      <div class="card">
-        <h3>${a.name}</h3>
-        Leads: ${a.leads} |
-        Conversions: ${a.conv} |
-        Complaints: ${a.complaints}
-        <br><br>
-        Score: ${a.score.toFixed(2)} <br>
-        <span class="${status.class}">${status.text}</span>
-      </div>
-    `;
+    if(chart) chart.destroy();
+    chart=new Chart(document.getElementById("chart"),{
+      type:"bar",
+      data:{
+        labels:labels,
+        datasets:[{
+          label:"Retention Score",
+          data:data
+        }]
+      }
+    });
   });
 }
 
-function sortByScore() {
-  affiliates.sort((a, b) => b.score - a.score);
-  saveCurrentProfile();
-  displayAffiliates();
+window.deleteAffiliate = async function(id){
+  await deleteDoc(doc(db,"users",currentUser.uid,"affiliates",id));
 }
 
-updateProfileDropdown();
+window.editAffiliate = async function(id,name,score){
+  const newName = prompt("Edit Name",name);
+  const newScore = prompt("Edit Score",score);
+  await updateDoc(doc(db,"users",currentUser.uid,"affiliates",id),{
+    name:newName,
+    score:parseInt(newScore)
+  });
+}
 
 </script>
-
 </body>
 </html>
