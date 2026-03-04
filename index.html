@@ -4,119 +4,178 @@
   <title>Company Knowledge Hub</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f4f6f9;
-      text-align: center;
-    }
-
+    body { margin:0; font-family:Arial; background:#f4f6f9; }
     header {
-      background: #1f2d3d;
-      color: white;
-      padding: 20px;
-      font-size: 22px;
+      background:#1f2d3d;
+      color:white;
+      padding:15px 30px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
     }
-
-    #loginSection {
-      margin-top: 150px;
+    .container { padding:30px; max-width:900px; margin:auto; }
+    .hidden { display:none; }
+    .card {
+      background:white;
+      padding:20px;
+      margin-bottom:20px;
+      border-radius:8px;
+      box-shadow:0 2px 6px rgba(0,0,0,0.1);
     }
-
     button {
-      padding: 12px 25px;
-      font-size: 16px;
-      background: #1f2d3d;
-      color: white;
-      border: none;
-      cursor: pointer;
-      border-radius: 5px;
+      padding:8px 14px;
+      background:#1f2d3d;
+      color:white;
+      border:none;
+      cursor:pointer;
+      border-radius:5px;
     }
-
-    button:hover {
-      background: #324a63;
-    }
-
-    #mainApp {
-      display: none;
-      margin-top: 80px;
+    button:hover { background:#324a63; }
+    input, textarea {
+      width:100%;
+      padding:8px;
+      margin:6px 0;
     }
   </style>
 </head>
 <body>
 
 <header>
-  Company Knowledge Hub
+  <div>Company Knowledge Hub</div>
+  <div id="userInfo"></div>
 </header>
 
-<div id="loginSection">
+<div id="loginSection" style="text-align:center; margin-top:120px;">
   <h2>Internal Access</h2>
   <button id="googleLoginBtn">Sign in with Google</button>
 </div>
 
-<div id="mainApp">
-  <h2>Welcome 🎉</h2>
-  <p id="userEmail"></p>
-  <button id="logoutBtn">Logout</button>
+<div class="container hidden" id="mainApp">
+
+  <div id="adminPanel" class="card hidden">
+    <h3>Create Update</h3>
+    <input id="updateTitle" placeholder="Title">
+    <textarea id="updateContent" placeholder="Content"></textarea>
+    <button id="postUpdateBtn">Publish Update</button>
+  </div>
+
+  <h2>Company Updates</h2>
+  <div id="updatesList"></div>
+
 </div>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { 
-    getAuth, 
-    GoogleAuthProvider, 
-    signInWithPopup, 
-    onAuthStateChanged, 
-    signOut 
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  orderBy,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  // ✅ EXACT API KEY FROM YOUR FIREBASE SCREENSHOT
-  const firebaseConfig = {
-    apiKey: "AIzaSyB8dDTnpPQVRAs7dkfc8QU3L5qUJtm-2jg",
-    authDomain: "affiliate-relations-17687.firebaseapp.com",
-    projectId: "affiliate-relations-17687",
-    storageBucket: "affiliate-relations-17687.firebasestorage.app",
-    messagingSenderId: "642027131905",
-    appId: "1:642027131905:web:5f0076ee7b34578b9f9c00",
-    measurementId: "G-DVSF596RV0"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyB8dDInPQRVAs7dkfc8QU3L5qUJtm-2jg",
+  authDomain: "affiliate-relations-17687.firebaseapp.com",
+  projectId: "affiliate-relations-17687",
+  storageBucket: "affiliate-relations-17687.firebasestorage.app",
+  messagingSenderId: "642027131905",
+  appId: "1:642027131905:web:5f0076ee7b34578b9f9c00"
+};
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const provider = new GoogleAuthProvider();
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
 
-  const loginBtn = document.getElementById("googleLoginBtn");
-  const logoutBtn = document.getElementById("logoutBtn");
-  const loginSection = document.getElementById("loginSection");
-  const mainApp = document.getElementById("mainApp");
-  const userEmail = document.getElementById("userEmail");
+const loginBtn = document.getElementById("googleLoginBtn");
+const loginSection = document.getElementById("loginSection");
+const mainApp = document.getElementById("mainApp");
+const userInfo = document.getElementById("userInfo");
+const adminPanel = document.getElementById("adminPanel");
+const updatesList = document.getElementById("updatesList");
+const postUpdateBtn = document.getElementById("postUpdateBtn");
 
-  // 🔑 Login
-  loginBtn.addEventListener("click", async () => {
-    try {
-      await signInWithPopup(auth, provider);
-    } catch (error) {
-      console.error("LOGIN ERROR:", error);
-      alert(error.message);
+loginBtn.addEventListener("click", async () => {
+  try {
+    await signInWithPopup(auth, provider);
+  } catch (err) {
+    alert(err.message);
+  }
+});
+
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    loginSection.classList.add("hidden");
+    mainApp.classList.remove("hidden");
+
+    userInfo.innerHTML = `
+      ${user.email}
+      <button onclick="logout()">Logout</button>
+    `;
+
+    const userDoc = await getDoc(doc(db, "users", user.uid));
+
+    if (userDoc.exists()) {
+      const role = userDoc.data().role;
+      if (role === "admin" || role === "superadmin") {
+        adminPanel.classList.remove("hidden");
+      }
     }
+
+    loadUpdates();
+  }
+});
+
+window.logout = async () => {
+  await signOut(auth);
+  location.reload();
+};
+
+postUpdateBtn.addEventListener("click", async () => {
+  const title = document.getElementById("updateTitle").value;
+  const content = document.getElementById("updateContent").value;
+
+  if (!title || !content) return alert("Fill all fields");
+
+  await addDoc(collection(db, "updates"), {
+    title,
+    content,
+    createdAt: serverTimestamp()
   });
 
-  // 🔄 Auth state listener
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      loginSection.style.display = "none";
-      mainApp.style.display = "block";
-      userEmail.textContent = "Logged in as: " + user.email;
-    } else {
-      loginSection.style.display = "block";
-      mainApp.style.display = "none";
-    }
-  });
+  document.getElementById("updateTitle").value = "";
+  document.getElementById("updateContent").value = "";
 
-  // 🚪 Logout
-  logoutBtn.addEventListener("click", async () => {
-    await signOut(auth);
-  });
+  loadUpdates();
+});
 
+async function loadUpdates() {
+  updatesList.innerHTML = "";
+  const q = query(collection(db, "updates"), orderBy("createdAt", "desc"));
+  const snapshot = await getDocs(q);
+
+  snapshot.forEach(doc => {
+    const data = doc.data();
+    updatesList.innerHTML += `
+      <div class="card">
+        <h3>${data.title}</h3>
+        <p>${data.content}</p>
+      </div>
+    `;
+  });
+}
 </script>
 
 </body>
