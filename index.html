@@ -3,92 +3,30 @@
 <head>
   <title>Knowledge Hub</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: #f4f6f9;
-    }
-
-    header {
-      background: #1f2d3d;
-      color: white;
-      padding: 15px 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    nav button {
-      margin-right: 15px;
-      padding: 8px 14px;
-      background: transparent;
-      color: white;
-      border: 1px solid white;
-      cursor: pointer;
-    }
-
-    nav button:hover {
-      background: white;
-      color: #1f2d3d;
-    }
-
-    .container {
-      padding: 30px;
-    }
-
-    .card {
-      background: white;
-      padding: 20px;
-      margin-bottom: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    textarea {
-      width: 100%;
-      height: 100px;
-      margin-top: 10px;
-    }
-
-    .login-container {
-      text-align: center;
-      margin-top: 150px;
-    }
-
-    .btn-primary {
-      padding: 10px 20px;
-      background: #1f2d3d;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-
-    .btn-primary:hover {
-      background: #324a63;
-    }
+    body { margin:0; font-family:Arial; background:#f4f6f9; }
+    header { background:#1f2d3d; color:white; padding:15px 30px; display:flex; justify-content:space-between; }
+    .container { padding:30px; }
+    .card { background:white; padding:20px; margin-bottom:20px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.1); }
+    .hidden { display:none; }
+    .btn { padding:10px 20px; background:#1f2d3d; color:white; border:none; cursor:pointer; }
+    .btn:hover { background:#324a63; }
+    nav button { margin-right:10px; padding:8px 12px; cursor:pointer; }
   </style>
 </head>
-
 <body>
 
 <header>
-  <h2>Knowledge Hub</h2>
+  <h2>Company Knowledge Hub</h2>
   <div id="userInfo"></div>
 </header>
 
-<div class="login-container" id="loginSection">
-  <h2>Company Knowledge Hub</h2>
-  <button class="btn-primary" id="googleLogin">Sign in with Google</button>
+<div id="loginSection" style="text-align:center; margin-top:150px;">
+  <h2>Internal Access</h2>
+  <button class="btn" id="googleLogin">Sign in with Google</button>
 </div>
 
 <div class="container hidden" id="mainApp">
-
   <nav>
     <button onclick="showHome()">Home</button>
     <button onclick="showUpdates()">Updates</button>
@@ -96,129 +34,139 @@
 
   <div id="homeSection">
     <div class="card">
-      <h3>Welcome to the Internal Knowledge Hub</h3>
-      <p>All company updates and resources are stored here.</p>
+      <h3>Welcome</h3>
+      <p>Internal company knowledge center.</p>
     </div>
   </div>
 
   <div id="updatesSection" class="hidden">
-    <div id="adminEditor" class="card hidden">
+    <div id="editor" class="card hidden">
       <h3>Create Update</h3>
-      <input type="text" id="updateTitle" placeholder="Update Title" style="width:100%; padding:8px;">
-      <textarea id="updateContent" placeholder="Write update..."></textarea>
-      <button class="btn-primary" onclick="addUpdate()">Publish</button>
+      <input id="title" placeholder="Title" style="width:100%; padding:8px;">
+      <textarea id="content" placeholder="Content" style="width:100%; height:100px; margin-top:10px;"></textarea>
+      <button class="btn" onclick="addUpdate()">Publish</button>
     </div>
-
     <div id="updatesList"></div>
   </div>
-
 </div>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-  import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut }
-    from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
-  import { getFirestore, doc, getDoc, collection, addDoc, getDocs, query, orderBy, serverTimestamp }
-    from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+import { 
+  getAuth, GoogleAuthProvider, signInWithPopup, 
+  onAuthStateChanged, signOut 
+} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+import { 
+  getFirestore, doc, getDoc, collection, addDoc, 
+  getDocs, query, orderBy, serverTimestamp 
+} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "affiliate-relations-17687.firebaseapp.com",
-    projectId: "affiliate-relations-17687",
-    storageBucket: "affiliate-relations-17687.firebasestorage.app",
-    messagingSenderId: "642027131905",
-    appId: "1:642027131905:web:5f0076ee7b34578b9f9c00"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyB8dDTnpPQVRAs7dkfc8QU3L5qUJtm-2jg,
+  authDomain: "affiliate-relations-17687.firebaseapp.com",
+  projectId: "affiliate-relations-17687",
+  storageBucket: "affiliate-relations-17687.appspot.com",
+  messagingSenderId: "642027131905",
+  appId: "1:642027131905:web:5f0076ee7b34578b9f9c00"
+};
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-  const provider = new GoogleAuthProvider();
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
 
-  const loginBtn = document.getElementById("googleLogin");
-  const loginSection = document.getElementById("loginSection");
-  const mainApp = document.getElementById("mainApp");
-  const userInfo = document.getElementById("userInfo");
-  const adminEditor = document.getElementById("adminEditor");
-  const updatesList = document.getElementById("updatesList");
+const loginBtn = document.getElementById("googleLogin");
+const loginSection = document.getElementById("loginSection");
+const mainApp = document.getElementById("mainApp");
+const userInfo = document.getElementById("userInfo");
+const editor = document.getElementById("editor");
+const updatesList = document.getElementById("updatesList");
 
-  let currentRole = "user";
+let currentRole = "user";
 
-  loginBtn.onclick = async () => {
+loginBtn.addEventListener("click", async () => {
+  try {
     await signInWithPopup(auth, provider);
-  };
+  } catch (error) {
+    console.error("LOGIN ERROR:", error);
+    alert(error.message);
+  }
+});
 
-  onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      loginSection.classList.add("hidden");
-      mainApp.classList.remove("hidden");
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    loginSection.classList.add("hidden");
+    mainApp.classList.remove("hidden");
 
-      userInfo.innerHTML = `
-        ${user.email} 
-        <button onclick="logout()">Logout</button>
-      `;
+    userInfo.innerHTML = `
+      ${user.email} 
+      <button onclick="logout()">Logout</button>
+    `;
 
+    try {
       const userDoc = await getDoc(doc(db, "users", user.uid));
-
       if (userDoc.exists()) {
         currentRole = userDoc.data().role;
         if (currentRole === "superadmin" || currentRole === "admin") {
-          adminEditor.classList.remove("hidden");
+          editor.classList.remove("hidden");
         }
       }
-
-      loadUpdates();
+    } catch (err) {
+      console.error("ROLE FETCH ERROR:", err);
     }
-  });
 
-  window.logout = () => {
-    signOut(auth);
-    location.reload();
-  };
+    loadUpdates();
+  }
+});
 
-  window.showHome = () => {
-    document.getElementById("homeSection").classList.remove("hidden");
-    document.getElementById("updatesSection").classList.add("hidden");
-  };
+window.logout = () => {
+  signOut(auth);
+  location.reload();
+};
 
-  window.showUpdates = () => {
-    document.getElementById("homeSection").classList.add("hidden");
-    document.getElementById("updatesSection").classList.remove("hidden");
-  };
+window.showHome = () => {
+  document.getElementById("homeSection").classList.remove("hidden");
+  document.getElementById("updatesSection").classList.add("hidden");
+};
 
-  window.addUpdate = async () => {
-    const title = document.getElementById("updateTitle").value;
-    const content = document.getElementById("updateContent").value;
+window.showUpdates = () => {
+  document.getElementById("homeSection").classList.add("hidden");
+  document.getElementById("updatesSection").classList.remove("hidden");
+};
 
-    if (!title || !content) return alert("Fill all fields");
+window.addUpdate = async () => {
+  const title = document.getElementById("title").value;
+  const content = document.getElementById("content").value;
 
+  if (!title || !content) return alert("Fill all fields");
+
+  try {
     await addDoc(collection(db, "updates"), {
       title,
       content,
       createdAt: serverTimestamp()
     });
-
-    document.getElementById("updateTitle").value = "";
-    document.getElementById("updateContent").value = "";
-
     loadUpdates();
-  };
-
-  async function loadUpdates() {
-    updatesList.innerHTML = "";
-    const q = query(collection(db, "updates"), orderBy("createdAt", "desc"));
-    const querySnapshot = await getDocs(q);
-
-    querySnapshot.forEach((docSnap) => {
-      const data = docSnap.data();
-      updatesList.innerHTML += `
-        <div class="card">
-          <h3>${data.title}</h3>
-          <p>${data.content}</p>
-        </div>
-      `;
-    });
+  } catch (err) {
+    console.error("ADD UPDATE ERROR:", err);
   }
+};
+
+async function loadUpdates() {
+  updatesList.innerHTML = "";
+  const q = query(collection(db, "updates"), orderBy("createdAt", "desc"));
+  const snapshot = await getDocs(q);
+
+  snapshot.forEach(doc => {
+    const data = doc.data();
+    updatesList.innerHTML += `
+      <div class="card">
+        <h3>${data.title}</h3>
+        <p>${data.content}</p>
+      </div>
+    `;
+  });
+}
 </script>
 
 </body>
