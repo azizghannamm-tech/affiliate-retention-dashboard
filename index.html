@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Company Knowledge Hub</title>
+<title>Affiliate Relations Knowledge Hub</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -13,6 +13,8 @@ background:#eef1f5;
 display:flex;
 height:100vh;
 }
+
+/* SIDEBAR */
 
 .sidebar{
 width:240px;
@@ -35,11 +37,14 @@ color:white;
 padding:14px 20px;
 text-align:left;
 cursor:pointer;
+font-size:14px;
 }
 
 .sidebar button:hover{
 background:#324a63;
 }
+
+/* MAIN */
 
 .main{
 flex:1;
@@ -61,44 +66,85 @@ padding:25px;
 overflow-y:auto;
 }
 
+/* CARDS */
+
 .card{
 background:white;
 padding:20px;
-border-radius:8px;
+border-radius:10px;
 margin-bottom:20px;
-box-shadow:0 2px 6px rgba(0,0,0,0.08);
+box-shadow:0 3px 8px rgba(0,0,0,0.08);
 }
+
+.card h3{
+margin-top:0;
+}
+
+/* SEARCH */
 
 .search{
 width:100%;
-padding:10px;
+padding:12px;
+border-radius:8px;
+border:1px solid #ddd;
 margin-bottom:20px;
+}
+
+/* ADMIN PANEL */
+
+.admin{
+background:#fff7e6;
+border:1px solid #ffd27a;
+}
+
+textarea{
+width:100%;
+height:100px;
+margin-top:10px;
+padding:10px;
+border-radius:6px;
+border:1px solid #ccc;
+}
+
+input{
+width:100%;
+padding:10px;
+margin-top:10px;
+border-radius:6px;
+border:1px solid #ccc;
+}
+
+button.publish{
+background:#2d8cff;
+color:white;
+border:none;
+padding:10px 16px;
+border-radius:6px;
+cursor:pointer;
+margin-top:10px;
+}
+
+button.publish:hover{
+background:#1f6de0;
 }
 
 .hidden{
 display:none;
 }
 
-textarea{
-width:100%;
-height:80px;
-margin-top:10px;
-}
-
-input{
-width:100%;
-padding:8px;
-margin-top:10px;
-}
-
-button{
-margin-top:10px;
-padding:8px 14px;
+.loginBtn{
+background:#2d8cff;
+color:white;
+border:none;
+padding:8px 16px;
+border-radius:6px;
+cursor:pointer;
 }
 
 </style>
 
 </head>
+
 <body>
 
 <div class="sidebar">
@@ -119,8 +165,14 @@ padding:8px 14px;
 <div class="main">
 
 <header>
+
 <div id="sectionTitle">Home</div>
-<div id="userInfo">Loading...</div>
+
+<div>
+<span id="userInfo">Not logged in</span>
+<button class="loginBtn" onclick="login()">Google Login</button>
+</div>
+
 </header>
 
 <div class="container">
@@ -128,11 +180,11 @@ padding:8px 14px;
 <input
 class="search"
 id="searchInput"
-placeholder="Search..."
+placeholder="Search knowledge..."
 oninput="searchPosts()"
 />
 
-<div id="adminPanel" class="card hidden">
+<div id="adminPanel" class="card admin hidden">
 
 <h3>Create Post</h3>
 
@@ -140,7 +192,7 @@ oninput="searchPosts()"
 
 <textarea id="postContent" placeholder="Content"></textarea>
 
-<button onclick="createPost()">Publish</button>
+<button class="publish" onclick="createPost()">Publish</button>
 
 </div>
 
@@ -149,7 +201,8 @@ oninput="searchPosts()"
 </div>
 </div>
 
-<!-- Firebase -->
+
+<!-- FIREBASE -->
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -173,27 +226,67 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const auth = firebase.auth();
 
-let currentSection = "home";
-let allPosts = [];
+let currentSection="home";
+let allPosts=[];
+
+
+/* LOGIN */
+
+function login(){
+
+const provider = new firebase.auth.GoogleAuthProvider();
+
+auth.signInWithPopup(provider);
+
+}
+
+
+/* AUTH STATE */
+
+auth.onAuthStateChanged(user=>{
+
+if(user){
+
+document.getElementById("userInfo").innerText=user.email;
+
+/* ADMIN EMAIL */
+
+if(user.email==="azizghannamm@gmail.com"){
+
+document.getElementById("adminPanel").classList.remove("hidden");
+
+}
+
+}
+
+loadPosts();
+
+});
+
+
+/* LOAD SECTION */
 
 function loadSection(section){
 
-currentSection = section;
+currentSection=section;
 
-document.getElementById("sectionTitle").innerText = section;
+document.getElementById("sectionTitle").innerText=section;
 
 loadPosts();
 
 }
 
+
+/* REALTIME POSTS */
+
 function loadPosts(){
 
 db.collection("posts")
 .where("section","==",currentSection)
-.get()
-.then(snapshot=>{
+.orderBy("createdAt","desc")
+.onSnapshot(snapshot=>{
 
-const container = document.getElementById("postsContainer");
+const container=document.getElementById("postsContainer");
 
 container.innerHTML="";
 
@@ -201,15 +294,20 @@ allPosts=[];
 
 snapshot.forEach(doc=>{
 
-const data = doc.data();
+const data=doc.data();
 
 allPosts.push(data);
 
-container.innerHTML += `
+container.innerHTML+=`
+
 <div class="card">
+
 <h3>${data.title}</h3>
+
 <p>${data.content}</p>
+
 </div>
+
 `;
 
 });
@@ -218,49 +316,60 @@ container.innerHTML += `
 
 }
 
+
+/* CREATE POST */
+
 function createPost(){
 
-const title = document.getElementById("postTitle").value;
-const content = document.getElementById("postContent").value;
+const title=document.getElementById("postTitle").value;
+const content=document.getElementById("postContent").value;
+
+if(!title || !content) return;
 
 db.collection("posts").add({
 
 title:title,
 content:content,
 section:currentSection,
-createdAt:new Date()
+createdAt:firebase.firestore.FieldValue.serverTimestamp()
 
-}).then(()=>{
-
-loadPosts();
+});
 
 document.getElementById("postTitle").value="";
 document.getElementById("postContent").value="";
 
-});
-
 }
+
+
+/* SEARCH */
 
 function searchPosts(){
 
-const text = document.getElementById("searchInput").value.toLowerCase();
+const text=document.getElementById("searchInput").value.toLowerCase();
 
-const container = document.getElementById("postsContainer");
+const container=document.getElementById("postsContainer");
 
 container.innerHTML="";
 
 allPosts.forEach(p=>{
 
 if(
+
 p.title.toLowerCase().includes(text) ||
 p.content.toLowerCase().includes(text)
+
 ){
 
-container.innerHTML += `
+container.innerHTML+=`
+
 <div class="card">
+
 <h3>${p.title}</h3>
+
 <p>${p.content}</p>
+
 </div>
+
 `;
 
 }
@@ -268,15 +377,6 @@ container.innerHTML += `
 });
 
 }
-
-auth.signInAnonymously().then(()=>{
-
-document.getElementById("adminPanel").classList.remove("hidden");
-document.getElementById("userInfo").innerText="Logged In";
-
-loadPosts();
-
-});
 
 </script>
 
