@@ -2,108 +2,85 @@
 <html>
 
 <head>
+<meta charset="UTF-8">
+<title>Knowledge Hub V2</title>
 
-<title>Company Knowledge Hub</title>
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 
 <style>
 
 body{
 margin:0;
 font-family:Arial;
-background:#eef1f5;
-display:flex;
-height:100vh;
+background:#f4f6f9;
 }
 
 .sidebar{
+position:fixed;
 width:240px;
-background:#1f2d3d;
+height:100%;
+background:#16243b;
 color:white;
-padding-top:20px;
+padding:20px;
 }
 
 .sidebar h2{
-text-align:center;
-margin-bottom:30px;
+margin-top:0;
 }
 
 .sidebar button{
 display:block;
 width:100%;
-background:none;
+margin:10px 0;
+padding:10px;
 border:none;
+background:#223554;
 color:white;
-padding:14px 20px;
-text-align:left;
 cursor:pointer;
 }
 
-.sidebar button:hover{
-background:#324a63;
+.content{
+margin-left:260px;
+padding:20px;
 }
 
-.main{
-flex:1;
-display:flex;
-flex-direction:column;
-}
-
-header{
-background:white;
-padding:15px 25px;
+.topbar{
 display:flex;
 justify-content:space-between;
-align-items:center;
-box-shadow:0 2px 5px rgba(0,0,0,0.08);
-}
-
-.container{
-padding:25px;
-overflow-y:auto;
+margin-bottom:20px;
 }
 
 .card{
 background:white;
 padding:20px;
-border-radius:8px;
 margin-bottom:20px;
-box-shadow:0 2px 6px rgba(0,0,0,0.08);
+border-radius:8px;
+box-shadow:0 2px 8px rgba(0,0,0,0.1);
 }
 
-.search{
+input,textarea{
 width:100%;
 padding:10px;
-margin-bottom:20px;
+margin:8px 0;
 }
 
-.hidden{
-display:none;
+#dropZone{
+border:2px dashed #aaa;
+padding:30px;
+text-align:center;
+background:#fafafa;
 }
 
-textarea{
-width:100%;
-height:80px;
+.tags{
 margin-top:10px;
+color:#3b82f6;
 }
 
-input{
-width:100%;
-padding:8px;
-margin-top:10px;
-}
-
-button{
-margin-top:10px;
-padding:8px 14px;
-cursor:pointer;
-}
-
-.pin{
-color:#ff9800;
-font-weight:bold;
+.tool{
+padding:15px;
+background:white;
 margin-bottom:10px;
+border-radius:8px;
 }
 
 </style>
@@ -119,310 +96,274 @@ margin-bottom:10px;
 <button onclick="loadSection('home')">Home</button>
 <button onclick="loadSection('contacts')">Contacts & Links</button>
 <button onclick="loadSection('updates')">Updates</button>
-<button onclick="loadSection('uw_guidelines')">UW & Guidelines</button>
-<button onclick="loadSection('payments')">Payments Change</button>
-<button onclick="loadSection('retention')">Retention & Cancellation</button>
-<button onclick="loadSection('evertrust')">Evertrust Files</button>
-<button onclick="loadSection('tools')">Extra Tools</button>
+<button onclick="loadSection('uw')">UW Guidelines</button>
+<button onclick="loadSection('payments')">Payments</button>
+<button onclick="loadSection('retention')">Retention</button>
+<button onclick="loadSection('files')">Files</button>
+<button onclick="loadSection('tools')">Agent Tools</button>
+<button onclick="loadSection('analytics')">Analytics</button>
 
 </div>
 
-<div class="main">
+<div class="content">
 
-<header>
-
-<div id="sectionTitle">Home</div>
+<div class="topbar">
+<div>
+<input id="search" placeholder="Search knowledge">
+<button onclick="searchPosts()">Search</button>
+</div>
 
 <div>
-
-<span id="userInfo">Not logged in</span>
-
-<button onclick="login()">Google Login</button>
-
-</div>
-
-</header>
-
-<div class="container">
-
-<input
-class="search"
-id="searchInput"
-placeholder="Search knowledge..."
-oninput="searchPosts()"
-/>
-
-<div id="adminPanel" class="card hidden">
-
-<h3>Create Post</h3>
-
-<input id="postTitle" placeholder="Title">
-
-<textarea id="postContent" placeholder="Content"></textarea>
-
-<input type="file" id="fileUpload">
-
-<label>
-<input type="checkbox" id="pinPost">
-Pin Post
-</label>
-
-<br>
-
-<button onclick="createPost()">Publish</button>
-
-</div>
-
-<div id="postsContainer"></div>
-
+<span id="userEmail"></span>
+<button onclick="googleLogin()">Google Login</button>
 </div>
 </div>
 
+<div id="main"></div>
 
-<!-- Firebase -->
+</div>
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
 
 <script>
 
 const firebaseConfig = {
 
-apiKey: "AIzaSyB8dDTnpPQVRAs7dkfc8QU3L5qUJtm-2jg",
-authDomain: "affiliate-relations-17687.firebaseapp.com",
-projectId: "affiliate-relations-17687",
-storageBucket: "affiliate-relations-17687.appspot.com",
-messagingSenderId: "642027131905",
-appId: "1:642027131905:web:5f0076ee7b34578b9f9c00"
+apiKey:"AIzaSyB8dDTnpPQVRAs7dkfc8QU3L5qUJtm-2jg",
+authDomain:"affiliate-relations-17687.firebaseapp.com",
+projectId:"affiliate-relations-17687",
+storageBucket:"affiliate-relations-17687.firebasestorage.app"
 
 };
 
-firebase.initializeApp(firebaseConfig);
+firebase.initializeApp(firebaseConfig)
 
-const db = firebase.firestore();
-const auth = firebase.auth();
-const storage = firebase.storage();
+const db=firebase.firestore()
+const storage=firebase.storage()
 
-let currentSection="home";
-let allPosts=[];
+let editor
 
+function googleLogin(){
 
-/* ADMIN EMAIL — EDIT IF NEEDED */
+const provider=new firebase.auth.GoogleAuthProvider()
 
-const adminEmail="azizghannamm@gmail.com";
-
-
-function login(){
-
-const provider=new firebase.auth.GoogleAuthProvider();
-
-auth.signInWithPopup(provider);
+firebase.auth().signInWithPopup(provider)
 
 }
 
-
-auth.onAuthStateChanged(user=>{
+firebase.auth().onAuthStateChanged(user=>{
 
 if(user){
 
-document.getElementById("userInfo").innerText=user.email;
-
-if(user.email===adminEmail){
-
-document.getElementById("adminPanel").classList.remove("hidden");
+document.getElementById("userEmail").innerText=user.email
 
 }
 
-}
-
-loadPosts();
-
-});
-
+})
 
 function loadSection(section){
 
-currentSection=section;
+if(section==="home"){
 
-document.getElementById("sectionTitle").innerText=section;
-
-loadPosts();
-
-}
-
-
-function loadPosts(){
-
-db.collection("posts")
-.where("section","==",currentSection)
-.onSnapshot(snapshot=>{
-
-let posts=[];
-
-snapshot.forEach(doc=>{
-
-let data=doc.data();
-
-data.id=doc.id;
-
-posts.push(data);
-
-});
-
-posts.sort((a,b)=>{
-
-if(a.pinned && !b.pinned) return -1;
-if(!a.pinned && b.pinned) return 1;
-return 0;
-
-});
-
-allPosts=posts;
-
-renderPosts(posts);
-
-});
-
-}
-
-
-function renderPosts(posts){
-
-const container=document.getElementById("postsContainer");
-
-container.innerHTML="";
-
-posts.forEach(post=>{
-
-container.innerHTML+=`
+document.getElementById("main").innerHTML=`
 
 <div class="card">
 
-${post.pinned ? "<div class='pin'>📌 PINNED</div>" : ""}
+<h3>Create Post</h3>
 
-<h3>${post.title}</h3>
+<input id="title" placeholder="Title">
 
-<p>${post.content}</p>
+<input id="tags" placeholder="#contracts #payments">
 
-${post.file ? `<a href="${post.file}" target="_blank">📎 Download File</a>` : ""}
+<div id="editor" style="height:200px"></div>
 
-${auth.currentUser?.email===adminEmail ? `
+<div id="dropZone">Drag file here</div>
 
-<br><br>
-
-<button onclick="deletePost('${post.id}')">Delete</button>
-
-<button onclick="editPost('${post.id}','${post.title}','${post.content}')">Edit</button>
-
-` : ""}
+<button onclick="createPost()">Publish</button>
 
 </div>
 
-`;
+<div id="posts"></div>
 
-});
+`
 
-}
+editor=new Quill('#editor',{theme:'snow'})
 
+loadPosts()
 
-async function uploadFile(file){
-
-if(!file) return null;
-
-const ref=storage.ref().child("files/"+Date.now()+"_"+file.name);
-
-await ref.put(file);
-
-const url=await ref.getDownloadURL();
-
-return url;
+setupDrop()
 
 }
 
+if(section==="tools"){
 
-async function createPost(){
+document.getElementById("main").innerHTML=`
 
-const title=document.getElementById("postTitle").value;
+<div class="tool">
 
-const content=document.getElementById("postContent").value;
+<h3>Payment Calculator</h3>
 
-const file=document.getElementById("fileUpload").files[0];
+<input id="debt" placeholder="Debt amount">
 
-const pinned=document.getElementById("pinPost").checked;
+<button onclick="calc()">Calculate</button>
 
-let fileURL=null;
+<div id="result"></div>
 
-if(file){
+</div>
 
-fileURL=await uploadFile(file);
+`
 
 }
+
+if(section==="analytics"){
+
+db.collection("posts").get().then(s=>{
+
+document.getElementById("main").innerHTML=`
+
+<div class="card">
+
+<h2>Analytics</h2>
+
+<p>Total Posts: ${s.size}</p>
+
+</div>
+
+`
+
+})
+
+}
+
+}
+
+function createPost(){
+
+const title=document.getElementById("title").value
+
+const content=editor.root.innerHTML
+
+const tags=document.getElementById("tags").value.split(" ")
 
 db.collection("posts").add({
 
-title:title,
-content:content,
-section:currentSection,
-pinned:pinned,
-file:fileURL,
-createdAt:firebase.firestore.FieldValue.serverTimestamp()
+title,
+content,
+tags,
+date:Date.now()
 
-});
-
-document.getElementById("postTitle").value="";
-document.getElementById("postContent").value="";
-document.getElementById("fileUpload").value="";
-document.getElementById("pinPost").checked=false;
+})
 
 }
 
+function loadPosts(){
 
-function deletePost(id){
+db.collection("posts").orderBy("date","desc").onSnapshot(snapshot=>{
 
-if(!confirm("Delete this post?")) return;
+let html=""
 
-db.collection("posts").doc(id).delete();
+snapshot.forEach(doc=>{
+
+const p=doc.data()
+
+html+=`
+
+<div class="card">
+
+<h3>${p.title}</h3>
+
+<div>${p.content}</div>
+
+<div class="tags">${p.tags.join(" ")}</div>
+
+</div>
+
+`
+
+})
+
+document.getElementById("posts").innerHTML=html
+
+})
 
 }
-
-
-function editPost(id,title,content){
-
-const newTitle=prompt("Edit title",title);
-
-const newContent=prompt("Edit content",content);
-
-if(!newTitle || !newContent) return;
-
-db.collection("posts").doc(id).update({
-
-title:newTitle,
-content:newContent
-
-});
-
-}
-
 
 function searchPosts(){
 
-const text=document.getElementById("searchInput").value.toLowerCase();
+const q=document.getElementById("search").value.toLowerCase()
 
-const filtered=allPosts.filter(p=>
+db.collection("posts").get().then(s=>{
 
-p.title.toLowerCase().includes(text) ||
-p.content.toLowerCase().includes(text)
+let html=""
 
-);
+s.forEach(doc=>{
 
-renderPosts(filtered);
+const p=doc.data()
+
+if(p.title.toLowerCase().includes(q)||p.content.toLowerCase().includes(q)){
+
+html+=`
+
+<div class="card">
+
+<h3>${p.title}</h3>
+
+${p.content}
+
+</div>
+
+`
 
 }
+
+})
+
+document.getElementById("main").innerHTML=html
+
+})
+
+}
+
+function setupDrop(){
+
+const zone=document.getElementById("dropZone")
+
+zone.addEventListener("dragover",e=>{
+
+e.preventDefault()
+
+})
+
+zone.addEventListener("drop",e=>{
+
+e.preventDefault()
+
+const file=e.dataTransfer.files[0]
+
+const ref=storage.ref("files/"+file.name)
+
+ref.put(file)
+
+})
+
+}
+
+function calc(){
+
+const d=document.getElementById("debt").value
+
+document.getElementById("result").innerText="Estimated payment: "+(d*0.03)
+
+}
+
+loadSection("home")
 
 </script>
 
 </body>
-
 </html>
