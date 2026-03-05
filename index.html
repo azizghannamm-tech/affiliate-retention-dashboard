@@ -4,137 +4,96 @@
 
 <title>Knowledge Hub</title>
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-<!-- Quill Editor -->
-<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
 
 <style>
 
 body{
+font-family:Inter;
 margin:0;
-font-family:Inter,Arial;
-background:linear-gradient(135deg,#0f172a,#1e293b);
-color:#fff;
+background:#ffffff;
+color:#111827;
 }
 
 header{
-background:#0f172a;
+background:#0b3d91;
+color:white;
 padding:15px 30px;
 display:flex;
 justify-content:space-between;
 align-items:center;
-box-shadow:0 5px 15px rgba(0,0,0,0.4);
 }
 
-.logo{
-font-size:20px;
-font-weight:700;
-}
-
-.user{
-display:flex;
-gap:10px;
-align-items:center;
-}
-
-.logout{
-background:#ef4444;
+header button{
+background:white;
 border:none;
-padding:8px 14px;
-border-radius:8px;
-cursor:pointer;
-color:white;
-}
-
-.navbar{
-display:flex;
-gap:10px;
-padding:12px 20px;
-background:#1e293b;
-flex-wrap:wrap;
-}
-
-.navbar button{
-
-background:#334155;
-border:none;
-padding:8px 14px;
+padding:6px 12px;
 border-radius:10px;
 cursor:pointer;
-color:white;
-font-size:14px;
-
 }
 
-.navbar button:hover{
-background:#6366f1;
+nav{
+background:#f8fafc;
+padding:12px 20px;
+border-bottom:1px solid #e5e7eb;
+}
+
+nav button{
+background:#e9f0ff;
+border:none;
+padding:8px 14px;
+border-radius:20px;
+margin-right:6px;
+cursor:pointer;
+}
+
+nav button:hover{
+background:#2563eb;
+color:white;
 }
 
 .container{
 max-width:1100px;
 margin:auto;
-padding:25px;
-}
-
-.search{
-width:100%;
-padding:12px;
-border-radius:10px;
-border:none;
-margin-bottom:20px;
+padding:30px;
 }
 
 .card{
-
-background:#1e293b;
-padding:20px;
-border-radius:16px;
-margin-bottom:20px;
-box-shadow:0 10px 25px rgba(0,0,0,0.3);
-
-}
-
-.card h3{
-margin-top:0;
-}
-
-.tags{
-color:#94a3b8;
-font-size:13px;
-margin-top:10px;
-}
-
-button.publish{
-
-background:#6366f1;
-border:none;
-padding:10px 18px;
-border-radius:10px;
-color:white;
-cursor:pointer;
-margin-top:15px;
-
-}
-
-#editor{
 background:white;
-color:black;
-border-radius:10px;
-}
-
-#dropZone{
-
-border:2px dashed #6366f1;
+border:1px solid #e5e7eb;
+border-radius:14px;
 padding:20px;
-border-radius:12px;
-margin-top:10px;
-text-align:center;
-
+margin-bottom:20px;
+box-shadow:0 5px 15px rgba(0,0,0,0.05);
 }
 
-.hidden{
-display:none;
+.publish-btn{
+background:#2563eb;
+color:white;
+border:none;
+padding:10px 16px;
+border-radius:10px;
+cursor:pointer;
+}
+
+.dark body{
+background:#0f172a;
+color:white;
+}
+
+.dark nav{
+background:#1e293b;
+}
+
+.dark .card{
+background:#1e293b;
+border-color:#334155;
 }
 
 </style>
@@ -145,238 +104,117 @@ display:none;
 
 <header>
 
-<div class="logo">Knowledge Hub</div>
+<h2>Knowledge Hub</h2>
 
-<div class="user">
+<div>
 
-<span id="userEmail"></span>
+<button onclick="toggleTheme()">🌙</button>
 
-<button class="logout" onclick="logout()">Logout</button>
+<button onclick="openProfile()">Profile</button>
+
+<button onclick="logout()">Logout</button>
 
 </div>
 
 </header>
 
+<nav>
 
-<div class="navbar">
+<button onclick="loadSection('home')">Home</button>
+<button onclick="loadSection('contacts')">Contacts</button>
+<button onclick="loadSection('updates')">Updates</button>
+<button onclick="loadSection('uw_guidelines')">UW Guidelines</button>
+<button onclick="loadSection('payments')">Payments</button>
+<button onclick="loadSection('retention')">Retention</button>
+<button onclick="loadSection('evertrust')">Evertrust</button>
+<button onclick="loadSection('tools')">Agent Tools</button>
+<button onclick="loadSection('files')">Files</button>
+<button onclick="loadSection('analytics')">Analytics</button>
 
-<button onclick="openSection('home')">Home</button>
-<button onclick="openSection('contacts')">Contacts</button>
-<button onclick="openSection('updates')">Updates</button>
-<button onclick="openSection('uw')">UW Guidelines</button>
-<button onclick="openSection('payments')">Payments</button>
-<button onclick="openSection('retention')">Retention</button>
-<button onclick="openSection('evertrust')">Evertrust</button>
-<button onclick="openSection('tools')">Agent Tools</button>
-<button onclick="openSection('files')">Files</button>
-<button onclick="analytics()">Analytics</button>
-
-</div>
-
+</nav>
 
 <div class="container">
 
-<input
-class="search"
-placeholder="Search knowledge..."
-oninput="searchPosts(this.value)"
->
+<div id="profile" class="card" style="display:none">
 
-<div class="card">
+<h2>Agent Profile</h2>
 
-<h3>Create Knowledge Post</h3>
+<p><b>Name:</b> <span id="agentName"></span></p>
 
-<input id="title" placeholder="Title">
+<p><b>Email:</b> <span id="agentEmail"></span></p>
 
-<input id="tags" placeholder="#contracts #payments">
-
-<div id="editor"></div>
-
-<div id="dropZone">
-
-Drag file here (PDF / contracts)
+<p><b>Access Level:</b> <span id="agentRole"></span></p>
 
 </div>
-
-<button class="publish" onclick="createPost()">
-
-Publish
-
-</button>
-
-</div>
-
 
 <div id="posts"></div>
 
 </div>
 
-
-
-<!-- Firebase -->
-
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
-
-
-<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
-
-
 <script>
 
 const firebaseConfig = {
 
-apiKey:"AIzaSyB8dDTnpPQVRAs7dkfc8QU3L5qUJtm-2jg",
-authDomain:"affiliate-relations-17687.firebaseapp.com",
-projectId:"affiliate-relations-17687",
-storageBucket:"affiliate-relations-17687.firebasestorage.app",
-appId:"1:642027131905:web:5f0076ee7b34578b9f9c00"
+apiKey: "AIzaSyB8dDTnpPQVRAs7dkfc8QU3L5qUJtm-2jg",
+authDomain: "affiliate-relations-17687.firebaseapp.com",
+projectId: "affiliate-relations-17687",
+storageBucket: "affiliate-relations-17687.firebasestorage.app",
+messagingSenderId: "642027131905",
+appId: "1:642027131905:web:5f0076ee7b34578b9f9c00"
 
-}
+};
 
 firebase.initializeApp(firebaseConfig)
 
 const db = firebase.firestore()
-const storage = firebase.storage()
+
 const auth = firebase.auth()
 
-let currentSection="home"
-let uploadedFile=null
-let allPosts=[]
-
-
-const quill = new Quill('#editor',{
-theme:'snow'
-})
-
-
-auth.onAuthStateChanged(user=>{
+auth.onAuthStateChanged(user => {
 
 if(!user){
 
-location.href="login.html"
+window.location.href="login.html"
 
 }
 
-document.getElementById("userEmail").innerText=user.email
-
-loadPosts()
-
 })
-
-
 
 function logout(){
 
 auth.signOut()
 
-location.href="login.html"
+window.location.href="login.html"
 
 }
 
+async function loadSection(section){
 
-
-function openSection(section){
-
-currentSection=section
-
-loadPosts()
-
-}
-
-
-
-function createPost(){
-
-const title=document.getElementById("title").value
-const tags=document.getElementById("tags").value
-const content=quill.root.innerHTML
-
-let fileURL=null
-
-const savePost=(url)=>{
-
-db.collection("posts").add({
-
-title,
-content,
-tags,
-file:url,
-section:currentSection,
-date:Date.now()
-
-}).then(()=>{
-
-document.getElementById("title").value=""
-document.getElementById("tags").value=""
-quill.setText("")
-
-loadPosts()
-
-})
-
-}
-
-
-if(uploadedFile){
-
-const ref=storage.ref().child("files/"+uploadedFile.name)
-
-ref.put(uploadedFile).then(snapshot=>{
-
-snapshot.ref.getDownloadURL().then(url=>{
-
-savePost(url)
-
-})
-
-})
-
-}else{
-
-savePost(null)
-
-}
-
-}
-
-
-
-function loadPosts(){
-
-db.collection("posts")
-
-.where("section","==",currentSection)
-
-.orderBy("date","desc")
-
-.onSnapshot(snapshot=>{
+document.getElementById("profile").style.display="none"
 
 const container=document.getElementById("posts")
 
+container.innerHTML="Loading..."
+
+const querySnapshot = await db.collection("posts")
+.where("section","==",section)
+.get()
+
 container.innerHTML=""
 
-allPosts=[]
+querySnapshot.forEach(doc =>{
 
-snapshot.forEach(doc=>{
-
-const p=doc.data()
-
-allPosts.push(p)
+const post=doc.data()
 
 container.innerHTML+=`
 
 <div class="card">
 
-<h3>${p.title}</h3>
+<h3>${post.title}</h3>
 
-<div>${p.content}</div>
+<p>${post.content}</p>
 
-<div class="tags">${p.tags||""}</div>
-
-${p.file ? `<a href="${p.file}" target="_blank">Download File</a>` : ""}
+${post.embedHTML ? post.embedHTML : ""}
 
 </div>
 
@@ -384,45 +222,27 @@ ${p.file ? `<a href="${p.file}" target="_blank">Download File</a>` : ""}
 
 })
 
-})
-
 }
 
+function openProfile(){
 
+document.getElementById("profile").style.display="block"
 
-function searchPosts(text){
+const user=auth.currentUser
 
-text=text.toLowerCase()
+document.getElementById("agentEmail").innerText=user.email
 
-const container=document.getElementById("posts")
+db.collection("users")
+.doc(user.uid)
+.get()
+.then(doc=>{
 
-container.innerHTML=""
+const data=doc.data()
 
-allPosts.forEach(p=>{
+if(data){
 
-if(
-
-p.title.toLowerCase().includes(text) ||
-
-p.tags?.toLowerCase().includes(text) ||
-
-p.content.toLowerCase().includes(text)
-
-){
-
-container.innerHTML+=`
-
-<div class="card">
-
-<h3>${p.title}</h3>
-
-<div>${p.content}</div>
-
-<div class="tags">${p.tags||""}</div>
-
-</div>
-
-`
+document.getElementById("agentName").innerText=data.name
+document.getElementById("agentRole").innerText=data.role
 
 }
 
@@ -430,25 +250,22 @@ container.innerHTML+=`
 
 }
 
+function toggleTheme(){
 
+document.documentElement.classList.toggle("dark")
 
-const dropZone=document.getElementById("dropZone")
+localStorage.setItem(
+"theme",
+document.documentElement.classList.contains("dark")
+)
 
-dropZone.addEventListener("dragover",e=>{
+}
 
-e.preventDefault()
+if(localStorage.getItem("theme")==="true"){
 
-})
+document.documentElement.classList.add("dark")
 
-dropZone.addEventListener("drop",e=>{
-
-e.preventDefault()
-
-uploadedFile=e.dataTransfer.files[0]
-
-dropZone.innerText=uploadedFile.name
-
-})
+}
 
 </script>
 
