@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
-
 <head>
 <meta charset="UTF-8">
-<title>Knowledge Hub V2</title>
+
+<title>Knowledge Hub V3</title>
 
 <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 
@@ -11,15 +11,17 @@
 
 body{
 margin:0;
-font-family:Arial;
-background:#f4f6f9;
+font-family:Inter, Arial;
+background:linear-gradient(135deg,#eef2ff,#e0f2fe);
 }
+
+/* SIDEBAR */
 
 .sidebar{
 position:fixed;
-width:240px;
 height:100%;
-background:#16243b;
+width:240px;
+background:linear-gradient(180deg,#1e293b,#0f172a);
 color:white;
 padding:20px;
 }
@@ -31,97 +33,100 @@ margin-top:0;
 .sidebar button{
 display:block;
 width:100%;
-margin:10px 0;
-padding:10px;
+margin:8px 0;
+padding:12px;
 border:none;
-background:#223554;
+border-radius:10px;
+background:#334155;
 color:white;
 cursor:pointer;
+transition:.2s;
 }
+
+.sidebar button:hover{
+background:#475569;
+}
+
+/* MAIN */
 
 .content{
 margin-left:260px;
-padding:20px;
+padding:30px;
 }
 
 .topbar{
 display:flex;
 justify-content:space-between;
-margin-bottom:20px;
-}
-
-.card{
-background:white;
-padding:20px;
-margin-bottom:20px;
-border-radius:8px;
-box-shadow:0 2px 8px rgba(0,0,0,0.1);
+margin-bottom:25px;
 }
 
 input,textarea{
 width:100%;
-padding:10px;
-margin:8px 0;
+padding:12px;
+border-radius:10px;
+border:1px solid #ddd;
 }
+
+/* CARDS */
+
+.card{
+background:white;
+padding:20px;
+border-radius:16px;
+box-shadow:0 10px 25px rgba(0,0,0,0.1);
+margin-bottom:20px;
+}
+
+/* BUTTON */
+
+.btn{
+padding:10px 16px;
+border:none;
+border-radius:10px;
+background:#3b82f6;
+color:white;
+cursor:pointer;
+}
+
+/* TAGS */
+
+.tag{
+display:inline-block;
+background:#e0f2fe;
+color:#0369a1;
+padding:5px 10px;
+border-radius:999px;
+margin:5px 5px 0 0;
+font-size:12px;
+}
+
+/* FILE DROP */
 
 #dropZone{
-border:2px dashed #aaa;
+border:2px dashed #94a3b8;
 padding:30px;
+border-radius:12px;
 text-align:center;
-background:#fafafa;
+background:#f8fafc;
 }
 
-.tags{
-margin-top:10px;
-color:#3b82f6;
-}
+/* LOGIN */
 
-.tool{
-padding:15px;
+.loginBox{
+width:360px;
+margin:120px auto;
 background:white;
-margin-bottom:10px;
-border-radius:8px;
+padding:30px;
+border-radius:16px;
+box-shadow:0 10px 30px rgba(0,0,0,.15);
 }
 
 </style>
-
 </head>
 
 <body>
 
-<div class="sidebar">
-
-<h2>Knowledge Hub</h2>
-
-<button onclick="loadSection('home')">Home</button>
-<button onclick="loadSection('contacts')">Contacts & Links</button>
-<button onclick="loadSection('updates')">Updates</button>
-<button onclick="loadSection('uw')">UW Guidelines</button>
-<button onclick="loadSection('payments')">Payments</button>
-<button onclick="loadSection('retention')">Retention</button>
-<button onclick="loadSection('files')">Files</button>
-<button onclick="loadSection('tools')">Agent Tools</button>
-<button onclick="loadSection('analytics')">Analytics</button>
-
-</div>
-
-<div class="content">
-
-<div class="topbar">
-<div>
-<input id="search" placeholder="Search knowledge">
-<button onclick="searchPosts()">Search</button>
-</div>
-
-<div>
-<span id="userEmail"></span>
-<button onclick="googleLogin()">Google Login</button>
-</div>
-</div>
-
-<div id="main"></div>
-
-</div>
+<div id="app"></div>
 
 <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 
@@ -132,49 +137,143 @@ border-radius:8px;
 
 <script>
 
-const firebaseConfig = {
+/* FIREBASE CONFIG */
+
+const firebaseConfig={
 
 apiKey:"AIzaSyB8dDTnpPQVRAs7dkfc8QU3L5qUJtm-2jg",
 authDomain:"affiliate-relations-17687.firebaseapp.com",
 projectId:"affiliate-relations-17687",
 storageBucket:"affiliate-relations-17687.firebasestorage.app"
 
-};
+}
 
 firebase.initializeApp(firebaseConfig)
 
+const auth=firebase.auth()
 const db=firebase.firestore()
 const storage=firebase.storage()
 
 let editor
 
-function googleLogin(){
+/* LOGIN PAGE */
 
-const provider=new firebase.auth.GoogleAuthProvider()
+function showLogin(){
 
-firebase.auth().signInWithPopup(provider)
+document.getElementById("app").innerHTML=`
+
+<div class="loginBox">
+
+<h2>Knowledge Hub Login</h2>
+
+<input id="email" placeholder="Email">
+
+<input id="password" type="password" placeholder="Password">
+
+<button class="btn" onclick="emailLogin()">Login</button>
+
+<br><br>
+
+<button class="btn" onclick="googleLogin()">Login with Google</button>
+
+</div>
+
+`
 
 }
 
-firebase.auth().onAuthStateChanged(user=>{
+function emailLogin(){
+
+const email=document.getElementById("email").value
+const pass=document.getElementById("password").value
+
+auth.signInWithEmailAndPassword(email,pass)
+
+}
+
+function googleLogin(){
+
+const provider=new firebase.auth.GoogleAuthProvider()
+auth.signInWithPopup(provider)
+
+}
+
+/* AUTH */
+
+auth.onAuthStateChanged(user=>{
 
 if(user){
 
-document.getElementById("userEmail").innerText=user.email
+loadApp(user)
+
+}else{
+
+showLogin()
 
 }
 
 })
 
-function loadSection(section){
+/* APP UI */
 
-if(section==="home"){
+function loadApp(user){
+
+document.getElementById("app").innerHTML=`
+
+<div class="sidebar">
+
+<h2>Knowledge Hub</h2>
+
+<button onclick="home()">Home</button>
+<button onclick="analytics()">Analytics</button>
+<button onclick="tools()">Agent Tools</button>
+<button onclick="files()">Files</button>
+
+</div>
+
+<div class="content">
+
+<div class="topbar">
+
+<input id="search" placeholder="Search knowledge">
+
+<div>
+
+${user.email}
+
+<button class="btn" onclick="logout()">Logout</button>
+
+</div>
+
+</div>
+
+<div id="main"></div>
+
+</div>
+
+`
+
+home()
+
+}
+
+/* LOGOUT */
+
+function logout(){
+
+auth.signOut()
+
+}
+
+/* HOME */
+
+function home(){
 
 document.getElementById("main").innerHTML=`
 
 <div class="card">
 
-<h3>Create Post</h3>
+<h3>Create Knowledge Post</h3>
 
 <input id="title" placeholder="Title">
 
@@ -184,7 +283,9 @@ document.getElementById("main").innerHTML=`
 
 <div id="dropZone">Drag file here</div>
 
-<button onclick="createPost()">Publish</button>
+<br>
+
+<button class="btn" onclick="createPost()">Publish</button>
 
 </div>
 
@@ -192,35 +293,129 @@ document.getElementById("main").innerHTML=`
 
 `
 
-editor=new Quill('#editor',{theme:'snow'})
-
-loadPosts()
+editor=new Quill("#editor",{theme:"snow"})
 
 setupDrop()
 
+loadPosts()
+
 }
 
-if(section==="tools"){
+/* CREATE POST */
 
-document.getElementById("main").innerHTML=`
+let uploadedFile=""
 
-<div class="tool">
+function createPost(){
 
-<h3>Payment Calculator</h3>
+const title=document.getElementById("title").value
+const content=editor.root.innerHTML
+const tags=document.getElementById("tags").value.split(" ")
 
-<input id="debt" placeholder="Debt amount">
+db.collection("posts").add({
 
-<button onclick="calc()">Calculate</button>
+title,
+content,
+tags,
+file:uploadedFile,
+date:Date.now()
 
-<div id="result"></div>
+})
+
+}
+
+/* LOAD POSTS */
+
+function loadPosts(){
+
+db.collection("posts").orderBy("date","desc").onSnapshot(snapshot=>{
+
+let html=""
+
+snapshot.forEach(doc=>{
+
+const p=doc.data()
+
+let tagsHTML=""
+
+p.tags.forEach(t=>{
+tagsHTML+=`<span class="tag">${t}</span>`
+})
+
+html+=`
+
+<div class="card">
+
+<h3>${p.title}</h3>
+
+<div>${p.content}</div>
+
+${tagsHTML}
+
+<br><br>
+
+${p.file ? `<a href="${p.file}" target="_blank">Attachment</a>` : ""}
+
+<br><br>
+
+<button onclick="deletePost('${doc.id}')">Delete</button>
 
 </div>
 
 `
 
+})
+
+document.getElementById("posts").innerHTML=html
+
+})
+
 }
 
-if(section==="analytics"){
+/* DELETE */
+
+function deletePost(id){
+
+db.collection("posts").doc(id).delete()
+
+}
+
+/* FILE DROP */
+
+function setupDrop(){
+
+const zone=document.getElementById("dropZone")
+
+zone.addEventListener("dragover",e=>{
+e.preventDefault()
+})
+
+zone.addEventListener("drop",e=>{
+
+e.preventDefault()
+
+const file=e.dataTransfer.files[0]
+
+const ref=storage.ref("uploads/"+file.name)
+
+ref.put(file).then(()=>{
+
+ref.getDownloadURL().then(url=>{
+
+uploadedFile=url
+
+alert("File uploaded")
+
+})
+
+})
+
+})
+
+}
+
+/* ANALYTICS */
+
+function analytics(){
 
 db.collection("posts").get().then(s=>{
 
@@ -240,116 +435,25 @@ document.getElementById("main").innerHTML=`
 
 }
 
-}
+/* AGENT TOOLS */
 
-function createPost(){
+function tools(){
 
-const title=document.getElementById("title").value
-
-const content=editor.root.innerHTML
-
-const tags=document.getElementById("tags").value.split(" ")
-
-db.collection("posts").add({
-
-title,
-content,
-tags,
-date:Date.now()
-
-})
-
-}
-
-function loadPosts(){
-
-db.collection("posts").orderBy("date","desc").onSnapshot(snapshot=>{
-
-let html=""
-
-snapshot.forEach(doc=>{
-
-const p=doc.data()
-
-html+=`
+document.getElementById("main").innerHTML=`
 
 <div class="card">
 
-<h3>${p.title}</h3>
+<h3>Debt Settlement Calculator</h3>
 
-<div>${p.content}</div>
+<input id="debt" placeholder="Debt Amount">
 
-<div class="tags">${p.tags.join(" ")}</div>
+<button class="btn" onclick="calc()">Calculate</button>
+
+<div id="result"></div>
 
 </div>
 
 `
-
-})
-
-document.getElementById("posts").innerHTML=html
-
-})
-
-}
-
-function searchPosts(){
-
-const q=document.getElementById("search").value.toLowerCase()
-
-db.collection("posts").get().then(s=>{
-
-let html=""
-
-s.forEach(doc=>{
-
-const p=doc.data()
-
-if(p.title.toLowerCase().includes(q)||p.content.toLowerCase().includes(q)){
-
-html+=`
-
-<div class="card">
-
-<h3>${p.title}</h3>
-
-${p.content}
-
-</div>
-
-`
-
-}
-
-})
-
-document.getElementById("main").innerHTML=html
-
-})
-
-}
-
-function setupDrop(){
-
-const zone=document.getElementById("dropZone")
-
-zone.addEventListener("dragover",e=>{
-
-e.preventDefault()
-
-})
-
-zone.addEventListener("drop",e=>{
-
-e.preventDefault()
-
-const file=e.dataTransfer.files[0]
-
-const ref=storage.ref("files/"+file.name)
-
-ref.put(file)
-
-})
 
 }
 
@@ -357,11 +461,29 @@ function calc(){
 
 const d=document.getElementById("debt").value
 
-document.getElementById("result").innerText="Estimated payment: "+(d*0.03)
+document.getElementById("result").innerHTML=
+
+"Estimated monthly: $" + (d*0.03).toFixed(2)
 
 }
 
-loadSection("home")
+/* FILE PAGE */
+
+function files(){
+
+document.getElementById("main").innerHTML=`
+
+<div class="card">
+
+<h2>Uploaded Files</h2>
+
+<p>Files appear inside posts.</p>
+
+</div>
+
+`
+
+}
 
 </script>
 
