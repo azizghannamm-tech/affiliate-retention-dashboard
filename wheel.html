@@ -1,357 +1,80 @@
-```html
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neon Agent Wheel</title>
 <style>
-
-body{
-margin:0;
-font-family:Arial;
-display:flex;
-justify-content:center;
-align-items:center;
-height:100vh;
-background:transparent;
-}
-
-.container{
-text-align:center;
-width:560px;
-}
-
-.pointer{
-width:0;
-height:0;
-border-left:15px solid transparent;
-border-right:15px solid transparent;
-border-top:24px solid #facc15;
-margin:auto;
-margin-bottom:10px;
-}
-
-canvas{
-display:block;
-margin:auto;
-cursor:pointer;
-}
-
-button{
-padding:10px 18px;
-border:none;
-border-radius:6px;
-background:#2563eb;
-color:white;
-font-weight:bold;
-cursor:pointer;
-margin-left:5px;
-}
-
-button:hover{
-background:#1d4ed8;
-}
-
-.controls{
-margin-top:18px;
-}
-
-input,textarea{
-padding:8px;
-border-radius:5px;
-border:1px solid #ccc;
-}
-
-textarea{
-width:320px;
-height:70px;
-margin-top:10px;
-}
-
-.nameList{
-margin-top:10px;
-display:flex;
-flex-wrap:wrap;
-justify-content:center;
-gap:6px;
-}
-
-.tag{
-background:#e5e7eb;
-padding:4px 8px;
-border-radius:6px;
-font-size:12px;
-cursor:pointer;
-}
-
-#winner{
-margin-top:20px;
-font-size:26px;
-font-weight:bold;
-color:#16a34a;
-opacity:0;
-transform:scale(.6);
-transition:.4s;
-}
-
-#winner.show{
-opacity:1;
-transform:scale(1.2);
-}
-
-.weightBox{
-width:50px;
-margin-left:5px;
-}
-
+body{background:#0b0b14;color:white;font-family:Arial,Helvetica,sans-serif;text-align:center}
+h1{color:#00ffe5;text-shadow:0 0 15px #00ffe5}
+#wheelContainer{position:relative;width:520px;margin:30px auto}
+canvas{border-radius:50%;box-shadow:0 0 40px #00ffe5,inset 0 0 30px #111;background:#111;cursor:pointer}
+textarea{width:90%;max-width:600px;height:120px;padding:10px;border-radius:10px;border:none;margin-top:15px}
+button{padding:10px 25px;border:none;border-radius:8px;background:#00ffe5;color:#000;font-weight:bold;cursor:pointer;margin-top:10px}
+.panel{background:#151528;padding:15px;border-radius:10px;margin:15px auto;width:90%;max-width:600px}
+#winner{font-size:32px;margin-top:20px;color:#00ff9d;text-shadow:0 0 15px #00ff9d}
+.history{text-align:left;max-height:150px;overflow:auto;font-size:14px}
+input[type=range]{width:250px}
 </style>
 </head>
-
 <body>
-
-<div class="container">
-
-<div class="pointer"></div>
-
-<canvas id="wheel" width="440" height="440"></canvas>
-
-<br>
-<button onclick="spin()">SPIN</button>
-
+<h1>🎡 Neon Agent Wheel</h1>
+<textarea id="agentInput" placeholder="Paste agents. Example:\nJohn\nMike,2\nSarah"></textarea><br>
+<button onclick="loadAgents()">Load Agents</button>
+<div class="panel">Spin Speed<br><input type="range" id="speed" min="3" max="30" value="12"></div>
+<div class="panel"><label><input type="checkbox" id="removeWinner"> Auto remove winner</label></div>
+<div id="wheelContainer"><canvas id="wheel" width="500" height="500"></canvas></div>
 <div id="winner"></div>
-
-<div class="controls">
-
-<input id="nameInput" placeholder="Add name">
-<input id="weightInput" class="weightBox" placeholder="w">
-<button onclick="addName()">Add</button>
-
-<br>
-
-<textarea id="bulkInput" placeholder="Paste names here (one per line)"></textarea>
-<br>
-<button onclick="addBulk()">Add List</button>
-
-<div class="nameList" id="nameList"></div>
-
-</div>
-
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-
+<div class="panel"><b>Last Winners</b><div class="history" id="history"></div></div>
 <script>
-
-let names=[
-{name:"Chase",weight:1},
-{name:"Douglas",weight:1},
-{name:"Valantine",weight:1},
-{name:"Raymond",weight:1},
-{name:"Flynn",weight:1},
-{name:"Rory",weight:1},
-{name:"Juliana",weight:1},
-{name:"Curtis",weight:1},
-{name:"Felix",weight:1}
-]
-
-const colors=[
-"#3b82f6",
-"#22c55e",
-"#a855f7",
-"#f97316",
-"#06b6d4"
-]
-
+let agents=[]
+let weights=[]
+let angle=0
+let spinning=false
 const canvas=document.getElementById("wheel")
 const ctx=canvas.getContext("2d")
-
-const center=canvas.width/2
-const radius=center-10
-
-let rotation=0
-let spinning=false
-
-const winSound=new Audio("https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3")
-
-function expandedNames(){
-let list=[]
-names.forEach(n=>{
-for(let i=0;i<n.weight;i++){
-list.push(n.name)
-}
-})
-return list
-}
-
-function drawWheel(){
-
-let list=expandedNames()
-
-ctx.clearRect(0,0,canvas.width,canvas.height)
-
-let slice=(2*Math.PI)/list.length
-
-for(let i=0;i<list.length;i++){
-
-let angle=i*slice
-
-ctx.beginPath()
-ctx.moveTo(center,center)
-ctx.arc(center,center,radius,angle,angle+slice)
-ctx.fillStyle=colors[i%colors.length]
-ctx.fill()
-
-ctx.save()
-
-ctx.translate(center,center)
-ctx.rotate(angle+slice/2)
-
-ctx.fillStyle="white"
-ctx.font="bold 14px Arial"
-ctx.textAlign="right"
-
-ctx.fillText(list[i],radius-15,5)
-
-ctx.restore()
-
-}
-
-}
-
-function spin(){
-
-if(spinning) return
-
-spinning=true
-
-document.getElementById("winner").classList.remove("show")
-
-let spins=Math.random()*6+7
-let target=rotation+spins*2*Math.PI
-
-let duration=5000
-let start=performance.now()
-let startRot=rotation
-
-function animate(t){
-
-let progress=Math.min((t-start)/duration,1)
-let ease=1-Math.pow(1-progress,3)
-
-rotation=startRot+(target-startRot)*ease
-
-ctx.setTransform(1,0,0,1,0,0)
-ctx.translate(center,center)
-ctx.rotate(rotation)
-ctx.translate(-center,-center)
-
-drawWheel()
-
-if(progress<1){
-
-requestAnimationFrame(animate)
-
-}else{
-
-spinning=false
-
-let list=expandedNames()
-let slice=(2*Math.PI)/list.length
-
-let index=Math.floor(list.length-(rotation%(2*Math.PI))/slice)%list.length
-
-let winner=list[index]
-
-let winnerBox=document.getElementById("winner")
-
-winnerBox.innerText="🏆 "+winner+" 🏆"
-winnerBox.classList.add("show")
-
-winSound.play()
-
-confetti({
-particleCount:200,
-spread:100,
-origin:{y:.6}
-})
-
-}
-
-}
-
-requestAnimationFrame(animate)
-
-}
-
+function loadAgents(){
+let text=document.getElementById("agentInput").value.trim()
+localStorage.setItem("agentWheelList",text)
+let lines=text.split("\n")
+agents=[]
+weights=[]
+lines.forEach(l=>{let parts=l.split(",");agents.push(parts[0].trim());weights.push(parts[1]?Number(parts[1]):1)})
+buildWheel()}
+function buildWheel(){
+let total=weights.reduce((a,b)=>a+b,0)
+let start=0
+ctx.clearRect(0,0,500,500)
+agents.forEach((name,i)=>{let slice=(weights[i]/total)*Math.PI*2
+ctx.beginPath();ctx.moveTo(250,250);ctx.arc(250,250,240,start,start+slice);ctx.fillStyle=`hsl(${i*50},100%,50%)`;ctx.fill()
+ctx.save();ctx.translate(250,250);ctx.rotate(start+slice/2);ctx.fillStyle="black";ctx.font="14px Arial";ctx.fillText(name,120,5);ctx.restore()
+start+=slice})}
+function weightedPick(){let total=weights.reduce((a,b)=>a+b,0);let r=Math.random()*total;for(let i=0;i<agents.length;i++){if(r<weights[i]) return i;r-=weights[i]}}
+function spin(){if(spinning||agents.length==0) return;spinning=true
+let targetIndex=weightedPick()
+let slice=(Math.PI*2)/agents.length
+let targetAngle=(Math.PI*2)-(targetIndex*slice)
+let spins=6
+let final=spins*Math.PI*2+targetAngle
+let start=angle
+let duration=3000
+let startTime=null
+function animate(t){if(!startTime) startTime=t;let progress=(t-startTime)/duration;if(progress>1) progress=1
+angle=start+(final-start)*progress
+ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,500,500);ctx.translate(250,250);ctx.rotate(angle);ctx.translate(-250,-250);buildWheel()
+if(progress<1){requestAnimationFrame(animate)}else{finish(targetIndex)}}
+requestAnimationFrame(animate)}
+function finish(index){spinning=false
+let winner=agents[index]
+let box=document.getElementById("winner")
+box.innerHTML="🏆 "+winner
+confetti()
+saveHistory(winner)
+if(document.getElementById("removeWinner").checked){agents.splice(index,1);weights.splice(index,1);buildWheel()}}
+function saveHistory(name){let list=document.getElementById("history");let div=document.createElement("div");div.textContent=name;list.prepend(div)}
+function confetti(){for(let i=0;i<80;i++){let c=document.createElement("div");c.style.position="fixed";c.style.width="6px";c.style.height="6px";c.style.background=`hsl(${Math.random()*360},100%,50%)`;c.style.left=Math.random()*100+"vw";c.style.top="-10px";c.style.transition="top 2s linear";document.body.appendChild(c);setTimeout(()=>{c.style.top="100vh"},10);setTimeout(()=>{c.remove()},2000)}}
 canvas.addEventListener("click",spin)
-
-function addName(){
-
-let name=document.getElementById("nameInput").value.trim()
-let weight=parseInt(document.getElementById("weightInput").value)||1
-
-if(!name) return
-
-names.push({name,weight})
-
-document.getElementById("nameInput").value=""
-document.getElementById("weightInput").value=""
-
-renderList()
-drawWheel()
-
-}
-
-function addBulk(){
-
-let text=document.getElementById("bulkInput").value
-
-text.split("\n").forEach(n=>{
-if(n.trim()){
-names.push({name:n.trim(),weight:1})
-}
-})
-
-document.getElementById("bulkInput").value=""
-
-renderList()
-drawWheel()
-
-}
-
-function removeName(name){
-
-names=names.filter(n=>n.name!==name)
-
-renderList()
-drawWheel()
-
-}
-
-function renderList(){
-
-let list=document.getElementById("nameList")
-list.innerHTML=""
-
-names.forEach(n=>{
-
-let tag=document.createElement("div")
-tag.className="tag"
-tag.innerText=n.name+" ("+n.weight+") ✕"
-
-tag.onclick=()=>removeName(n.name)
-
-list.appendChild(tag)
-
-})
-
-}
-
-renderList()
-drawWheel()
-
+window.onload=()=>{let saved=localStorage.getItem("agentWheelList");if(saved){document.getElementById("agentInput").value=saved;loadAgents()}}
 </script>
-
 </body>
 </html>
-```
