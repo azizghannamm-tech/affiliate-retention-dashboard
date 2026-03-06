@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html>
-
 <head>
+<meta charset="UTF-8">
 <title>Agent Login</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
 body{
-font-family:Arial;
+font-family: Arial;
 background:#f4f7fb;
 display:flex;
 align-items:center;
@@ -17,25 +16,38 @@ height:100vh;
 
 .loginBox{
 background:white;
-padding:40px;
+padding:30px;
 border-radius:10px;
-box-shadow:0 5px 20px rgba(0,0,0,0.1);
-width:300px;
+width:320px;
+box-shadow:0 4px 10px rgba(0,0,0,0.1);
+text-align:center;
 }
 
 input{
 width:100%;
 padding:10px;
 margin-top:10px;
+border:1px solid #ccc;
+border-radius:5px;
 }
 
 button{
-margin-top:15px;
 width:100%;
 padding:10px;
-background:#1e4fa1;
-color:white;
+margin-top:12px;
 border:none;
+border-radius:5px;
+cursor:pointer;
+}
+
+.loginBtn{
+background:#2e5aac;
+color:white;
+}
+
+.googleBtn{
+background:#db4437;
+color:white;
 }
 </style>
 
@@ -47,40 +59,18 @@ border:none;
 
 <h2>Agent Login</h2>
 
-<input id="email" placeholder="Email">
-<input id="password" type="password" placeholder="Password">
+<input type="email" id="email" placeholder="Email" autocomplete="email">
+<input type="password" id="password" placeholder="Password" autocomplete="current-password">
 
-<button id="loginBtn">Login</button>
+<button class="loginBtn" onclick="login()">Login</button>
+
+<button class="googleBtn" onclick="googleLogin()">Login with Google</button>
+
+<p id="error" style="color:red;"></p>
 
 </div>
 
-<script type="module">
-
-import { auth } from "./app.js";
-
-import { signInWithEmailAndPassword }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-document.getElementById("loginBtn").onclick = async ()=>{
-
-const email=document.getElementById("email").value
-const password=document.getElementById("password").value
-
-try{
-
-await signInWithEmailAndPassword(auth,email,password)
-
-window.location.href="index.html"
-
-}catch(e){
-
-alert(e.message)
-
-}
-
-}
-
-</script>
+<script type="module" src="app.js"></script>
 
 </body>
 </html>
