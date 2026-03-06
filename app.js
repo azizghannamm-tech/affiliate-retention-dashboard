@@ -1,17 +1,81 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+import {
+getAuth,
+signInWithEmailAndPassword,
+signInWithPopup,
+GoogleAuthProvider,
+onAuthStateChanged,
+signOut
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
 
 const firebaseConfig = {
-  apiKey: "AIzaSyB8dDTnpPQVRAs7dkfc8QU3L5qUJtm-2jg",
-  authDomain: "affiliate-relations-17687.firebaseapp.com",
-  projectId: "affiliate-relations-17687",
-  storageBucket: "affiliate-relations-17687.appspot.com",
-  messagingSenderId: "642027131905",
-  appId: "1:642027131905:web:5f0076ee7b34578b9f9c00"
+
+apiKey: "AIzaSyB8dDTnpPQVRAs7dkfc8QU3L5qUJtm-2jg",
+authDomain: "affiliate-relations-17687.firebaseapp.com",
+projectId: "affiliate-relations-17687",
+appId: "1:642027131905:web:5f0076ee7b34578b9f9c00"
+
 };
 
-const app = initializeApp(firebaseConfig);
 
-export const auth = getAuth(app);
-export const db = getFirestore(app);
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
+
+
+window.login = function(){
+
+const email=document.getElementById("email").value;
+const password=document.getElementById("password").value;
+
+signInWithEmailAndPassword(auth,email,password)
+.then(()=>{
+window.location="index.html";
+})
+.catch(err=>{
+document.getElementById("error").innerText=err.message;
+});
+
+};
+
+
+window.googleLogin=function(){
+
+signInWithPopup(auth,provider)
+.then(()=>{
+window.location="index.html";
+})
+.catch(err=>{
+document.getElementById("error").innerText=err.message;
+});
+
+};
+
+
+window.logout=function(){
+
+signOut(auth).then(()=>{
+window.location="login.html";
+});
+
+};
+
+
+onAuthStateChanged(auth,user=>{
+
+if(user){
+
+if(document.getElementById("userEmail"))
+document.getElementById("userEmail").innerText=user.email;
+
+}else{
+
+if(!window.location.pathname.includes("login"))
+window.location="login.html";
+
+}
+
+});
