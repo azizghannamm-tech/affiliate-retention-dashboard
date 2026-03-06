@@ -27,12 +27,14 @@ getDoc
 // ==========================
 
 const firebaseConfig = {
+
 apiKey: "AIzaSyB8dDTnpPQVRAs7dkfc8QU3L5qUJtm-2jg",
 authDomain: "affiliate-relations-17687.firebaseapp.com",
 projectId: "affiliate-relations-17687",
 storageBucket: "affiliate-relations-17687.appspot.com",
 messagingSenderId: "642027131905",
 appId: "1:642027131905:web:5f0076ee7b34578b9f9c00"
+
 };
 
 
@@ -41,7 +43,9 @@ appId: "1:642027131905:web:5f0076ee7b34578b9f9c00"
 // ==========================
 
 const app = initializeApp(firebaseConfig);
+
 const auth = getAuth(app);
+
 const db = getFirestore(app);
 
 
@@ -53,7 +57,7 @@ const currentPage = window.location.pathname.split("/").pop();
 
 
 // ==========================
-// AUTH STATE CONTROL
+// AUTH STATE CHECK
 // ==========================
 
 onAuthStateChanged(auth, async (user) => {
@@ -75,7 +79,7 @@ return;
 
 
 // ==========================
-// LOAD PROFILE INFO
+// LOAD USER PROFILE
 // ==========================
 
 const nameEl = document.getElementById("agentName");
@@ -105,9 +109,7 @@ if(userSnap.exists()){
 
 const data = userSnap.data();
 
-if(roleEl){
-roleEl.innerText = data.role || "agent";
-}
+if(roleEl) roleEl.innerText = data.role || "agent";
 
 }else{
 
@@ -117,9 +119,7 @@ role:"agent",
 created:new Date()
 });
 
-if(roleEl){
-roleEl.innerText = "agent";
-}
+if(roleEl) roleEl.innerText = "agent";
 
 }
 
@@ -132,139 +132,6 @@ console.log("User role error:",err);
 });
 
 
-
-// ==========================
-// LOGIN
-// ==========================
-
-window.login = async function(){
-
-const email = document.getElementById("email").value;
-const password = document.getElementById("password").value;
-const error = document.getElementById("error");
-
-try{
-
-await signInWithEmailAndPassword(auth,email,password);
-
-window.location.href = "index.html";
-
-}catch(err){
-
-if(error){
-
-if(err.code === "auth/user-not-found"){
-error.innerText = "User not found";
-}
-
-else if(err.code === "auth/wrong-password"){
-error.innerText = "Wrong password";
-}
-
-else{
-error.innerText = err.message;
-}
-
-}
-
-}
-
-};
-
-
-
-// ==========================
-// SIGNUP
-// ==========================
-
-window.signup = async function(){
-
-const email = document.getElementById("email").value;
-const password = document.getElementById("password").value;
-
-const error = document.getElementById("error");
-
-try{
-
-const userCredential = await createUserWithEmailAndPassword(auth,email,password);
-
-await setDoc(doc(db,"users",userCredential.user.uid),{
-
-email:email,
-role:"agent",
-created:new Date()
-
-});
-
-window.location.href="index.html";
-
-}catch(err){
-
-if(error) error.innerText = err.message;
-
-}
-
-};
-
-
-
-// ==========================
-// GOOGLE LOGIN
-// ==========================
-
-window.googleLogin = async function(){
-
-try{
-
-const provider = new GoogleAuthProvider();
-
-const result = await signInWithPopup(auth,provider);
-
-const user = result.user;
-
-const userRef = doc(db,"users",user.uid);
-const snap = await getDoc(userRef);
-
-if(!snap.exists()){
-
-await setDoc(userRef,{
-email:user.email,
-role:"agent",
-created:new Date()
-});
-
-}
-
-window.location.href="index.html";
-
-}catch(err){
-
-const error = document.getElementById("error");
-
-if(error) error.innerText = err.message;
-
-}
-
-};
-
-
-
-// ==========================
-// LOGOUT
-// ==========================
-
-const logoutBtn = document.getElementById("logoutBtn");
-
-if(logoutBtn){
-
-logoutBtn.addEventListener("click", async ()=>{
-
-await signOut(auth);
-
-window.location.href="login.html";
-
-});
-
 // ==========================
 // BUTTON EVENT LISTENERS
 // ==========================
@@ -272,6 +139,12 @@ window.location.href="login.html";
 const loginBtn = document.getElementById("loginBtn");
 const signupBtn = document.getElementById("signupBtn");
 const googleBtn = document.getElementById("googleBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+
+
+// ==========================
+// EMAIL LOGIN
+// ==========================
 
 if(loginBtn){
 
@@ -284,6 +157,7 @@ const error = document.getElementById("error");
 try{
 
 await signInWithEmailAndPassword(auth,email,password);
+
 window.location.href = "index.html";
 
 }catch(err){
@@ -295,6 +169,11 @@ if(error) error.innerText = err.message;
 });
 
 }
+
+
+// ==========================
+// SIGN UP
+// ==========================
 
 if(signupBtn){
 
@@ -327,6 +206,11 @@ if(error) error.innerText = err.message;
 });
 
 }
+
+
+// ==========================
+// GOOGLE LOGIN
+// ==========================
 
 if(googleBtn){
 
@@ -365,6 +249,21 @@ if(error) error.innerText = err.message;
 
 });
 
-}  
+}
+
+
+// ==========================
+// LOGOUT
+// ==========================
+
+if(logoutBtn){
+
+logoutBtn.addEventListener("click", async ()=>{
+
+await signOut(auth);
+
+window.location.href="login.html";
+
+});
 
 }
