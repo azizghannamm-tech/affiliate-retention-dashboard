@@ -3,8 +3,7 @@
 <head>
 
 <meta charset="UTF-8">
-<title>Knowledge Hub</title>
-
+<title>Knowledge Hub Login</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
@@ -13,178 +12,64 @@ body{
 font-family:Arial;
 background:#f4f7fb;
 margin:0;
-transition:0.25s;
-}
-
-/* HEADER */
-
-header{
-background:#2e5aac;
-color:white;
-padding:15px 25px;
 display:flex;
-justify-content:space-between;
+justify-content:center;
 align-items:center;
+height:100vh;
 }
 
-.logo{
-font-size:18px;
-font-weight:bold;
-}
-
-/* CONTAINER */
-
-.container{
-padding:40px;
-}
-
-/* TOOL CARD */
-
-.tool{
+.card{
 background:white;
-padding:20px;
-margin-bottom:20px;
+padding:40px;
 border-radius:10px;
-box-shadow:0 3px 10px rgba(0,0,0,0.08);
+box-shadow:0 4px 15px rgba(0,0,0,0.1);
+width:350px;
+text-align:center;
 }
 
-/* BUTTON */
+h2{
+margin-bottom:25px;
+color:#2e5aac;
+}
+
+input{
+width:100%;
+padding:12px;
+margin-bottom:15px;
+border:1px solid #ccc;
+border-radius:6px;
+font-size:14px;
+}
 
 button{
-padding:8px 14px;
-border:none;
-background:#e74c3c;
-color:white;
-border-radius:5px;
-cursor:pointer;
-}
-
-/* PROFILE AREA */
-
-.profileArea{
-display:flex;
-align-items:center;
-gap:20px;
-position:relative;
-}
-
-/* PROFILE */
-
-.profile{
-display:flex;
-align-items:center;
-gap:10px;
-cursor:pointer;
-}
-
-.profile img{
-width:38px;
-height:38px;
-border-radius:50%;
-object-fit:cover;
-}
-
-/* PROFILE INFO */
-
-.profileInfo{
-font-size:13px;
-}
-
-.role{
-font-size:11px;
-color:#d6d6d6;
-}
-
-/* DROPDOWN */
-
-.dropdown{
-position:absolute;
-right:0;
-top:60px;
-background:white;
-border-radius:8px;
-box-shadow:0 6px 20px rgba(0,0,0,0.15);
-padding:15px;
-display:none;
-min-width:200px;
-color:#333;
-}
-
-.dropdown button{
 width:100%;
-margin-top:10px;
-padding:8px;
+padding:12px;
 border:none;
-background:#1e4fa1;
-color:white;
 border-radius:6px;
+font-size:14px;
 cursor:pointer;
+margin-bottom:10px;
 }
 
-.dropdown.show{
-display:block;
-}
-
-/* DARK MODE SWITCH */
-
-.switch{
-position:relative;
-display:inline-block;
-width:44px;
-height:24px;
-}
-
-.switch input{
-opacity:0;
-width:0;
-height:0;
-}
-
-.slider{
-position:absolute;
-cursor:pointer;
-top:0;
-left:0;
-right:0;
-bottom:0;
-background:#ccc;
-border-radius:24px;
-transition:.3s;
-}
-
-.slider:before{
-position:absolute;
-content:"";
-height:18px;
-width:18px;
-left:3px;
-bottom:3px;
-background:white;
-border-radius:50%;
-transition:.3s;
-}
-
-input:checked + .slider{
-background:#1e4fa1;
-}
-
-input:checked + .slider:before{
-transform:translateX(20px);
-}
-
-/* DARK MODE */
-
-.dark{
-background:#1e293b;
+.loginBtn{
+background:#2e5aac;
 color:white;
 }
 
-.dark .tool{
-background:#334155;
+.signupBtn{
+background:#27ae60;
+color:white;
 }
 
-.dark header{
-background:#0f172a;
+.googleBtn{
+background:#db4437;
+color:white;
+}
+
+#error{
+color:red;
+font-size:13px;
+margin-top:10px;
 }
 
 </style>
@@ -193,94 +78,25 @@ background:#0f172a;
 
 <body>
 
-<header>
+<div class="card">
 
-<div class="logo">
-Knowledge Hub
-</div>
+<h2>Knowledge Hub</h2>
 
-<div class="profileArea">
+<input id="email" type="email" placeholder="Email">
 
-<label class="switch">
-<input type="checkbox" id="darkToggle">
-<span class="slider"></span>
-</label>
+<input id="password" type="password" placeholder="Password">
 
-<div class="profile" id="profileBtn">
+<button class="loginBtn" onclick="login()">Sign In</button>
 
-<img id="agentAvatar" src="https://i.imgur.com/6VBx3io.png">
+<button class="signupBtn" onclick="signup()">Create Account</button>
 
-<div class="profileInfo">
-<div id="agentName">Agent</div>
-<div class="role" id="accessLevel">Agent</div>
-</div>
+<button class="googleBtn" onclick="googleLogin()">Sign in with Google</button>
 
-</div>
-
-<div class="dropdown" id="profileDropdown">
-
-<div id="agentEmail"></div>
-
-<hr>
-
-<button id="logoutBtn">Logout</button>
-
-</div>
-
-</div>
-
-</header>
-
-<div class="container">
-
-<div class="tool">
-<h3>Agent Tools Dashboard</h3>
-<p>This is your internal tools workspace.</p>
-</div>
-
-<div class="tool">
-<h3>More Tools Coming</h3>
-<p>Wheel spinner, calculators, CRM tools and automations will appear here.</p>
-</div>
+<div id="error"></div>
 
 </div>
 
 <script type="module" src="app.js"></script>
-
-<script>
-
-/* PROFILE DROPDOWN */
-
-const profileBtn = document.getElementById("profileBtn")
-const dropdown = document.getElementById("profileDropdown")
-
-profileBtn.onclick = () => {
-
-dropdown.classList.toggle("show")
-
-}
-
-/* CLOSE DROPDOWN WHEN CLICK OUTSIDE */
-
-window.onclick = function(event){
-
-if(!event.target.closest(".profileArea")){
-dropdown.classList.remove("show")
-}
-
-}
-
-/* DARK MODE */
-
-const toggle = document.getElementById("darkToggle")
-
-toggle.addEventListener("change",()=>{
-
-document.body.classList.toggle("dark")
-
-})
-
-</script>
 
 </body>
 </html>
