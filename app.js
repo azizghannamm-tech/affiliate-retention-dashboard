@@ -1,167 +1,167 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+/* =========================
+   GLOBAL STORAGE SYSTEM
+========================= */
 
-import {
-getAuth,
-GoogleAuthProvider,
-signInWithPopup,
-onAuthStateChanged,
-signOut
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-import {
-getFirestore,
-collection,
-addDoc,
-getDocs,
-query,
-where,
-orderBy,
-serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-
-// FIREBASE CONFIG
-
-const firebaseConfig = {
-
-apiKey: "YOUR_API_KEY",
-authDomain: "YOUR_DOMAIN",
-projectId: "YOUR_PROJECT_ID",
-storageBucket: "YOUR_BUCKET",
-messagingSenderId: "YOUR_ID",
-appId: "YOUR_APP"
-
-};
-
-
-// INIT
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-
-// AUTH STATE
-
-onAuthStateChanged(auth, async (user)=>{
-
-if(!user){
-window.location.href="login.html";
-return;
+if (!localStorage.getItem("posts")) {
+  localStorage.setItem("posts", JSON.stringify([]));
 }
 
-document.getElementById("agentEmail").innerText=user.email;
+/* =========================
+   AUTH SYSTEM
+========================= */
 
-const q=query(
-collection(db,"users"),
-where("email","==",user.email)
-);
+const USERNAME = "agent";
+const PASSWORD = "1234";
 
-const snap=await getDocs(q);
-
-let role="agent";
-
-snap.forEach(doc=>{
-role=doc.data().role;
-});
-
-document.getElementById("accessLevel").innerText=role;
-
-if(role==="admin"){
-document.getElementById("adminPanel").style.display="block";
+function isLoggedIn() {
+  return localStorage.getItem("loggedIn") === "true";
 }
 
-loadSection("home");
+function login(username, password) {
 
-});
+  if (username === USERNAME && password === PASSWORD) {
 
+    localStorage.setItem("loggedIn", "true");
+    window.location.href = "index.html";
 
-// SECTION SWITCH
-
-window.openSection=function(section){
-
-document.querySelectorAll(".section").forEach(sec=>{
-sec.style.display="none";
-});
-
-document.getElementById(section).style.display="block";
-
-loadSection(section);
-
-};
-
-
-// LOAD POSTS
-
-async function loadSection(section){
-
-const container=document.getElementById(section+"Posts");
-
-container.innerHTML="Loading...";
-
-const q=query(
-collection(db,"posts"),
-where("section","==",section),
-orderBy("date","desc")
-);
-
-const snap=await getDocs(q);
-
-container.innerHTML="";
-
-snap.forEach(doc=>{
-
-const data=doc.data();
-
-const card=document.createElement("div");
-
-card.className="postCard";
-
-card.innerHTML=`
-<h3>${data.title}</h3>
-<p>${data.content}</p>
-`;
-
-container.appendChild(card);
-
-});
+  } else {
+    alert("Invalid login");
+  }
 
 }
 
+function logout() {
 
-// CREATE POST
+  localStorage.removeItem("loggedIn");
+  window.location.href = "login.html";
 
-const postBtn=document.getElementById("publishPost");
+}
 
-postBtn.onclick=async()=>{
+/* =========================
+   PAGE PROTECTION
+========================= */
 
-const title=document.getElementById("postTitle").value;
+const page = window.location.pathname.split("/").pop();
 
-const section=document.getElementById("postSection").value;
+if (page === "index.html" || page === "") {
 
-const content=document.getElementById("postContent").value;
+  if (!isLoggedIn()) {
+    window.location.href = "login.html";
+  }
 
-const tags=document.getElementById("postTags").value;
+}
 
-await addDoc(collection(db,"posts"),{
+if (page === "login.html") {
 
-title:title,
-section:section,
-content:content,
-tags:tags,
-date:serverTimestamp()
+  if (isLoggedIn()) {
+    window.location.href = "index.html";
+  }
 
-});
+}
 
-alert("Post published");
+/* =========================
+   POSTS SYSTEM
+========================= */
 
-document.getElementById("postTitle").value="";
-document.getElementById("postContent").value="";
-};
+function getPosts() {
+  return JSON.parse(localStorage.getItem("posts"));
+}
 
+function savePosts(posts) {
+  localStorage.setItem("posts", JSON.stringify(posts));
+}
 
-// LOGOUT
+function addPost(title, content, tags) {
 
-document.getElementById("logoutBtn").onclick=()=>{
-signOut(auth);
-};
+  const posts = getPosts();
+
+  posts.unshift({
+    id: Date.now(),
+    title,
+    content,
+    tags,
+    pinned: false,
+    date: new Date().toLocaleString()
+  });
+
+  savePosts(posts);
+}
+
+function deletePost(id) {
+
+  let posts = getPosts();
+
+  posts = posts.filter(p => p.id !== id);
+
+  savePosts(posts);
+}
+
+function togglePin(id) {
+
+  const posts = getPosts();
+
+  const post = posts.find(p => p.id === id);
+
+  if (post) post.pinned = !post.pinned;
+
+  savePosts(posts);
+}
+
+function editPost(id, newTitle, newContent) {
+
+  const posts = getPosts();
+
+  const post = posts.find(p => p.id === id);
+
+  if (post) {
+
+    post.title = newTitle;
+    post.content = newContent;
+
+  }
+
+  savePosts(posts);
+}
+
+/* =========================
+   SEARCH SYSTEM
+========================= */
+
+function searchPosts(query) {
+
+  const posts = getPosts();
+
+  return posts.filter(post =>
+    post.title.toLowerCase().includes(query.toLowerCase()) ||
+    post.content.toLowerCase().includes(query.toLowerCase())
+  );
+
+}
+
+/* =========================
+   TAG FILTER
+========================= */
+
+function filterByTag(tag) {
+
+  const posts = getPosts();
+
+  return posts.filter(post => post.tags.includes(tag));
+
+}
+
+/* =========================
+   ANALYTICS
+========================= */
+
+function getAnalytics() {
+
+  const posts = getPosts();
+
+  return {
+    totalPosts: posts.length,
+    pinnedPosts: posts.filter(p => p.pinned).length,
+    tagsUsed: [...new Set(posts.flatMap(p => p.tags))]
+  };
+
+}
