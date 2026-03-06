@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Spin Wheel</title>
+
+<style>
+body{
+font-family:Arial;
+text-align:center;
+background:transparent;
+}
+
+canvas{
+display:block;
+margin:auto;
+}
+
+.pointer{
+width:0;
+height:0;
+border-left:14px solid transparent;
+border-right:14px solid transparent;
+border-top:22px solid #facc15;
+margin:auto;
+margin-bottom:10px;
+}
+
+button{
+margin-top:15px;
+padding:10px 22px;
+background:#2563eb;
+color:white;
+border:none;
+border-radius:6px;
+font-weight:bold;
+cursor:pointer;
+}
+
+#winner{
+margin-top:20px;
+font-size:20px;
+font-weight:bold;
+color:#16a34a;
+}
+</style>
+
+</head>
+<body>
+
+<div class="pointer"></div>
+<canvas id="wheel" width="420" height="420"></canvas>
+
+<button onclick="spin()">SPIN</button>
+
+<div id="winner"></div>
+
+<script>
+
+const names=[
+"Chase","Douglas","Valantine","Raymond",
+"Flynn","Rory","Juliana","Curtis","Felix"
+];
+
+const colors=[
+"#3b82f6",
+"#22c55e",
+"#a855f7",
+"#f97316",
+"#06b6d4"
+];
+
+const canvas=document.getElementById("wheel");
+const ctx=canvas.getContext("2d");
+
+const center=canvas.width/2;
+const radius=center-10;
+
+let rotation=0;
+let spinning=false;
+
+function drawWheel(){
+
+ctx.clearRect(0,0,canvas.width,canvas.height);
+
+const slice=(2*Math.PI)/names.length;
+
+for(let i=0;i<names.length;i++){
+
+const angle=i*slice;
+
+ctx.beginPath();
+ctx.moveTo(center,center);
+ctx.arc(center,center,radius,angle,angle+slice);
+ctx.fillStyle=colors[i%colors.length];
+ctx.fill();
+
+ctx.save();
+ctx.translate(center,center);
+ctx.rotate(angle+slice/2);
+
+ctx.fillStyle="white";
+ctx.font="bold 14px Arial";
+ctx.textAlign="right";
+ctx.fillText(names[i],radius-15,5);
+
+ctx.restore();
+
+}
+
+}
+
+function spin(){
+
+if(spinning) return;
+
+spinning=true;
+
+const spins=Math.random()*6+6;
+const target=rotation+spins*2*Math.PI;
+
+const duration=5000;
+const start=performance.now();
+const startRot=rotation;
+
+function animate(t){
+
+const progress=Math.min((t-start)/duration,1);
+const ease=1-Math.pow(1-progress,3);
+
+rotation=startRot+(target-startRot)*ease;
+
+ctx.setTransform(1,0,0,1,0,0);
+ctx.translate(center,center);
+ctx.rotate(rotation);
+ctx.translate(-center,-center);
+
+drawWheel();
+
+if(progress<1){
+requestAnimationFrame(animate);
+}else{
+spinning=false;
+
+let slice=(2*Math.PI)/names.length;
+let index=Math.floor(names.length-(rotation%(2*Math.PI))/slice)%names.length;
+
+document.getElementById("winner").innerText="Winner: "+names[index];
+}
+
+}
+
+requestAnimationFrame(animate);
+
+}
+
+drawWheel();
+
+</script>
+
+</body>
+</html>
