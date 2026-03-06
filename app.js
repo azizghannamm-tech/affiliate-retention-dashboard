@@ -265,4 +265,106 @@ window.location.href="login.html";
 
 });
 
+// ==========================
+// BUTTON EVENT LISTENERS
+// ==========================
+
+const loginBtn = document.getElementById("loginBtn");
+const signupBtn = document.getElementById("signupBtn");
+const googleBtn = document.getElementById("googleBtn");
+
+if(loginBtn){
+
+loginBtn.addEventListener("click", async () => {
+
+const email = document.getElementById("email").value;
+const password = document.getElementById("password").value;
+const error = document.getElementById("error");
+
+try{
+
+await signInWithEmailAndPassword(auth,email,password);
+window.location.href = "index.html";
+
+}catch(err){
+
+if(error) error.innerText = err.message;
+
+}
+
+});
+
+}
+
+if(signupBtn){
+
+signupBtn.addEventListener("click", async () => {
+
+const email = document.getElementById("email").value;
+const password = document.getElementById("password").value;
+const error = document.getElementById("error");
+
+try{
+
+const userCredential = await createUserWithEmailAndPassword(auth,email,password);
+
+await setDoc(doc(db,"users",userCredential.user.uid),{
+
+email:email,
+role:"agent",
+created:new Date()
+
+});
+
+window.location.href="index.html";
+
+}catch(err){
+
+if(error) error.innerText = err.message;
+
+}
+
+});
+
+}
+
+if(googleBtn){
+
+googleBtn.addEventListener("click", async () => {
+
+try{
+
+const provider = new GoogleAuthProvider();
+
+const result = await signInWithPopup(auth,provider);
+
+const user = result.user;
+
+const userRef = doc(db,"users",user.uid);
+const snap = await getDoc(userRef);
+
+if(!snap.exists()){
+
+await setDoc(userRef,{
+email:user.email,
+role:"agent",
+created:new Date()
+});
+
+}
+
+window.location.href="index.html";
+
+}catch(err){
+
+const error = document.getElementById("error");
+
+if(error) error.innerText = err.message;
+
+}
+
+});
+
+}  
+
 }
