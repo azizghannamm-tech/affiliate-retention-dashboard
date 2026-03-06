@@ -73,12 +73,14 @@ gap:10px;
 
 .googleBtn img{
 width:18px;
+height:18px;
 }
 
 #error{
 color:red;
 font-size:13px;
 margin-top:10px;
+min-height:18px;
 }
 
 </style>
@@ -91,17 +93,33 @@ margin-top:10px;
 
 <h2>Knowledge Hub</h2>
 
-<input id="email" type="email" placeholder="Email">
+<input 
+id="email"
+type="email"
+placeholder="Email"
+autocomplete="email"
+required
+>
 
-<input id="password" type="password" placeholder="Password">
+<input 
+id="password"
+type="password"
+placeholder="Password"
+autocomplete="current-password"
+required
+>
 
-<button class="loginBtn" id="loginBtn">Sign In</button>
+<button type="button" class="loginBtn" id="loginBtn">
+Sign In
+</button>
 
-<button class="signupBtn" id="signupBtn">Create Account</button>
+<button type="button" class="signupBtn" id="signupBtn">
+Create Account
+</button>
 
-<button class="googleBtn" id="googleBtn">
+<button type="button" class="googleBtn" id="googleBtn">
 
-<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" width="18">
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png">
 
 Sign in with Google
 
