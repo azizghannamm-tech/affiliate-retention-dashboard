@@ -114,5 +114,106 @@ function confetti(){for(let i=0;i<80;i++){let c=document.createElement("div");c.
 canvas.addEventListener("click",spin)
 window.onload=()=>{let saved=localStorage.getItem("agentWheelList");if(saved){document.getElementById("agentInput").value=saved;loadAgents()}}
 </script>
+
+    <script>
+
+let names = ["Chase","Felix","Rory","Flynn","Douglas","Juliana","Chris","Valantine","Raymond"];
+
+const canvas = document.getElementById("wheel");
+const ctx = canvas.getContext("2d");
+
+let rotation = 0;
+
+function drawWheel(){
+
+let arc = 2*Math.PI / names.length;
+
+ctx.clearRect(0,0,500,500);
+
+names.forEach((name,i)=>{
+
+let angle = i*arc + rotation;
+
+ctx.beginPath();
+ctx.moveTo(250,250);
+ctx.arc(250,250,250,angle,angle+arc);
+ctx.fillStyle = ["#3b82f6","#f97316","#22c55e","#a855f7","#06b6d4"][i%5];
+ctx.fill();
+
+ctx.save();
+ctx.translate(250,250);
+ctx.rotate(angle+arc/2);
+ctx.fillStyle="white";
+ctx.font="bold 16px Arial";
+ctx.fillText(name,120,5);
+ctx.restore();
+
+});
+
+}
+
+drawWheel();
+
+document.getElementById("spinBtn").onclick=spin;
+
+function spin(){
+
+let spinAmount = Math.random()*2000+3000;
+
+let start = null;
+
+function animate(timestamp){
+
+if(!start) start = timestamp;
+
+let progress = timestamp-start;
+
+rotation = (spinAmount*progress/3000)/1000;
+
+drawWheel();
+
+if(progress<3000){
+requestAnimationFrame(animate);
+}else{
+
+let index = Math.floor(names.length - (rotation%(2*Math.PI))/(2*Math.PI)*names.length) % names.length;
+
+alert("Winner: "+names[index]);
+
+}
+
+}
+
+requestAnimationFrame(animate);
+
+}
+
+function addName(){
+
+let name=document.getElementById("nameInput").value;
+
+if(name){
+
+names.push(name);
+
+drawWheel();
+
+}
+
+}
+
+function pasteNames(){
+
+let list=document.getElementById("bulkNames").value.split("\n");
+
+list.forEach(n=>{
+if(n.trim()!="") names.push(n.trim());
+});
+
+drawWheel();
+
+}
+
+</script>
 </body>
 </html>
