@@ -21,6 +21,7 @@ padding:40px;
 border-radius:12px;
 width:320px;
 box-shadow:0 10px 30px rgba(0,0,0,0.1);
+text-align:center;
 }
 
 h2{
@@ -45,8 +46,18 @@ border-radius:6px;
 cursor:pointer;
 }
 
+button:hover{
+opacity:0.9;
+}
+
 .google{
 background:#ea4335;
+margin-top:10px;
+}
+
+.error{
+color:red;
+font-size:13px;
 margin-top:10px;
 }
 
@@ -63,9 +74,11 @@ margin-top:10px;
 <input id="email" placeholder="Email">
 <input id="password" placeholder="Password" type="password">
 
-<button onclick="login()">Login</button>
+<button id="loginBtn">Login</button>
 
-<button class="google" onclick="googleLogin()">Sign in with Google</button>
+<button class="google" id="googleBtn">Sign in with Google</button>
+
+<div id="errorMsg" class="error"></div>
 
 </div>
 
@@ -73,7 +86,16 @@ margin-top:10px;
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"
-import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"
+import {
+getAuth,
+signInWithEmailAndPassword,
+GoogleAuthProvider,
+signInWithPopup,
+onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"
+
+
+/* ---------------- FIREBASE CONFIG ---------------- */
 
 const firebaseConfig = {
 
@@ -89,26 +111,57 @@ appId: "1:642027131905:web:5f0076ee7b34578b9f9c00"
 const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
 
+/* ---------------- AUTO REDIRECT IF ALREADY LOGGED ---------------- */
 
-window.login = async () => {
+onAuthStateChanged(auth,(user)=>{
+
+if(user){
+window.location="index.html"
+}
+
+})
+
+/* ---------------- EMAIL LOGIN ---------------- */
+
+document.getElementById("loginBtn").onclick = async () => {
 
 const email=document.getElementById("email").value
 const password=document.getElementById("password").value
+const error=document.getElementById("errorMsg")
+
+try{
 
 await signInWithEmailAndPassword(auth,email,password)
 
 window.location="index.html"
 
+}catch(e){
+
+error.innerText=e.message
+
+}
+
 }
 
 
-window.googleLogin = async () => {
+/* ---------------- GOOGLE LOGIN ---------------- */
+
+document.getElementById("googleBtn").onclick = async () => {
 
 const provider=new GoogleAuthProvider()
+const error=document.getElementById("errorMsg")
+
+try{
 
 await signInWithPopup(auth,provider)
 
 window.location="index.html"
+
+}catch(e){
+
+error.innerText=e.message
+
+}
 
 }
 
