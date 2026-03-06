@@ -7,13 +7,11 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css" rel="stylesheet">
-
 <style>
 
 body{
-margin:0;
 font-family:Arial;
+margin:0;
 background:#f4f7fb;
 }
 
@@ -22,58 +20,15 @@ background:white;
 padding:15px 25px;
 display:flex;
 justify-content:space-between;
-align-items:center;
-box-shadow:0 2px 8px rgba(0,0,0,0.08);
-}
-
-nav{
-display:flex;
-gap:12px;
-padding:10px;
-background:#1e4fa1;
-flex-wrap:wrap;
-}
-
-nav button{
-border:none;
-padding:10px 14px;
-border-radius:6px;
-background:white;
-cursor:pointer;
+box-shadow:0 2px 10px rgba(0,0,0,0.1);
 }
 
 .container{
-padding:25px;
+padding:30px;
 }
 
-.postCard{
-background:white;
-padding:20px;
-margin-bottom:20px;
-border-radius:10px;
-box-shadow:0 4px 10px rgba(0,0,0,0.08);
-}
-
-.admin{
-background:#fff7e6;
-padding:20px;
-border-radius:10px;
-margin-bottom:20px;
-}
-
-#editor{
-background:white;
-height:200px;
-margin-top:10px;
-}
-
-.dark{
-background:#1e293b;
-color:white;
-}
-
-.dark .postCard{
-background:#334155;
+button{
+padding:8px 12px;
 }
 
 </style>
@@ -85,287 +40,55 @@ background:#334155;
 <header>
 
 <div>
+
 <b>Knowledge Hub</b>
+
 </div>
 
 <div>
 
-<span id="agentName"></span>
-|
-<span id="agentEmail"></span>
-|
-<span id="accessLevel"></span>
+<span id="userEmail"></span>
 
 <button id="logoutBtn">Logout</button>
-
-<button onclick="toggleDark()">🌙</button>
 
 </div>
 
 </header>
 
-<nav>
-
-<button onclick="openSection('home')">Home</button>
-<button onclick="openSection('contacts')">Contacts</button>
-<button onclick="openSection('updates')">Updates</button>
-<button onclick="openSection('guidelines')">Guidelines</button>
-<button onclick="openSection('payments')">Payments</button>
-<button onclick="openSection('retention')">Retention</button>
-<button onclick="openSection('evertrust')">Evertrust</button>
-<button onclick="openSection('tools')">Tools</button>
-
-</nav>
-
 <div class="container">
 
-<div id="adminPanel" class="admin" style="display:none">
+<h2>Welcome Agent</h2>
 
-<h3>Create Post</h3>
-
-<input id="postTitle" placeholder="Title" style="width:100%;margin-bottom:10px;padding:8px">
-
-<select id="postSection" style="margin-bottom:10px;padding:6px">
-
-<option value="home">Home</option>
-<option value="contacts">Contacts</option>
-<option value="updates">Updates</option>
-<option value="guidelines">Guidelines</option>
-<option value="payments">Payments</option>
-<option value="retention">Retention</option>
-<option value="evertrust">Evertrust</option>
-
-</select>
-
-<div id="editor"></div>
-
-<input id="postTags" placeholder="#tags" style="width:100%;margin-top:10px;padding:8px">
-
-<br><br>
-
-<label>
-<input type="checkbox" id="postPinned">
-Pin Post
-</label>
-
-<br><br>
-
-<button id="publishPost">Publish</button>
-
-</div>
-
-<div id="contentArea">
-
-Loading...
-
-</div>
+<p>This is the dashboard.</p>
 
 </div>
 
 <script type="module">
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { auth } from "./app.js";
 
 import {
-getAuth,
 onAuthStateChanged,
 signOut
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-import {
-getFirestore,
-collection,
-addDoc,
-getDocs,
-query,
-where,
-orderBy,
-serverTimestamp,
-deleteDoc,
-doc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-import Quill from "https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.js"
-
-const firebaseConfig = {
-
-apiKey: "YOUR_API_KEY",
-authDomain: "affiliate-relations-17687.firebaseapp.com",
-projectId: "affiliate-relations-17687",
-storageBucket: "affiliate-relations-17687.appspot.com",
-messagingSenderId: "642027131905",
-appId: "1:642027131905:web:5f0076ee7b34578b9f9c00"
-
-};
-
-const app = initializeApp(firebaseConfig);
-
-const auth = getAuth(app);
-
-const db = getFirestore(app);
-
-let role="agent"
-
-let currentSection="home"
-
-const quill = new Quill('#editor',{theme:'snow'})
-
-onAuthStateChanged(auth, async user => {
+onAuthStateChanged(auth,user=>{
 
 if(!user){
 
 window.location.href="login.html"
-
 return
 
 }
 
-document.getElementById("agentName").innerText=user.displayName || "Agent"
-
-document.getElementById("agentEmail").innerText=user.email
-
-const q=query(collection(db,"users"),where("email","==",user.email))
-
-const snap=await getDocs(q)
-
-snap.forEach(d=>{
-
-role=d.data().role
-
-})
-
-document.getElementById("accessLevel").innerText=role
-
-if(role==="admin"){
-
-document.getElementById("adminPanel").style.display="block"
-
-}
-
-openSection("home")
+document.getElementById("userEmail").innerText=user.email
 
 })
 
 document.getElementById("logoutBtn").onclick=()=>{
 
 signOut(auth)
-
-}
-
-window.openSection = async(section)=>{
-
-currentSection=section
-
-const area=document.getElementById("contentArea")
-
-if(section==="tools"){
-
-area.innerHTML=`
-<iframe src="wheel.html" width="600" height="500" style="border:none"></iframe>
-`
-return
-}
-
-const q=query(
-collection(db,"posts"),
-where("section","==",section),
-orderBy("pinned","desc"),
-orderBy("date","desc")
-)
-
-const snap=await getDocs(q)
-
-area.innerHTML=""
-
-if(snap.empty){
-
-area.innerHTML="<p>No posts yet.</p>"
-return
-
-}
-
-snap.forEach(d=>{
-
-const data=d.data()
-
-const card=document.createElement("div")
-
-card.className="postCard"
-
-card.innerHTML=`
-
-<h2>${data.title}</h2>
-
-<div>${data.content}</div>
-
-<p>${data.tags || ""}</p>
-
-${role==="admin" ? `
-<button onclick="deletePost('${d.id}')">Delete</button>
-`:""}
-
-`
-
-area.appendChild(card)
-
-})
-
-}
-
-window.deletePost = async(id)=>{
-
-if(!confirm("Delete post?")) return
-
-await deleteDoc(doc(db,"posts",id))
-
-openSection(currentSection)
-
-}
-
-document.getElementById("publishPost").onclick = async()=>{
-
-const title=document.getElementById("postTitle").value
-
-const section=document.getElementById("postSection").value
-
-const tags=document.getElementById("postTags").value
-
-const pinned=document.getElementById("postPinned").checked
-
-const content=quill.root.innerHTML
-
-if(!title || content===""){
-
-alert("Title and content required")
-return
-
-}
-
-await addDoc(collection(db,"posts"),{
-
-title,
-section,
-tags,
-pinned,
-content,
-date:serverTimestamp()
-
-})
-
-document.getElementById("postTitle").value=""
-document.getElementById("postTags").value=""
-document.getElementById("postPinned").checked=false
-quill.root.innerHTML=""
-
-openSection(currentSection)
-
-alert("Post published")
-
-}
-
-window.toggleDark=()=>{
-
-document.body.classList.toggle("dark")
 
 }
 
