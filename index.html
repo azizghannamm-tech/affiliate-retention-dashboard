@@ -5,6 +5,8 @@
 <meta charset="UTF-8">
 <title>Knowledge Hub</title>
 
+<link rel="stylesheet" href="dashboard.css">
+
 <style>
 
 body{
@@ -171,9 +173,9 @@ transform:translateX(20px);
 <span class="slider"></span>
 </label>
 
-<div class="profile" id="profileBtn" onclick="location.href='profile.html'">
+<div class="profile" id="profileBtn">
 
-<img id="agentAvatar" src="https://ui-avatars.com/api/?name=A&background=2e5aac&color=fff">
+<img id="agentAvatar" src="https://ui-avatars.com/api/?name=Agent&background=2e5aac&color=fff">
 
 <div class="profileInfo">
 <div id="agentName">Agent</div>
@@ -188,6 +190,7 @@ transform:translateX(20px);
 
 <hr>
 
+<button type="button" onclick="location.href='profile.html'">Edit Profile</button>
 <button type="button" id="logoutBtn">Logout</button>
 
 </div>
@@ -196,23 +199,93 @@ transform:translateX(20px);
 
 </header>
 
+
 <div class="container">
 
+<!-- TABS -->
+
+<div class="tabs">
+
+<div class="tab active" data-tab="home">Home</div>
+<div class="tab" data-tab="retention">Retention</div>
+<div class="tab" data-tab="updates">Updates</div>
+<div class="tab" data-tab="tools">Tools</div>
+<div class="tab" data-tab="evertrust">Evertrust</div>
+<div class="tab" data-tab="uw">UW Guidelines</div>
+<div class="tab" data-tab="payments">Payments</div>
+<div class="tab" data-tab="files">Files</div>
+<div class="tab" data-tab="contacts">Contacts</div>
+
+</div>
+
+<!-- TAB CONTENT -->
+
+<div id="home" class="tabContent active">
 <div class="tool">
 <h3>Agent Tools Dashboard</h3>
 <p>This is your internal tools workspace.</p>
 </div>
+</div>
 
+<div id="retention" class="tabContent">
 <div class="tool">
-<h3>More Tools Coming</h3>
-<p>Wheel spinner, calculators, CRM tools and automations will appear here.</p>
+<h3>Retention</h3>
+<p>Retention scripts and strategies will appear here.</p>
+</div>
+</div>
+
+<div id="updates" class="tabContent">
+<div class="tool">
+<h3>Updates</h3>
+<p>Company updates and announcements.</p>
+</div>
+</div>
+
+<div id="tools" class="tabContent">
+<div class="tool">
+<h3>Tools</h3>
+<p>Calculators, wheel spinner, automation tools.</p>
+</div>
+</div>
+
+<div id="evertrust" class="tabContent">
+<div class="tool">
+<h3>Evertrust</h3>
+<p>Evertrust partner documentation.</p>
+</div>
+</div>
+
+<div id="uw" class="tabContent">
+<div class="tool">
+<h3>UW Guidelines</h3>
+<p>Underwriting guidelines and requirements.</p>
+</div>
+</div>
+
+<div id="payments" class="tabContent">
+<div class="tool">
+<h3>Payments</h3>
+<p>Payment processes and information.</p>
+</div>
+</div>
+
+<div id="files" class="tabContent">
+<div class="tool">
+<h3>Files</h3>
+<p>Important company files.</p>
+</div>
+</div>
+
+<div id="contacts" class="tabContent">
+<div class="tool">
+<h3>Contacts</h3>
+<p>Internal company contacts.</p>
+</div>
 </div>
 
 </div>
 
 <script type="module" src="app.js"></script>
-
-<link rel="stylesheet" href="dashboard.css">
 <script type="module" src="dashboard.js"></script>
 
 <script>
@@ -240,21 +313,24 @@ darkToggle.addEventListener("change", () => {
 document.body.classList.toggle("dark");
 });
 
+/* TABS */
 
-/* LOAD PROFILE DATA */
+const tabs = document.querySelectorAll(".tab");
+const contents = document.querySelectorAll(".tabContent");
 
-window.addEventListener("DOMContentLoaded", () => {
+tabs.forEach(tab => {
 
-const savedAvatar = localStorage.getItem("agentAvatar");
-const savedName = localStorage.getItem("agentName");
+tab.addEventListener("click", () => {
 
-if(savedAvatar){
-document.getElementById("agentAvatar").src = savedAvatar;
-}
+tabs.forEach(t => t.classList.remove("active"));
+contents.forEach(c => c.classList.remove("active"));
 
-if(savedName){
-document.getElementById("agentName").textContent = savedName;
-}
+tab.classList.add("active");
+
+const target = document.getElementById(tab.dataset.tab);
+target.classList.add("active");
+
+});
 
 });
 
