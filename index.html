@@ -1,128 +1,70 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-
 <meta charset="UTF-8">
-<title>Affiliate Relations Hub</title>
+<title>Affiliate Relations</title>
 
-<style>
-
-body{
-font-family:Arial;
-margin:0;
-background:#f4f7fb;
-}
-
-/* HEADER */
-
-header{
-background:white;
-padding:15px 30px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-border-bottom:1px solid #ddd;
-}
-
-nav button{
-margin-right:10px;
-padding:8px 14px;
-border:none;
-background:#1e4fa1;
-color:white;
-border-radius:6px;
-cursor:pointer;
-}
-
-/* PROFILE */
-
-.profile{
-font-size:14px;
-}
-
-/* CONTENT */
-
-#contentArea{
-padding:30px;
-}
-
-/* POSTS */
-
-.postCard{
-background:white;
-padding:20px;
-margin-bottom:20px;
-border-radius:10px;
-box-shadow:0 5px 15px rgba(0,0,0,0.05);
-}
-
-/* ADMIN PANEL */
-
-#adminPanel{
-display:none;
-background:white;
-padding:20px;
-margin:20px;
-border-radius:10px;
-}
-
-#adminPanel input,
-#adminPanel textarea,
-#adminPanel select{
-width:100%;
-padding:10px;
-margin-bottom:10px;
-border-radius:6px;
-border:1px solid #ccc;
-}
-
-#adminPanel button{
-background:#16a34a;
-color:white;
-padding:10px;
-border:none;
-border-radius:6px;
-cursor:pointer;
-}
-
-</style>
+<link rel="stylesheet" href="style.css">
 
 </head>
 
 <body>
 
-<header>
+<!-- NAVBAR -->
 
-<nav>
+<div class="navbar">
 
+<div class="nav-left">
 <button onclick="openSection('home')">Home</button>
 <button onclick="openSection('documents')">Documents</button>
 <button onclick="openSection('contacts')">Contacts</button>
 <button onclick="openSection('tools')">Tools</button>
+</div>
 
-</nav>
-
-<div class="profile">
-
-<b id="agentName"></b><br>
-<span id="agentEmail"></span><br>
-Access: <span id="accessLevel"></span>
-
-<br>
+<div class="nav-right">
+<div id="agentEmail"></div>
+<div>Access: <span id="accessLevel"></span></div>
 <button id="logoutBtn">Logout</button>
+</div>
 
 </div>
 
-</header>
+
+<!-- MAIN CONTENT -->
+
+<div class="main-container">
+
+<div id="home" class="section">
+<h2>Home</h2>
+<div id="homePosts"></div>
+</div>
+
+<div id="documents" class="section" style="display:none;">
+<h2>Documents</h2>
+<div id="documentsPosts"></div>
+</div>
+
+<div id="contacts" class="section" style="display:none;">
+<h2>Contacts</h2>
+<div id="contactsPosts"></div>
+</div>
+
+<div id="tools" class="section" style="display:none;">
+<h2>Tools</h2>
+<div id="toolsPosts"></div>
+</div>
+
+</div>
 
 
 <!-- ADMIN PANEL -->
 
-<div id="adminPanel">
+<div id="adminPanel" style="display:none;">
 
-<h3>Admin Post</h3>
+<h3>Create Post</h3>
 
-<input id="postTitle" placeholder="Post title">
+<input id="postTitle" placeholder="Title">
 
 <select id="postSection">
 <option value="home">Home</option>
@@ -131,21 +73,16 @@ Access: <span id="accessLevel"></span>
 <option value="tools">Tools</option>
 </select>
 
-<textarea id="postContent" rows="6" placeholder="Post content or HTML embed"></textarea>
+<textarea id="postContent" placeholder="Content"></textarea>
 
-<input id="postTags" placeholder="tags">
+<input id="postTags" placeholder="Tags">
 
-<button id="publishPost">Publish Post</button>
+<button id="publishPost">Publish</button>
 
 </div>
 
 
-<!-- CONTENT AREA -->
-
-<div id="contentArea"></div>
-
-
-<script type="module" src="main.js"></script>
+<script type="module" src="app.js"></script>
 
 </body>
 </html>
