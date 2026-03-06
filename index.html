@@ -1,20 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Agent Login</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f4f7fb;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+margin:0;
+}
+
+.card{
+background:white;
+padding:40px;
+border-radius:12px;
+width:320px;
+box-shadow:0 10px 30px rgba(0,0,0,0.1);
+text-align:center;
+}
+
+h2{
+margin-bottom:20px;
+}
+
+input{
+width:100%;
+padding:10px;
+margin-bottom:12px;
+border-radius:6px;
+border:1px solid #ccc;
+}
+
+button{
+width:100%;
+padding:10px;
+border:none;
+background:#1e4fa1;
+color:white;
+border-radius:6px;
+cursor:pointer;
+margin-top:5px;
+}
+
+.google{
+background:#ea4335;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="card">
+
+<h2>Agent Login</h2>
+
+<input id="email" placeholder="Email">
+<input id="password" type="password" placeholder="Password">
+
+<button onclick="login()">Login</button>
+
+<button class="google" onclick="googleLogin()">Sign in with Google</button>
+
+</div>
+
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"
 
 import {
 getAuth,
-onAuthStateChanged,
-signOut
+signInWithEmailAndPassword,
+GoogleAuthProvider,
+signInWithPopup,
+onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"
-
-import {
-getFirestore,
-collection,
-getDocs,
-query,
-where
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"
 
 const firebaseConfig = {
 apiKey: "AIzaSyB8dDTnpPQVRAs7dkfc8QU3L5qUJtm-2jg",
@@ -27,54 +94,57 @@ appId: "1:642027131905:web:5f0076ee7b34578b9f9c00"
 
 const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
-const db = getFirestore(app)
 
-let authChecked = false
+/* If already logged in → go to dashboard */
 
-/* LOGOUT */
+onAuthStateChanged(auth,(user)=>{
+if(user){
+window.location.replace("index.html")
+}
+})
 
-document.getElementById("logoutBtn").onclick = () => signOut(auth)
+/* EMAIL LOGIN */
 
-/* WAIT FOR AUTH STATE */
+window.login = async () => {
 
-onAuthStateChanged(auth, async (user)=>{
+const email=document.getElementById("email").value
+const password=document.getElementById("password").value
 
-if(authChecked) return
-authChecked = true
+try{
 
-if(!user){
+await signInWithEmailAndPassword(auth,email,password)
 
-window.location.replace("login.html")
-return
+window.location.replace("index.html")
+
+}catch(e){
+
+alert(e.message)
 
 }
 
-/* USER INFO */
-
-document.getElementById("agentName").innerText = user.displayName || "Agent"
-document.getElementById("agentEmail").innerText = user.email
-
-/* LOAD USER ROLE */
-
-const q = query(collection(db,"users"), where("email","==",user.email))
-const snap = await getDocs(q)
-
-let role = "agent"
-
-snap.forEach(doc=>{
-role = doc.data().role
-})
-
-document.getElementById("accessLevel").innerText = role
-
-if(role==="admin"){
-document.getElementById("adminPanel").style.display="block"
 }
 
-/* LOAD DEFAULT PAGE */
+/* GOOGLE LOGIN */
 
-openSection("home")
+window.googleLogin = async () => {
 
-})
+const provider = new GoogleAuthProvider()
+
+try{
+
+await signInWithPopup(auth,provider)
+
+window.location.replace("index.html")
+
+}catch(e){
+
+alert(e.message)
+
+}
+
+}
 
 </script>
+
+</body>
+</html>
