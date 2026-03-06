@@ -92,18 +92,20 @@ window.location="login.html";
 };
 
 
-onAuthStateChanged(auth,user=>{
+onAuthStateChanged(auth, async (user) => {
 
-if(user){
-
-if(document.getElementById("userEmail"))
-document.getElementById("userEmail").innerText=user.email;
-
-}else{
-
-if(!window.location.pathname.includes("login"))
-window.location="login.html";
-
+if(!user){
+window.location.href = "login.html"
+return
 }
+
+document.getElementById("agentName").innerText = user.displayName || "Agent"
+document.getElementById("agentEmail").innerText = user.email
+
+// Avatar
+document.getElementById("agentAvatar").src =
+user.photoURL || "https://i.imgur.com/6VBx3io.png"
+
+})
 
 });
