@@ -5,6 +5,10 @@
 
 <title>Knowledge Hub</title>
 
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css" rel="stylesheet">
+
 <style>
 
 body{
@@ -13,83 +17,61 @@ font-family:Arial;
 background:#f4f7fb;
 }
 
-/* HEADER */
-
-.header{
+header{
 background:white;
-padding:15px 30px;
+padding:15px 25px;
 display:flex;
 justify-content:space-between;
 align-items:center;
-box-shadow:0 2px 10px rgba(0,0,0,0.08);
+box-shadow:0 2px 8px rgba(0,0,0,0.08);
 }
 
-.nav button{
-margin-right:10px;
-padding:8px 14px;
-border:none;
+nav{
+display:flex;
+gap:12px;
+padding:10px;
 background:#1e4fa1;
-color:white;
-border-radius:6px;
-cursor:pointer;
 }
 
-/* PROFILE */
-
-.profile{
-text-align:right;
-font-size:13px;
-}
-
-.logout{
-margin-top:5px;
-background:#e53935;
+nav button{
 border:none;
-padding:6px 10px;
-color:white;
-border-radius:5px;
+padding:10px 14px;
+border-radius:6px;
+background:white;
 cursor:pointer;
 }
-
-/* CONTENT */
 
 .container{
-padding:30px;
+padding:25px;
 }
 
 .postCard{
 background:white;
 padding:20px;
-border-radius:10px;
 margin-bottom:20px;
-box-shadow:0 4px 12px rgba(0,0,0,0.07);
+border-radius:10px;
+box-shadow:0 4px 10px rgba(0,0,0,0.08);
 }
 
-/* ADMIN PANEL */
-
-#adminPanel{
-display:none;
-background:white;
+.admin{
+background:#fff7e6;
 padding:20px;
 border-radius:10px;
 margin-bottom:20px;
-box-shadow:0 4px 12px rgba(0,0,0,0.07);
 }
 
-input,textarea,select{
-width:100%;
-padding:8px;
-margin-top:8px;
-margin-bottom:10px;
+#editor{
+background:white;
+height:200px;
 }
 
-button.publish{
-background:#1e4fa1;
+.dark{
+background:#1e293b;
 color:white;
-border:none;
-padding:8px 12px;
-border-radius:6px;
-cursor:pointer;
+}
+
+.dark .postCard{
+background:#334155;
 }
 
 </style>
@@ -98,39 +80,46 @@ cursor:pointer;
 
 <body>
 
-<div class="header">
+<header>
 
-<div class="nav">
+<div>
+
+<b>Knowledge Hub</b>
+
+</div>
+
+<div>
+
+<span id="agentName"></span>
+|
+<span id="agentEmail"></span>
+|
+<span id="accessLevel"></span>
+
+<button id="logoutBtn">Logout</button>
+
+<button onclick="toggleDark()">🌙</button>
+
+</div>
+
+</header>
+
+<nav>
 
 <button onclick="openSection('home')">Home</button>
 <button onclick="openSection('contacts')">Contacts</button>
 <button onclick="openSection('updates')">Updates</button>
-<button onclick="openSection('uw')">UW Guidelines</button>
+<button onclick="openSection('guidelines')">Guidelines</button>
 <button onclick="openSection('payments')">Payments</button>
 <button onclick="openSection('retention')">Retention</button>
 <button onclick="openSection('evertrust')">Evertrust</button>
 <button onclick="openSection('tools')">Tools</button>
 
-</div>
-
-<div class="profile">
-
-<div id="agentName"></div>
-<div id="agentEmail"></div>
-<div>Access: <span id="accessLevel"></span></div>
-
-<button id="logoutBtn" class="logout">Logout</button>
-
-</div>
-
-</div>
-
+</nav>
 
 <div class="container">
 
-<!-- ADMIN PANEL -->
-
-<div id="adminPanel">
+<div id="adminPanel" class="admin" style="display:none">
 
 <h3>Create Post</h3>
 
@@ -141,36 +130,43 @@ cursor:pointer;
 <option value="home">Home</option>
 <option value="contacts">Contacts</option>
 <option value="updates">Updates</option>
-<option value="uw">UW Guidelines</option>
+<option value="guidelines">Guidelines</option>
 <option value="payments">Payments</option>
 <option value="retention">Retention</option>
 <option value="evertrust">Evertrust</option>
-<option value="tools">Tools</option>
 
 </select>
 
-<textarea id="postContent" placeholder="Content"></textarea>
+<div id="editor"></div>
 
-<input id="postTags" placeholder="tags example: #contracts #payments">
+<input id="postTags" placeholder="#tags">
 
-<button id="publishPost" class="publish">Publish</button>
+<label>
+<input type="checkbox" id="postPinned">
+Pin Post
+</label>
+
+<button id="publishPost">Publish</button>
 
 </div>
 
-<div id="contentArea">Loading...</div>
+<div id="contentArea">
+
+Loading...
 
 </div>
 
+</div>
 
 <script type="module">
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
 getAuth,
 onAuthStateChanged,
 signOut
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import {
 getFirestore,
@@ -180,100 +176,132 @@ getDocs,
 query,
 where,
 orderBy,
-serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"
+serverTimestamp,
+deleteDoc,
+doc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+import Quill from "https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.js"
 
 const firebaseConfig = {
+
 apiKey: "AIzaSyB8dDTnpPQVRAs7dkfc8QU3L5qUJtm-2jg",
 authDomain: "affiliate-relations-17687.firebaseapp.com",
 projectId: "affiliate-relations-17687",
-storageBucket: "affiliate-relations-17687.firebasestorage.app",
+storageBucket: "affiliate-relations-17687.appspot.com",
 messagingSenderId: "642027131905",
 appId: "1:642027131905:web:5f0076ee7b34578b9f9c00"
-}
 
-const app = initializeApp(firebaseConfig)
-const auth = getAuth(app)
-const db = getFirestore(app)
+};
 
-/* LOGOUT */
+const app = initializeApp(firebaseConfig);
 
-document.getElementById("logoutBtn").onclick = () => signOut(auth)
+const auth = getAuth(app);
 
-/* AUTH CHECK */
+const db = getFirestore(app);
+
+let role="agent"
+
+let currentSection="home"
+
+const quill = new Quill('#editor',{theme:'snow'})
 
 onAuthStateChanged(auth, async user => {
 
 if(!user){
 
-window.location.replace("login.html")
+window.location.href="login.html"
+
 return
 
 }
 
-/* PROFILE */
+document.getElementById("agentName").innerText=user.displayName || "Agent"
 
-document.getElementById("agentName").innerText = user.displayName || "Agent"
-document.getElementById("agentEmail").innerText = user.email
+document.getElementById("agentEmail").innerText=user.email
 
-/* CHECK ROLE */
+const q=query(collection(db,"users"),where("email","==",user.email))
 
-const q = query(collection(db,"users"), where("email","==",user.email))
-const snap = await getDocs(q)
+const snap=await getDocs(q)
 
-let role="agent"
+snap.forEach(d=>{
 
-snap.forEach(doc=>{
-role = doc.data().role
+role=d.data().role
+
 })
 
-document.getElementById("accessLevel").innerText = role
+document.getElementById("accessLevel").innerText=role
 
 if(role==="admin"){
+
 document.getElementById("adminPanel").style.display="block"
+
 }
 
-/* LOAD HOME */
-
-loadSection("home")
+openSection("home")
 
 })
 
-/* NAVIGATION */
+document.getElementById("logoutBtn").onclick=()=>{
 
-window.openSection = function(section){
-loadSection(section)
+signOut(auth)
+
 }
 
-/* LOAD POSTS */
+window.openSection = async(section)=>{
 
-async function loadSection(section){
+currentSection=section
 
-const area=document.getElementById("contentArea")
+if(section==="tools"){
 
-area.innerHTML="Loading..."
+document.getElementById("contentArea").innerHTML=`
+
+<iframe src="wheel.html" width="600" height="500" style="border:none"></iframe>
+
+`
+
+return
+
+}
 
 const q=query(
+
 collection(db,"posts"),
+
 where("section","==",section),
+
+orderBy("pinned","desc"),
+
 orderBy("date","desc")
+
 )
 
 const snap=await getDocs(q)
 
+const area=document.getElementById("contentArea")
+
 area.innerHTML=""
 
-snap.forEach(doc=>{
+snap.forEach(d=>{
 
-const d=doc.data()
+const data=d.data()
 
 const card=document.createElement("div")
 
 card.className="postCard"
 
 card.innerHTML=`
-<h2>${d.title}</h2>
-<div>${d.content}</div>
+
+<h2>${data.title}</h2>
+
+<div>${data.content}</div>
+
+<p>${data.tags || ""}</p>
+
+${role==="admin" ? `
+<button onclick="deletePost('${d.id}')">Delete</button>
+`:""}
+
 `
 
 area.appendChild(card)
@@ -282,29 +310,51 @@ area.appendChild(card)
 
 }
 
-/* CREATE POST */
+window.deletePost = async(id)=>{
 
-document.getElementById("publishPost").onclick = async ()=>{
+if(!confirm("Delete post?")) return
+
+await deleteDoc(doc(db,"posts",id))
+
+openSection(currentSection)
+
+}
+
+document.getElementById("publishPost").onclick = async()=>{
 
 const title=document.getElementById("postTitle").value
+
 const section=document.getElementById("postSection").value
-const content=document.getElementById("postContent").value
+
 const tags=document.getElementById("postTags").value
+
+const pinned=document.getElementById("postPinned").checked
+
+const content=quill.root.innerHTML
 
 await addDoc(collection(db,"posts"),{
 
 title,
+
 section,
-content,
+
 tags,
+
+pinned,
+
+content,
+
 date:serverTimestamp()
 
 })
 
-alert("Post Published")
+alert("Post published")
 
-document.getElementById("postTitle").value=""
-document.getElementById("postContent").value=""
+}
+
+window.toggleDark=()=>{
+
+document.body.classList.toggle("dark")
 
 }
 
