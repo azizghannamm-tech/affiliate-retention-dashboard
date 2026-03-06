@@ -13,8 +13,7 @@ getFirestore,
 collection,
 getDocs,
 query,
-where,
-orderBy
+where
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"
 
 const firebaseConfig = {
@@ -30,40 +29,51 @@ const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
 const db = getFirestore(app)
 
+let authChecked = false
+
 /* LOGOUT */
 
-document.getElementById("logoutBtn").onclick=()=>signOut(auth)
+document.getElementById("logoutBtn").onclick = () => signOut(auth)
 
-/* AUTH STATE */
+/* WAIT FOR AUTH STATE */
 
 onAuthStateChanged(auth, async (user)=>{
 
+if(authChecked) return
+authChecked = true
+
 if(!user){
 
-window.location.href="login.html"
+window.location.replace("login.html")
 return
 
 }
 
-document.getElementById("agentName").innerText=user.displayName || "Agent"
-document.getElementById("agentEmail").innerText=user.email
+/* USER INFO */
 
-/* LOAD ROLE */
+document.getElementById("agentName").innerText = user.displayName || "Agent"
+document.getElementById("agentEmail").innerText = user.email
 
-const q=query(collection(db,"users"),where("email","==",user.email))
-const snap=await getDocs(q)
+/* LOAD USER ROLE */
 
-let role="agent"
+const q = query(collection(db,"users"), where("email","==",user.email))
+const snap = await getDocs(q)
+
+let role = "agent"
 
 snap.forEach(doc=>{
-role=doc.data().role
+role = doc.data().role
 })
 
-document.getElementById("accessLevel").innerText=role
+document.getElementById("accessLevel").innerText = role
 
 if(role==="admin"){
 document.getElementById("adminPanel").style.display="block"
 }
+
+/* LOAD DEFAULT PAGE */
+
+openSection("home")
 
 })
 
