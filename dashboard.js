@@ -1,155 +1,103 @@
-import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"
-import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { 
+getAuth,
+onAuthStateChanged,
+signOut
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-const auth = getAuth()
-const db = getFirestore()
+import { 
+getFirestore,
+doc,
+getDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// =================
-// TABS
-// =================
 
-const tabs = [
-"home",
-"retention",
-"updates",
-"tools",
-"evertrust",
-"uw guidelines",
-"payments",
-"files",
-"contacts"
-]
+/* FIREBASE CONFIG */
 
-const container = document.querySelector(".container")
+const firebaseConfig = {
+apiKey: "AIzaSyB8dDTnpPQVRAs7dkfc8QU3L5qUJtm-2jg",
+authDomain: "affiliate-relations-17687.firebaseapp.com",
+projectId: "affiliate-relations-17687"
+};
 
-const tabsDiv = document.createElement("div")
-tabsDiv.className = "tabs"
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-const contentArea = document.createElement("div")
 
-tabs.forEach((name,i)=>{
+/* HEADER ELEMENTS */
 
-const tab = document.createElement("div")
-tab.className="tab"
-tab.innerText=name
+const headerAvatar = document.getElementById("headerAvatar");
+const headerName = document.getElementById("headerName");
 
-const content = document.createElement("div")
-content.className="tabContent"
-content.innerHTML=`<h3>${name}</h3><p>Content from database will appear here.</p>`
+const profileBtn = document.getElementById("profileBtn");
+const dropdown = document.getElementById("profileDropdown");
+const logoutBtn = document.getElementById("logoutBtn");
 
-if(i===0){
-tab.classList.add("active")
-content.classList.add("active")
+
+/* PROFILE DROPDOWN */
+
+if(profileBtn){
+profileBtn.onclick = () => {
+dropdown.classList.toggle("show");
+};
 }
 
-tab.onclick=()=>{
 
-document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"))
-document.querySelectorAll(".tabContent").forEach(c=>c.classList.remove("active"))
+/* LOGOUT */
 
-tab.classList.add("active")
-content.classList.add("active")
-
+if(logoutBtn){
+logoutBtn.onclick = () => {
+signOut(auth);
+window.location.href = "login.html";
+};
 }
 
-tabsDiv.appendChild(tab)
-contentArea.appendChild(content)
 
-})
+/* AUTH STATE */
 
-container.prepend(contentArea)
-container.prepend(tabsDiv)
+onAuthStateChanged(auth, async (user) => {
 
-
-// =================
-// PROFILE EDITOR
-// =================
-
-const profileBtn = document.getElementById("profileBtn")
-
-const modal = document.createElement("div")
-modal.className="profileModal"
-
-modal.innerHTML=`
-
-<div class="profileCard">
-
-<h3>Edit Profile</h3>
-
-<img id="profilePreview" class="profileAvatar">
-
-<input id="profileName" placeholder="Name">
-
-<input id="profilePhoto" placeholder="Photo URL">
-
-<textarea id="profileBio" placeholder="Bio"></textarea>
-
-<button id="saveProfile">Save</button>
-
-</div>
-
-`
-
-document.body.appendChild(modal)
-
-profileBtn.addEventListener("dblclick",()=>{
-modal.style.display="flex"
-loadProfile()
-})
+if(!user){
+window.location.href = "login.html";
+return;
+}
 
 
-// =================
-// LOAD PROFILE
-// =================
+/* LOAD PROFILE FROM FIRESTORE */
 
-async function loadProfile(){
-
-const user = auth.currentUser
-if(!user) return
-
-const ref = doc(db,"profiles",user.uid)
-const snap = await getDoc(ref)
+const ref = doc(db,"profiles",user.uid);
+const snap = await getDoc(ref);
 
 if(snap.exists()){
 
-const data = snap.data()
+const data = snap.data();
 
-document.getElementById("profileName").value=data.name||""
-document.getElementById("profilePhoto").value=data.photo||""
-document.getElementById("profileBio").value=data.bio||""
+/* SET NAME */
 
-document.getElementById("profilePreview").src=data.photo||""
+if(headerName){
+headerName.textContent = data.name || "Agent";
+}
+
+/* SET PHOTO */
+
+if(headerAvatar){
+
+if(data.photo){
+headerAvatar.src = data.photo;
+}
+else{
+
+/* fallback avatar */
+const name = data.name || "Agent";
+
+headerAvatar.src =
+`https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=6b46c1&color=fff`;
 
 }
 
 }
 
-
-// =================
-// SAVE PROFILE
-// =================
-
-document.addEventListener("click",async(e)=>{
-
-if(e.target.id==="saveProfile"){
-
-const user = auth.currentUser
-if(!user) return
-
-const name=document.getElementById("profileName").value
-const photo=document.getElementById("profilePhoto").value
-const bio=document.getElementById("profileBio").value
-
-await setDoc(doc(db,"profiles",user.uid),{
-
-name,
-photo,
-bio
-
-})
-
-modal.style.display="none"
-
 }
 
-})
+});
