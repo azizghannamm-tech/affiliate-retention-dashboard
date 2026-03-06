@@ -1,66 +1,190 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <meta charset="UTF-8">
-<title>Agent Login</title>
+<title>Knowledge Hub</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
 
 body{
 font-family:Arial;
 background:#f4f7fb;
+margin:0;
+transition:0.25s;
+}
+
+/* HEADER */
+
+header{
+background:#2e5aac;
+color:white;
+padding:15px 25px;
 display:flex;
+justify-content:space-between;
 align-items:center;
-justify-content:center;
-height:100vh;
 }
 
-.loginBox{
+.logo{
+font-size:18px;
+font-weight:bold;
+}
+
+/* CONTAINER */
+
+.container{
+padding:40px;
+}
+
+/* TOOL CARD */
+
+.tool{
 background:white;
-padding:30px;
+padding:20px;
+margin-bottom:20px;
 border-radius:10px;
-width:340px;
-box-shadow:0 4px 10px rgba(0,0,0,0.1);
-text-align:center;
+box-shadow:0 3px 10px rgba(0,0,0,0.08);
 }
 
-input{
-width:100%;
-padding:10px;
-margin-top:10px;
-border:1px solid #ccc;
-border-radius:5px;
-}
+/* BUTTON */
 
 button{
-width:100%;
-padding:10px;
-margin-top:12px;
+padding:8px 14px;
 border:none;
+background:#e74c3c;
+color:white;
 border-radius:5px;
 cursor:pointer;
 }
 
-.loginBtn{
-background:#2e5aac;
+/* PROFILE AREA */
+
+.profileArea{
+display:flex;
+align-items:center;
+gap:20px;
+position:relative;
+}
+
+/* PROFILE */
+
+.profile{
+display:flex;
+align-items:center;
+gap:10px;
+cursor:pointer;
+}
+
+.profile img{
+width:38px;
+height:38px;
+border-radius:50%;
+object-fit:cover;
+}
+
+/* PROFILE INFO */
+
+.profileInfo{
+font-size:13px;
+}
+
+.role{
+font-size:11px;
+color:#d6d6d6;
+}
+
+/* DROPDOWN */
+
+.dropdown{
+position:absolute;
+right:0;
+top:60px;
+background:white;
+border-radius:8px;
+box-shadow:0 6px 20px rgba(0,0,0,0.15);
+padding:15px;
+display:none;
+min-width:200px;
+color:#333;
+}
+
+.dropdown button{
+width:100%;
+margin-top:10px;
+padding:8px;
+border:none;
+background:#1e4fa1;
+color:white;
+border-radius:6px;
+cursor:pointer;
+}
+
+.dropdown.show{
+display:block;
+}
+
+/* DARK MODE SWITCH */
+
+.switch{
+position:relative;
+display:inline-block;
+width:44px;
+height:24px;
+}
+
+.switch input{
+opacity:0;
+width:0;
+height:0;
+}
+
+.slider{
+position:absolute;
+cursor:pointer;
+top:0;
+left:0;
+right:0;
+bottom:0;
+background:#ccc;
+border-radius:24px;
+transition:.3s;
+}
+
+.slider:before{
+position:absolute;
+content:"";
+height:18px;
+width:18px;
+left:3px;
+bottom:3px;
+background:white;
+border-radius:50%;
+transition:.3s;
+}
+
+input:checked + .slider{
+background:#1e4fa1;
+}
+
+input:checked + .slider:before{
+transform:translateX(20px);
+}
+
+/* DARK MODE */
+
+.dark{
+background:#1e293b;
 color:white;
 }
 
-.googleBtn{
-background:white;
-color:#444;
-border:1px solid #ddd;
-display:flex;
-align-items:center;
-justify-content:center;
-gap:8px;
+.dark .tool{
+background:#334155;
 }
 
-.switch{
-margin-top:15px;
-font-size:14px;
-color:#2e5aac;
-cursor:pointer;
+.dark header{
+background:#0f172a;
 }
 
 </style>
@@ -69,35 +193,55 @@ cursor:pointer;
 
 <body>
 
-<div class="loginBox">
+<header>
 
-<h2 id="formTitle">Agent Login</h2>
+<div class="logo">
+Knowledge Hub
+</div>
 
-<input type="email" id="email" placeholder="Email">
-<input type="password" id="password" placeholder="Password">
+<div class="profileArea">
 
-<button class="loginBtn" id="loginBtn">Login</button>
+<label class="switch">
+<input type="checkbox" id="darkToggle">
+<span class="slider"></span>
+</label>
 
-<button class="loginBtn" id="signupBtn" style="display:none;">
-Create Account
-</button>
+<div class="profile" id="profileBtn">
 
-<button class="googleBtn" id="googleBtn">
+<img id="agentAvatar" src="https://i.imgur.com/6VBx3io.png">
 
-<img 
-src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-style="width:18px;"
->
+<div class="profileInfo">
+<div id="agentName">Agent</div>
+<div class="role" id="accessLevel">Agent</div>
+</div>
 
-Continue with Google
+</div>
 
-</button>
+<div class="dropdown" id="profileDropdown">
 
-<p id="error" style="color:red;"></p>
+<div id="agentEmail"></div>
 
-<p class="switch" id="switchText">
-Don't have an account? Sign up
-</p>
+<hr>
+
+<button id="logoutBtn">Logout</button>
+
+</div>
+
+</div>
+
+</header>
+
+<div class="container">
+
+<div class="tool">
+<h3>Agent Tools Dashboard</h3>
+<p>This is your internal tools workspace.</p>
+</div>
+
+<div class="tool">
+<h3>More Tools Coming</h3>
+<p>Wheel spinner, calculators, CRM tools and automations will appear here.</p>
+</div>
 
 </div>
 
@@ -105,29 +249,36 @@ Don't have an account? Sign up
 
 <script>
 
-let isLogin=true;
+/* PROFILE DROPDOWN */
 
-document.getElementById("switchText").onclick = function(){
+const profileBtn = document.getElementById("profileBtn")
+const dropdown = document.getElementById("profileDropdown")
 
-isLogin=!isLogin;
+profileBtn.onclick = () => {
 
-if(isLogin){
-
-document.getElementById("formTitle").innerText="Agent Login";
-document.getElementById("loginBtn").style.display="block";
-document.getElementById("signupBtn").style.display="none";
-document.getElementById("switchText").innerText="Don't have an account? Sign up";
-
-}else{
-
-document.getElementById("formTitle").innerText="Create Account";
-document.getElementById("loginBtn").style.display="none";
-document.getElementById("signupBtn").style.display="block";
-document.getElementById("switchText").innerText="Already have an account? Login";
+dropdown.classList.toggle("show")
 
 }
 
-};
+/* CLOSE DROPDOWN WHEN CLICK OUTSIDE */
+
+window.onclick = function(event){
+
+if(!event.target.closest(".profileArea")){
+dropdown.classList.remove("show")
+}
+
+}
+
+/* DARK MODE */
+
+const toggle = document.getElementById("darkToggle")
+
+toggle.addEventListener("change",()=>{
+
+document.body.classList.toggle("dark")
+
+})
 
 </script>
 
