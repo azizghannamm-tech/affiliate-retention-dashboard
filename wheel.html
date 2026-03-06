@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html>
 <head>
@@ -18,15 +17,15 @@ background:transparent;
 
 .container{
 text-align:center;
-width:560px;
+width:520px;
 }
 
 .pointer{
 width:0;
 height:0;
-border-left:15px solid transparent;
-border-right:15px solid transparent;
-border-top:24px solid #facc15;
+border-left:14px solid transparent;
+border-right:14px solid transparent;
+border-top:22px solid #facc15;
 margin:auto;
 margin-bottom:10px;
 }
@@ -34,18 +33,16 @@ margin-bottom:10px;
 canvas{
 display:block;
 margin:auto;
-cursor:pointer;
 }
 
 button{
-padding:10px 18px;
+padding:10px 20px;
 border:none;
 border-radius:6px;
 background:#2563eb;
 color:white;
 font-weight:bold;
 cursor:pointer;
-margin-left:5px;
 }
 
 button:hover{
@@ -53,19 +50,14 @@ background:#1d4ed8;
 }
 
 .controls{
-margin-top:18px;
+margin-top:20px;
 }
 
-input,textarea{
+input{
 padding:8px;
+width:200px;
 border-radius:5px;
 border:1px solid #ccc;
-}
-
-textarea{
-width:320px;
-height:70px;
-margin-top:10px;
 }
 
 .nameList{
@@ -86,7 +78,7 @@ cursor:pointer;
 
 #winner{
 margin-top:20px;
-font-size:26px;
+font-size:22px;
 font-weight:bold;
 color:#16a34a;
 opacity:0;
@@ -99,11 +91,6 @@ opacity:1;
 transform:scale(1.2);
 }
 
-.weightBox{
-width:50px;
-margin-left:5px;
-}
-
 </style>
 </head>
 
@@ -113,7 +100,7 @@ margin-left:5px;
 
 <div class="pointer"></div>
 
-<canvas id="wheel" width="440" height="440"></canvas>
+<canvas id="wheel" width="420" height="420"></canvas>
 
 <br>
 <button onclick="spin()">SPIN</button>
@@ -123,14 +110,7 @@ margin-left:5px;
 <div class="controls">
 
 <input id="nameInput" placeholder="Add name">
-<input id="weightInput" class="weightBox" placeholder="w">
 <button onclick="addName()">Add</button>
-
-<br>
-
-<textarea id="bulkInput" placeholder="Paste names here (one per line)"></textarea>
-<br>
-<button onclick="addBulk()">Add List</button>
 
 <div class="nameList" id="nameList"></div>
 
@@ -138,20 +118,18 @@ margin-left:5px;
 
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-
 <script>
 
 let names=[
-{name:"Chase",weight:1},
-{name:"Douglas",weight:1},
-{name:"Valantine",weight:1},
-{name:"Raymond",weight:1},
-{name:"Flynn",weight:1},
-{name:"Rory",weight:1},
-{name:"Juliana",weight:1},
-{name:"Curtis",weight:1},
-{name:"Felix",weight:1}
+"Chase",
+"Douglas",
+"Valantine",
+"Raymond",
+"Flynn",
+"Rory",
+"Juliana",
+"Curtis",
+"Felix"
 ]
 
 const colors=[
@@ -171,27 +149,13 @@ const radius=center-10
 let rotation=0
 let spinning=false
 
-const winSound=new Audio("https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3")
-
-function expandedNames(){
-let list=[]
-names.forEach(n=>{
-for(let i=0;i<n.weight;i++){
-list.push(n.name)
-}
-})
-return list
-}
-
 function drawWheel(){
-
-let list=expandedNames()
 
 ctx.clearRect(0,0,canvas.width,canvas.height)
 
-let slice=(2*Math.PI)/list.length
+let slice=(2*Math.PI)/names.length
 
-for(let i=0;i<list.length;i++){
+for(let i=0;i<names.length;i++){
 
 let angle=i*slice
 
@@ -210,7 +174,7 @@ ctx.fillStyle="white"
 ctx.font="bold 14px Arial"
 ctx.textAlign="right"
 
-ctx.fillText(list[i],radius-15,5)
+ctx.fillText(names[i],radius-15,5)
 
 ctx.restore()
 
@@ -226,7 +190,7 @@ spinning=true
 
 document.getElementById("winner").classList.remove("show")
 
-let spins=Math.random()*6+7
+let spins=Math.random()*6+6
 let target=rotation+spins*2*Math.PI
 
 let duration=5000
@@ -255,25 +219,15 @@ requestAnimationFrame(animate)
 
 spinning=false
 
-let list=expandedNames()
-let slice=(2*Math.PI)/list.length
+let slice=(2*Math.PI)/names.length
+let index=Math.floor(names.length-(rotation%(2*Math.PI))/slice)%names.length
 
-let index=Math.floor(list.length-(rotation%(2*Math.PI))/slice)%list.length
-
-let winner=list[index]
+let winner=names[index]
 
 let winnerBox=document.getElementById("winner")
 
-winnerBox.innerText="🏆 "+winner+" 🏆"
+winnerBox.innerText="🎉 "+winner+" 🎉"
 winnerBox.classList.add("show")
-
-winSound.play()
-
-confetti({
-particleCount:200,
-spread:100,
-origin:{y:.6}
-})
 
 }
 
@@ -283,36 +237,16 @@ requestAnimationFrame(animate)
 
 }
 
-canvas.addEventListener("click",spin)
-
 function addName(){
 
-let name=document.getElementById("nameInput").value.trim()
-let weight=parseInt(document.getElementById("weightInput").value)||1
+let input=document.getElementById("nameInput")
+let name=input.value.trim()
 
 if(!name) return
 
-names.push({name,weight})
+names.push(name)
 
-document.getElementById("nameInput").value=""
-document.getElementById("weightInput").value=""
-
-renderList()
-drawWheel()
-
-}
-
-function addBulk(){
-
-let text=document.getElementById("bulkInput").value
-
-text.split("\n").forEach(n=>{
-if(n.trim()){
-names.push({name:n.trim(),weight:1})
-}
-})
-
-document.getElementById("bulkInput").value=""
+input.value=""
 
 renderList()
 drawWheel()
@@ -321,7 +255,7 @@ drawWheel()
 
 function removeName(name){
 
-names=names.filter(n=>n.name!==name)
+names=names.filter(n=>n!==name)
 
 renderList()
 drawWheel()
@@ -337,9 +271,9 @@ names.forEach(n=>{
 
 let tag=document.createElement("div")
 tag.className="tag"
-tag.innerText=n.name+" ("+n.weight+") ✕"
+tag.innerText=n+" ✕"
 
-tag.onclick=()=>removeName(n.name)
+tag.onclick=()=>removeName(n)
 
 list.appendChild(tag)
 
@@ -354,4 +288,3 @@ drawWheel()
 
 </body>
 </html>
-```
