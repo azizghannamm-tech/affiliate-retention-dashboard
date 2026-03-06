@@ -1,67 +1,71 @@
-document.addEventListener("DOMContentLoaded", () => {
-    loadPage("home");
-});
+window.addEventListener("DOMContentLoaded", () => {
+    loadPage("home")
+})
 
-function loadPage(page) {
+window.loadPage = function(page){
 
-    const content = document.getElementById("content");
+    const content = document.getElementById("content")
 
-    if (!content) return;
+    if(!content) return
 
-    if (page === "home") {
+    if(page === "home"){
         content.innerHTML = `
         <h2>Welcome</h2>
-        <p>Knowledge Hub Dashboard</p>
-        `;
+        <p>Affiliate Knowledge Hub</p>
+        `
     }
 
-    if (page === "contacts") {
+    if(page === "contacts"){
         content.innerHTML = `
         <h2>Contacts</h2>
-        <p>Affiliate contact list will appear here.</p>
-        `;
+        <p>Affiliate contact directory.</p>
+        `
     }
 
-    if (page === "updates") {
+    if(page === "updates"){
         content.innerHTML = `
         <h2>Updates</h2>
         <p>Company updates will appear here.</p>
-        `;
+        `
     }
 
-    if (page === "guidelines") {
+    if(page === "guidelines"){
         content.innerHTML = `
         <h2>Guidelines</h2>
-        <p>Internal guidelines.</p>
-        `;
+        <p>Internal guidelines and policies.</p>
+        `
     }
 
-    if (page === "payments") {
+    if(page === "payments"){
         content.innerHTML = `
         <h2>Payments</h2>
-        <p>Payment information.</p>
-        `;
+        <p>Payment processes and schedules.</p>
+        `
     }
 
-    if (page === "retention") {
+    if(page === "retention"){
         content.innerHTML = `
         <h2>Retention</h2>
         <p>Retention resources.</p>
-        `;
+        `
     }
 
-    if (page === "evertrust") {
+    if(page === "evertrust"){
         content.innerHTML = `
         <h2>Evertrust</h2>
         <p>Evertrust information.</p>
-        `;
+        `
     }
 
-    if (page === "tools") {
+    if(page === "tools"){
         content.innerHTML = `
         <h2>Tools</h2>
-        <button onclick="window.location.href='wheel.html'">Spin Wheel Tool</button>
-        `;
+        <button onclick="openWheel()">Spin Wheel Tool</button>
+        `
     }
 
+}
+
+window.openWheel = function(){
+    window.location.href = "wheel.html"
 }
