@@ -5,8 +5,9 @@
 <title>Agent Login</title>
 
 <style>
+
 body{
-font-family: Arial;
+font-family:Arial;
 background:#f4f7fb;
 display:flex;
 align-items:center;
@@ -18,7 +19,7 @@ height:100vh;
 background:white;
 padding:30px;
 border-radius:10px;
-width:320px;
+width:340px;
 box-shadow:0 4px 10px rgba(0,0,0,0.1);
 text-align:center;
 }
@@ -49,6 +50,14 @@ color:white;
 background:#db4437;
 color:white;
 }
+
+.switch{
+margin-top:15px;
+font-size:14px;
+color:#2e5aac;
+cursor:pointer;
+}
+
 </style>
 
 </head>
@@ -57,20 +66,56 @@ color:white;
 
 <div class="loginBox">
 
-<h2>Agent Login</h2>
+<h2 id="formTitle">Agent Login</h2>
 
-<input type="email" id="email" placeholder="Email" autocomplete="email">
-<input type="password" id="password" placeholder="Password" autocomplete="current-password">
+<input type="email" id="email" placeholder="Email">
+<input type="password" id="password" placeholder="Password">
 
-<button class="loginBtn" onclick="login()">Login</button>
+<button class="loginBtn" id="loginBtn" onclick="login()">Login</button>
 
-<button class="googleBtn" onclick="googleLogin()">Login with Google</button>
+<button class="loginBtn" id="signupBtn" onclick="signup()" style="display:none;">
+Create Account
+</button>
+
+<button class="googleBtn" onclick="googleLogin()">Continue with Google</button>
 
 <p id="error" style="color:red;"></p>
+
+<p class="switch" onclick="toggleForm()" id="switchText">
+Don't have an account? Sign up
+</p>
 
 </div>
 
 <script type="module" src="app.js"></script>
+
+<script>
+
+let isLogin=true;
+
+function toggleForm(){
+
+isLogin=!isLogin;
+
+if(isLogin){
+
+document.getElementById("formTitle").innerText="Agent Login";
+document.getElementById("loginBtn").style.display="block";
+document.getElementById("signupBtn").style.display="none";
+document.getElementById("switchText").innerText="Don't have an account? Sign up";
+
+}else{
+
+document.getElementById("formTitle").innerText="Create Account";
+document.getElementById("loginBtn").style.display="none";
+document.getElementById("signupBtn").style.display="block";
+document.getElementById("switchText").innerText="Already have an account? Login";
+
+}
+
+}
+
+</script>
 
 </body>
 </html>
