@@ -1,12 +1,12 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 
-import { 
+import {
 getAuth,
 onAuthStateChanged,
 signOut
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-import { 
+import {
 getFirestore,
 doc,
 getDoc,
@@ -14,8 +14,6 @@ collection,
 getDocs
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-
-/* FIREBASE CONFIG */
 
 const firebaseConfig = {
 apiKey: "AIzaSyB8dDTnpPQVRAs7dkfc8QU3L5qUJtm-2jg",
@@ -28,8 +26,6 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 
-/* HEADER ELEMENTS */
-
 const agentAvatar = document.getElementById("agentAvatar");
 const agentName = document.getElementById("agentName");
 const agentEmail = document.getElementById("agentEmail");
@@ -39,16 +35,13 @@ const dropdown = document.getElementById("profileDropdown");
 const logoutBtn = document.getElementById("logoutBtn");
 
 
-/* PROFILE DROPDOWN */
+/* PROFILE MENU */
 
 if(profileBtn){
 profileBtn.onclick = () => {
 dropdown.classList.toggle("show");
 };
 }
-
-
-/* LOGOUT */
 
 if(logoutBtn){
 logoutBtn.onclick = () => {
@@ -58,7 +51,7 @@ window.location.href = "login.html";
 }
 
 
-/* AUTH STATE */
+/* AUTH CHECK */
 
 onAuthStateChanged(auth, async (user) => {
 
@@ -67,9 +60,6 @@ window.location.href = "login.html";
 return;
 }
 
-
-/* LOAD CURRENT USER PROFILE */
-
 const ref = doc(db,"profiles",user.uid);
 const snap = await getDoc(ref);
 
@@ -77,31 +67,24 @@ if(snap.exists()){
 
 const data = snap.data();
 
-/* NAME */
-
 if(agentName){
 agentName.textContent = data.name || "Agent";
 }
-
-/* EMAIL */
 
 if(agentEmail){
 agentEmail.textContent = user.email;
 }
 
-/* AVATAR */
-
 if(agentAvatar){
 
 if(data.photo){
 agentAvatar.src = data.photo;
-}
-else{
+}else{
 
 const name = data.name || "Agent";
 
 agentAvatar.src =
-`https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=6b46c1&color=fff`;
+`https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=2e5aac&color=fff`;
 
 }
 
@@ -109,34 +92,27 @@ agentAvatar.src =
 
 }
 
-
-/* LOAD DIRECTORY */
+/* LOAD AGENT DIRECTORY */
 
 loadAgentDirectory();
 
 });
 
 
-
-/* ========================= */
-/* AGENT DIRECTORY FUNCTION */
-/* ========================= */
+/* AGENT DIRECTORY */
 
 async function loadAgentDirectory(){
 
-const container = document.getElementById("agentsList");
+const container = document.getElementById("agentDirectory");
 
 if(!container) return;
 
 container.innerHTML = "";
 
-
-/* GET ALL PROFILES */
+const grid = document.createElement("div");
+grid.className = "agentGrid";
 
 const querySnapshot = await getDocs(collection(db,"profiles"));
-
-
-/* BUILD CARDS */
 
 querySnapshot.forEach((docSnap)=>{
 
@@ -147,35 +123,22 @@ const role = data.role || "Agent";
 const bio = data.bio || "";
 
 const photo = data.photo ||
-`https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=6b46c1&color=fff`;
-
-
-/* CREATE CARD */
+`https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=2e5aac&color=fff`;
 
 const card = document.createElement("div");
 card.className = "agentCard";
 
 card.innerHTML = `
-<img src="${photo}">
+<img src="${photo}" alt="${name}">
 <h4>${name}</h4>
-<p>${role}</p>
+<div class="agentRole">${role}</div>
+<div class="agentBio">${bio}</div>
 `;
 
-
-/* OPTIONAL BIO */
-
-if(bio){
-const bioText = document.createElement("p");
-bioText.style.fontSize = "12px";
-bioText.style.opacity = "0.8";
-bioText.textContent = bio;
-
-card.appendChild(bioText);
-}
-
-
-container.appendChild(card);
+grid.appendChild(card);
 
 });
+
+container.appendChild(grid);
 
 }
