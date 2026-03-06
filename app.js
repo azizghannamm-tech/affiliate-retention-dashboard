@@ -1,73 +1,254 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+// FIREBASE IMPORTS
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
 getAuth,
 onAuthStateChanged,
+signInWithEmailAndPassword,
+createUserWithEmailAndPassword,
+GoogleAuthProvider,
+signInWithPopup,
 signOut
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+getFirestore,
+doc,
+setDoc,
+getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
-// 🔹 YOUR FIREBASE CONFIG
+// FIREBASE CONFIG
+
 const firebaseConfig = {
 
 apiKey: "AIzaSyB8dDTnpPQVRAs7dkfc8QU3L5qUJtm-2jg",
 authDomain: "affiliate-relations-17687.firebaseapp.com",
 projectId: "affiliate-relations-17687",
-storageBucket: "affiliate-relations-17687.firebasestorage.app",
+storageBucket: "affiliate-relations-17687.appspot.com",
 messagingSenderId: "642027131905",
 appId: "1:642027131905:web:5f0076ee7b34578b9f9c00"
 
 };
 
 
-// 🔹 INITIALIZE FIREBASE
+// INITIALIZE
+
 const app = initializeApp(firebaseConfig);
+
 const auth = getAuth(app);
 
+const db = getFirestore(app);
 
-// 🔹 CHECK LOGIN STATE
-onAuthStateChanged(auth, (user) => {
 
-if (!user) {
+// PAGE DETECTION
 
-window.location.href = "login.html";
+const currentPage = window.location.pathname;
+
+
+
+// ==========================
+// AUTH STATE CONTROL
+// ==========================
+
+onAuthStateChanged(auth, async (user) => {
+
+if(currentPage.includes("login.html")){
+
+// If already logged in → go to dashboard
+
+if(user){
+window.location.href = "index.html";
+}
+
 return;
 
 }
 
+// If NOT logged in → go to login
 
-// 🔹 LOAD USER INFO
-const name = user.displayName || "Agent";
-const email = user.email || "";
-const avatar = user.photoURL || "https://i.imgur.com/6VBx3io.png";
+if(!user){
+window.location.href = "login.html";
+return;
+}
 
 
-// 🔹 UPDATE UI
-document.getElementById("agentName").innerText = name;
-document.getElementById("agentEmail").innerText = email;
-document.getElementById("agentAvatar").src = avatar;
+// ==========================
+// LOAD PROFILE INFO
+// ==========================
+
+const nameEl = document.getElementById("agentName");
+const emailEl = document.getElementById("agentEmail");
+const roleEl = document.getElementById("accessLevel");
+const avatarEl = document.getElementById("agentAvatar");
+
+if(nameEl) nameEl.innerText = user.displayName || "Agent";
+
+if(emailEl) emailEl.innerText = user.email;
+
+if(avatarEl){
+avatarEl.src = user.photoURL || "https://i.imgur.com/6VBx3io.png";
+}
+
+
+// ==========================
+// LOAD ROLE FROM FIRESTORE
+// ==========================
+
+try{
+
+const userRef = doc(db,"users",user.uid);
+const userSnap = await getDoc(userRef);
+
+if(userSnap.exists()){
+
+const data = userSnap.data();
+
+if(roleEl) roleEl.innerText = data.role || "Agent";
+
+}else{
+
+// Create default user doc
+
+await setDoc(userRef,{
+email:user.email,
+role:"agent",
+created:new Date()
+});
+
+if(roleEl) roleEl.innerText = "agent";
+
+}
+
+}catch(err){
+console.log("User role error:",err);
+}
 
 });
 
 
-// 🔹 LOGOUT BUTTON
+
+// ==========================
+// LOGIN
+// ==========================
+
+window.login = async function(){
+
+const email = document.getElementById("email").value;
+const password = document.getElementById("password").value;
+
+const error = document.getElementById("error");
+
+try{
+
+await signInWithEmailAndPassword(auth,email,password);
+
+window.location.href="index.html";
+
+}catch(err){
+
+if(error) error.innerText = err.message;
+
+}
+
+};
+
+
+
+// ==========================
+// SIGNUP
+// ==========================
+
+window.signup = async function(){
+
+const email = document.getElementById("email").value;
+const password = document.getElementById("password").value;
+
+const error = document.getElementById("error");
+
+try{
+
+const userCredential = await createUserWithEmailAndPassword(auth,email,password);
+
+await setDoc(doc(db,"users",userCredential.user.uid),{
+
+email:email,
+role:"agent",
+created:new Date()
+
+});
+
+window.location.href="index.html";
+
+}catch(err){
+
+if(error) error.innerText = err.message;
+
+}
+
+};
+
+
+
+// ==========================
+// GOOGLE LOGIN
+// ==========================
+
+window.googleLogin = async function(){
+
+try{
+
+const provider = new GoogleAuthProvider();
+
+const result = await signInWithPopup(auth,provider);
+
+const user = result.user;
+
+
+// Ensure user exists in Firestore
+
+const userRef = doc(db,"users",user.uid);
+const snap = await getDoc(userRef);
+
+if(!snap.exists()){
+
+await setDoc(userRef,{
+email:user.email,
+role:"agent",
+created:new Date()
+});
+
+}
+
+window.location.href="index.html";
+
+}catch(err){
+
+const error = document.getElementById("error");
+
+if(error) error.innerText = err.message;
+
+}
+
+};
+
+
+
+// ==========================
+// LOGOUT
+// ==========================
+
 const logoutBtn = document.getElementById("logoutBtn");
 
-if (logoutBtn) {
+if(logoutBtn){
 
-logoutBtn.addEventListener("click", () => {
+logoutBtn.addEventListener("click", async ()=>{
 
-signOut(auth)
-.then(() => {
+await signOut(auth);
 
-window.location.href = "login.html";
-
-})
-.catch((error) => {
-
-console.error("Logout error:", error);
-
-});
+window.location.href="login.html";
 
 });
 
