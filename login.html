@@ -76,25 +76,26 @@ cursor:pointer;
 <input type="email" id="email" placeholder="Email">
 <input type="password" id="password" placeholder="Password">
 
-<button class="loginBtn" id="loginBtn" onclick="login()">Login</button>
+<button class="loginBtn" id="loginBtn">Login</button>
 
-<button class="loginBtn" id="signupBtn" onclick="signup()" style="display:none;">
+<button class="loginBtn" id="signupBtn" style="display:none;">
 Create Account
 </button>
 
-<button class="googleBtn" onclick="googleLogin()">
+<button class="googleBtn" id="googleBtn">
 
 <img 
 src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-style="width:18px; vertical-align:middle; margin-right:8px;"
+style="width:18px;"
 >
 
 Continue with Google
 
 </button>
+
 <p id="error" style="color:red;"></p>
 
-<p class="switch" onclick="toggleForm()" id="switchText">
+<p class="switch" id="switchText">
 Don't have an account? Sign up
 </p>
 
@@ -106,7 +107,7 @@ Don't have an account? Sign up
 
 let isLogin=true;
 
-function toggleForm(){
+document.getElementById("switchText").onclick = function(){
 
 isLogin=!isLogin;
 
@@ -126,7 +127,7 @@ document.getElementById("switchText").innerText="Already have an account? Login"
 
 }
 
-}
+};
 
 </script>
 
