@@ -2,65 +2,113 @@
 <html>
 
 <head>
-<meta charset="UTF-8">
-<title>Affiliate Relations</title>
+<title>Knowledge Hub</title>
 
-<link rel="stylesheet" href="style.css">
+<style>
 
+body{
+font-family:Arial;
+margin:0;
+background:#f4f7fb;
+}
+
+header{
+background:white;
+padding:15px 30px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+box-shadow:0 2px 10px rgba(0,0,0,0.1);
+}
+
+.nav{
+display:flex;
+gap:15px;
+}
+
+.nav button{
+padding:8px 14px;
+border:none;
+background:#1e4fa1;
+color:white;
+border-radius:6px;
+cursor:pointer;
+}
+
+.profile{
+text-align:right;
+}
+
+.container{
+padding:30px;
+}
+
+.postCard{
+background:white;
+padding:20px;
+border-radius:10px;
+margin-bottom:20px;
+box-shadow:0 5px 20px rgba(0,0,0,0.08);
+}
+
+#adminPanel{
+display:none;
+margin-bottom:30px;
+}
+
+input, textarea, select{
+width:100%;
+padding:10px;
+margin-top:10px;
+border-radius:6px;
+border:1px solid #ccc;
+}
+
+button.publish{
+margin-top:10px;
+background:#16a34a;
+color:white;
+border:none;
+padding:10px 15px;
+border-radius:6px;
+cursor:pointer;
+}
+
+</style>
 </head>
 
 <body>
 
-<!-- NAVBAR -->
+<header>
 
-<div class="navbar">
+<div class="nav">
 
-<div class="nav-left">
 <button onclick="openSection('home')">Home</button>
-<button onclick="openSection('documents')">Documents</button>
 <button onclick="openSection('contacts')">Contacts</button>
+<button onclick="openSection('updates')">Updates</button>
+<button onclick="openSection('uw_guidelines')">UW</button>
+<button onclick="openSection('payments')">Payments</button>
+<button onclick="openSection('retention')">Retention</button>
+<button onclick="openSection('evertrust')">Evertrust</button>
 <button onclick="openSection('tools')">Tools</button>
+
 </div>
 
-<div class="nav-right">
+<div class="profile">
+
+<div id="agentName"></div>
 <div id="agentEmail"></div>
 <div>Access: <span id="accessLevel"></span></div>
+
 <button id="logoutBtn">Logout</button>
-</div>
 
 </div>
 
+</header>
 
-<!-- MAIN CONTENT -->
+<div class="container">
 
-<div class="main-container">
-
-<div id="home" class="section">
-<h2>Home</h2>
-<div id="homePosts"></div>
-</div>
-
-<div id="documents" class="section" style="display:none;">
-<h2>Documents</h2>
-<div id="documentsPosts"></div>
-</div>
-
-<div id="contacts" class="section" style="display:none;">
-<h2>Contacts</h2>
-<div id="contactsPosts"></div>
-</div>
-
-<div id="tools" class="section" style="display:none;">
-<h2>Tools</h2>
-<div id="toolsPosts"></div>
-</div>
-
-</div>
-
-
-<!-- ADMIN PANEL -->
-
-<div id="adminPanel" style="display:none;">
+<div id="adminPanel">
 
 <h3>Create Post</h3>
 
@@ -68,21 +116,163 @@
 
 <select id="postSection">
 <option value="home">Home</option>
-<option value="documents">Documents</option>
 <option value="contacts">Contacts</option>
+<option value="updates">Updates</option>
+<option value="uw_guidelines">UW</option>
+<option value="payments">Payments</option>
+<option value="retention">Retention</option>
+<option value="evertrust">Evertrust</option>
 <option value="tools">Tools</option>
 </select>
 
 <textarea id="postContent" placeholder="Content"></textarea>
 
-<input id="postTags" placeholder="Tags">
+<input id="postTags" placeholder="tags example: contracts,payments">
 
-<button id="publishPost">Publish</button>
+<button class="publish" id="publishPost">Publish</button>
 
 </div>
 
+<div id="contentArea"></div>
 
-<script type="module" src="app.js"></script>
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"
+
+import {
+getAuth,
+onAuthStateChanged,
+signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"
+
+import {
+getFirestore,
+collection,
+addDoc,
+getDocs,
+query,
+where,
+orderBy,
+serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"
+
+const firebaseConfig = {
+apiKey: "AIzaSyB8dDTnpPQVRAs7dkfc8QU3L5qUJtm-2jg",
+authDomain: "affiliate-relations-17687.firebaseapp.com",
+projectId: "affiliate-relations-17687",
+storageBucket: "affiliate-relations-17687.firebasestorage.app",
+messagingSenderId: "642027131905",
+appId: "1:642027131905:web:5f0076ee7b34578b9f9c00"
+}
+
+const app = initializeApp(firebaseConfig)
+const auth = getAuth(app)
+const db = getFirestore(app)
+
+document.getElementById("logoutBtn").onclick=()=>signOut(auth)
+
+/* AUTH CHECK */
+
+onAuthStateChanged(auth, async user=>{
+
+if(!user){
+window.location="login.html"
+return
+}
+
+document.getElementById("agentName").innerText=user.displayName||"Agent"
+document.getElementById("agentEmail").innerText=user.email
+
+/* GET ROLE */
+
+const q=query(collection(db,"users"),where("email","==",user.email))
+const snap=await getDocs(q)
+
+let role="agent"
+
+snap.forEach(doc=>{
+role=doc.data().role
+})
+
+document.getElementById("accessLevel").innerText=role
+
+if(role==="admin"){
+document.getElementById("adminPanel").style.display="block"
+}
+
+loadSection("home")
+
+})
+
+/* LOAD POSTS */
+
+async function loadSection(section){
+
+const content=document.getElementById("contentArea")
+
+content.innerHTML="Loading..."
+
+const q=query(
+collection(db,"posts"),
+where("section","==",section),
+orderBy("date","desc")
+)
+
+const snap=await getDocs(q)
+
+content.innerHTML=""
+
+snap.forEach(doc=>{
+
+const data=doc.data()
+
+const card=document.createElement("div")
+
+card.className="postCard"
+
+card.innerHTML=`
+<h2>${data.title}</h2>
+<div>${data.content}</div>
+`
+
+content.appendChild(card)
+
+})
+
+}
+
+/* NAVIGATION */
+
+window.openSection=function(section){
+loadSection(section)
+}
+
+/* ADMIN POST */
+
+document.getElementById("publishPost").onclick=async()=>{
+
+const title=document.getElementById("postTitle").value
+const section=document.getElementById("postSection").value
+const content=document.getElementById("postContent").value
+const tags=document.getElementById("postTags").value
+
+await addDoc(collection(db,"posts"),{
+title:title,
+section:section,
+content:content,
+tags:tags,
+date:serverTimestamp()
+})
+
+alert("Post published")
+
+loadSection(section)
+
+}
+
+</script>
 
 </body>
 </html>
