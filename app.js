@@ -1,4 +1,6 @@
+// ==========================
 // FIREBASE IMPORTS
+// ==========================
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
@@ -20,33 +22,34 @@ getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
+// ==========================
 // FIREBASE CONFIG
+// ==========================
 
 const firebaseConfig = {
-
-apiKey: "AIzaSyB8dDTnpPQVRAs7dkfc8QU3L5qUJtm-2jg",
+apiKey: "YOURKEY",
 authDomain: "affiliate-relations-17687.firebaseapp.com",
 projectId: "affiliate-relations-17687",
 storageBucket: "affiliate-relations-17687.appspot.com",
 messagingSenderId: "642027131905",
 appId: "1:642027131905:web:5f0076ee7b34578b9f9c00"
-
 };
 
 
-// INITIALIZE
+// ==========================
+// INITIALIZE FIREBASE
+// ==========================
 
 const app = initializeApp(firebaseConfig);
-
 const auth = getAuth(app);
-
 const db = getFirestore(app);
 
 
+// ==========================
 // PAGE DETECTION
+// ==========================
 
-const currentPage = window.location.pathname;
-
+const currentPage = window.location.pathname.split("/").pop();
 
 
 // ==========================
@@ -55,9 +58,7 @@ const currentPage = window.location.pathname;
 
 onAuthStateChanged(auth, async (user) => {
 
-if(currentPage.includes("login.html")){
-
-// If already logged in → go to dashboard
+if(currentPage === "login.html"){
 
 if(user){
 window.location.href = "index.html";
@@ -66,8 +67,6 @@ window.location.href = "index.html";
 return;
 
 }
-
-// If NOT logged in → go to login
 
 if(!user){
 window.location.href = "login.html";
@@ -106,11 +105,11 @@ if(userSnap.exists()){
 
 const data = userSnap.data();
 
-if(roleEl) roleEl.innerText = data.role || "Agent";
+if(roleEl){
+roleEl.innerText = data.role || "agent";
+}
 
 }else{
-
-// Create default user doc
 
 await setDoc(userRef,{
 email:user.email,
@@ -118,12 +117,16 @@ role:"agent",
 created:new Date()
 });
 
-if(roleEl) roleEl.innerText = "agent";
+if(roleEl){
+roleEl.innerText = "agent";
+}
 
 }
 
 }catch(err){
+
 console.log("User role error:",err);
+
 }
 
 });
@@ -138,18 +141,31 @@ window.login = async function(){
 
 const email = document.getElementById("email").value;
 const password = document.getElementById("password").value;
-
 const error = document.getElementById("error");
 
 try{
 
 await signInWithEmailAndPassword(auth,email,password);
 
-window.location.href="index.html";
+window.location.href = "index.html";
 
 }catch(err){
 
-if(error) error.innerText = err.message;
+if(error){
+
+if(err.code === "auth/user-not-found"){
+error.innerText = "User not found";
+}
+
+else if(err.code === "auth/wrong-password"){
+error.innerText = "Wrong password";
+}
+
+else{
+error.innerText = err.message;
+}
+
+}
 
 }
 
@@ -205,9 +221,6 @@ const provider = new GoogleAuthProvider();
 const result = await signInWithPopup(auth,provider);
 
 const user = result.user;
-
-
-// Ensure user exists in Firestore
 
 const userRef = doc(db,"users",user.uid);
 const snap = await getDoc(userRef);
