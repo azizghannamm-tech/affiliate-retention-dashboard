@@ -16,6 +16,44 @@ button{padding:10px 25px;border:none;border-radius:8px;background:#00ffe5;color:
 .history{text-align:left;max-height:150px;overflow:auto;font-size:14px}
 input[type=range]{width:250px}
 </style>
+
+<style>
+
+/* Wheel Layout */
+.wheel-wrapper{
+    width:100%;
+    max-width:700px;
+    margin:auto;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+}
+
+/* Canvas size */
+#wheel{
+    width:500px;
+    height:500px;
+    max-width:90vw;
+}
+
+/* Prevent scrollbars */
+*{
+box-sizing:border-box;
+}
+
+body{
+margin:0;
+overflow-x:hidden;
+}
+
+/* Glow effect */
+canvas{
+filter: drop-shadow(0 0 20px rgba(0,255,255,0.4));
+}
+
+</style>
+  
 </head>
 <body>
 <h1>🎡 Neon Agent Wheel</h1>
