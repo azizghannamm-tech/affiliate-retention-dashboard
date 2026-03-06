@@ -2,18 +2,22 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Spin Wheel</title>
 
 <style>
+
 body{
+margin:0;
 font-family:Arial;
-text-align:center;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
 background:transparent;
 }
 
-canvas{
-display:block;
-margin:auto;
+.container{
+text-align:center;
+width:520px;
 }
 
 .pointer{
@@ -26,41 +30,107 @@ margin:auto;
 margin-bottom:10px;
 }
 
+canvas{
+display:block;
+margin:auto;
+}
+
 button{
-margin-top:15px;
-padding:10px 22px;
-background:#2563eb;
-color:white;
+padding:10px 20px;
 border:none;
 border-radius:6px;
+background:#2563eb;
+color:white;
 font-weight:bold;
+cursor:pointer;
+}
+
+button:hover{
+background:#1d4ed8;
+}
+
+.controls{
+margin-top:20px;
+}
+
+input{
+padding:8px;
+width:200px;
+border-radius:5px;
+border:1px solid #ccc;
+}
+
+.nameList{
+margin-top:10px;
+display:flex;
+flex-wrap:wrap;
+justify-content:center;
+gap:6px;
+}
+
+.tag{
+background:#e5e7eb;
+padding:4px 8px;
+border-radius:6px;
+font-size:12px;
 cursor:pointer;
 }
 
 #winner{
 margin-top:20px;
-font-size:20px;
+font-size:22px;
 font-weight:bold;
 color:#16a34a;
+opacity:0;
+transform:scale(.6);
+transition:.4s;
 }
-</style>
 
+#winner.show{
+opacity:1;
+transform:scale(1.2);
+}
+
+</style>
 </head>
+
 <body>
 
+<div class="container">
+
 <div class="pointer"></div>
+
 <canvas id="wheel" width="420" height="420"></canvas>
 
+<br>
 <button onclick="spin()">SPIN</button>
 
 <div id="winner"></div>
 
+<div class="controls">
+
+<input id="nameInput" placeholder="Add name">
+<button onclick="addName()">Add</button>
+
+<div class="nameList" id="nameList"></div>
+
+</div>
+
+</div>
+
 <script>
 
-const names=[
-"Chase","Douglas","Valantine","Raymond",
-"Flynn","Rory","Juliana","Curtis","Felix"
-];
+let names=[
+"Chase",
+"Douglas",
+"Valantine",
+"Raymond",
+"Flynn",
+"Rory",
+"Juliana",
+"Curtis",
+"Felix"
+]
 
 const colors=[
 "#3b82f6",
@@ -68,43 +138,45 @@ const colors=[
 "#a855f7",
 "#f97316",
 "#06b6d4"
-];
+]
 
-const canvas=document.getElementById("wheel");
-const ctx=canvas.getContext("2d");
+const canvas=document.getElementById("wheel")
+const ctx=canvas.getContext("2d")
 
-const center=canvas.width/2;
-const radius=center-10;
+const center=canvas.width/2
+const radius=center-10
 
-let rotation=0;
-let spinning=false;
+let rotation=0
+let spinning=false
 
 function drawWheel(){
 
-ctx.clearRect(0,0,canvas.width,canvas.height);
+ctx.clearRect(0,0,canvas.width,canvas.height)
 
-const slice=(2*Math.PI)/names.length;
+let slice=(2*Math.PI)/names.length
 
 for(let i=0;i<names.length;i++){
 
-const angle=i*slice;
+let angle=i*slice
 
-ctx.beginPath();
-ctx.moveTo(center,center);
-ctx.arc(center,center,radius,angle,angle+slice);
-ctx.fillStyle=colors[i%colors.length];
-ctx.fill();
+ctx.beginPath()
+ctx.moveTo(center,center)
+ctx.arc(center,center,radius,angle,angle+slice)
+ctx.fillStyle=colors[i%colors.length]
+ctx.fill()
 
-ctx.save();
-ctx.translate(center,center);
-ctx.rotate(angle+slice/2);
+ctx.save()
 
-ctx.fillStyle="white";
-ctx.font="bold 14px Arial";
-ctx.textAlign="right";
-ctx.fillText(names[i],radius-15,5);
+ctx.translate(center,center)
+ctx.rotate(angle+slice/2)
 
-ctx.restore();
+ctx.fillStyle="white"
+ctx.font="bold 14px Arial"
+ctx.textAlign="right"
+
+ctx.fillText(names[i],radius-15,5)
+
+ctx.restore()
 
 }
 
@@ -112,49 +184,105 @@ ctx.restore();
 
 function spin(){
 
-if(spinning) return;
+if(spinning) return
 
-spinning=true;
+spinning=true
 
-const spins=Math.random()*6+6;
-const target=rotation+spins*2*Math.PI;
+document.getElementById("winner").classList.remove("show")
 
-const duration=5000;
-const start=performance.now();
-const startRot=rotation;
+let spins=Math.random()*6+6
+let target=rotation+spins*2*Math.PI
+
+let duration=5000
+let start=performance.now()
+let startRot=rotation
 
 function animate(t){
 
-const progress=Math.min((t-start)/duration,1);
-const ease=1-Math.pow(1-progress,3);
+let progress=Math.min((t-start)/duration,1)
+let ease=1-Math.pow(1-progress,3)
 
-rotation=startRot+(target-startRot)*ease;
+rotation=startRot+(target-startRot)*ease
 
-ctx.setTransform(1,0,0,1,0,0);
-ctx.translate(center,center);
-ctx.rotate(rotation);
-ctx.translate(-center,-center);
+ctx.setTransform(1,0,0,1,0,0)
+ctx.translate(center,center)
+ctx.rotate(rotation)
+ctx.translate(-center,-center)
 
-drawWheel();
+drawWheel()
 
 if(progress<1){
-requestAnimationFrame(animate);
+
+requestAnimationFrame(animate)
+
 }else{
-spinning=false;
 
-let slice=(2*Math.PI)/names.length;
-let index=Math.floor(names.length-(rotation%(2*Math.PI))/slice)%names.length;
+spinning=false
 
-document.getElementById("winner").innerText="Winner: "+names[index];
+let slice=(2*Math.PI)/names.length
+let index=Math.floor(names.length-(rotation%(2*Math.PI))/slice)%names.length
+
+let winner=names[index]
+
+let winnerBox=document.getElementById("winner")
+
+winnerBox.innerText="🎉 "+winner+" 🎉"
+winnerBox.classList.add("show")
+
 }
 
 }
 
-requestAnimationFrame(animate);
+requestAnimationFrame(animate)
 
 }
 
-drawWheel();
+function addName(){
+
+let input=document.getElementById("nameInput")
+let name=input.value.trim()
+
+if(!name) return
+
+names.push(name)
+
+input.value=""
+
+renderList()
+drawWheel()
+
+}
+
+function removeName(name){
+
+names=names.filter(n=>n!==name)
+
+renderList()
+drawWheel()
+
+}
+
+function renderList(){
+
+let list=document.getElementById("nameList")
+list.innerHTML=""
+
+names.forEach(n=>{
+
+let tag=document.createElement("div")
+tag.className="tag"
+tag.innerText=n+" ✕"
+
+tag.onclick=()=>removeName(n)
+
+list.appendChild(tag)
+
+})
+
+}
+
+renderList()
+drawWheel()
 
 </script>
 
