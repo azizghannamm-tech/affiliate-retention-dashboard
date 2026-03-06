@@ -51,11 +51,38 @@ cursor:pointer;
 
 <header>
 
-<h2>Agent Dashboard</h2>
+<div class="logo">
+<b>Knowledge Hub</b>
+</div>
 
-<div>
-<span id="userEmail"></span>
-<button onclick="logout()">Logout</button>
+<div class="profileArea">
+
+<label class="switch">
+<input type="checkbox" id="darkToggle">
+<span class="slider"></span>
+</label>
+
+<div class="profile" id="profileBtn">
+
+<img id="agentAvatar">
+
+<div class="profileInfo">
+<div id="agentName"></div>
+<div class="role" id="accessLevel"></div>
+</div>
+
+</div>
+
+<div class="dropdown" id="profileDropdown">
+
+<div id="agentEmail"></div>
+
+<hr>
+
+<button id="logoutBtn">Logout</button>
+
+</div>
+
 </div>
 
 </header>
