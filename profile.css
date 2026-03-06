@@ -1,0 +1,73 @@
+body{
+font-family:Arial;
+background:#f4f7fb;
+margin:0;
+}
+
+.topBar{
+background:#2e5aac;
+color:white;
+padding:15px;
+display:flex;
+align-items:center;
+gap:20px;
+}
+
+.backBtn{
+color:white;
+text-decoration:none;
+font-size:14px;
+}
+
+.profileContainer{
+max-width:600px;
+margin:60px auto;
+background:white;
+padding:40px;
+border-radius:10px;
+box-shadow:0 4px 15px rgba(0,0,0,0.1);
+}
+
+.avatarSection{
+text-align:center;
+margin-bottom:30px;
+}
+
+.avatarSection img{
+width:120px;
+height:120px;
+border-radius:50%;
+display:block;
+margin:auto;
+margin-bottom:15px;
+}
+
+.form label{
+display:block;
+margin-top:15px;
+font-weight:bold;
+}
+
+.form input,
+.form textarea{
+width:100%;
+padding:10px;
+margin-top:5px;
+border:1px solid #ccc;
+border-radius:6px;
+}
+
+textarea{
+height:100px;
+}
+
+button{
+margin-top:20px;
+padding:12px;
+width:100%;
+border:none;
+background:#2e5aac;
+color:white;
+border-radius:6px;
+cursor:pointer;
+}
