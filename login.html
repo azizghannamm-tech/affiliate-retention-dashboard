@@ -24,10 +24,6 @@ width:320px;
 box-shadow:0 10px 30px rgba(0,0,0,0.1);
 }
 
-h2{
-margin-bottom:20px;
-}
-
 input{
 width:100%;
 padding:10px;
@@ -47,10 +43,6 @@ cursor:pointer;
 font-weight:bold;
 }
 
-button:hover{
-opacity:0.9;
-}
-
 .google{
 background:#ea4335;
 margin-top:10px;
@@ -66,22 +58,24 @@ margin-top:10px;
 <h2>Agent Login</h2>
 
 <input id="email" placeholder="Email">
-<input id="password" placeholder="Password" type="password">
+<input id="password" type="password" placeholder="Password">
 
-<button onclick="login()">Login</button>
-
-<button class="google" onclick="googleLogin()">Sign in with Google</button>
+<button id="loginBtn">Login</button>
+<button class="google" id="googleBtn">Sign in with Google</button>
 
 </div>
 
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"
-import { 
-getAuth, 
-signInWithEmailAndPassword, 
-GoogleAuthProvider, 
-signInWithPopup 
+
+import {
+getAuth,
+setPersistence,
+browserLocalPersistence,
+signInWithEmailAndPassword,
+GoogleAuthProvider,
+signInWithPopup
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"
 
 const firebaseConfig = {
@@ -96,7 +90,11 @@ appId: "1:642027131905:web:5f0076ee7b34578b9f9c00"
 const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
 
-window.login = async () => {
+await setPersistence(auth, browserLocalPersistence)
+
+/* EMAIL LOGIN */
+
+document.getElementById("loginBtn").onclick = async ()=>{
 
 try{
 
@@ -105,7 +103,7 @@ const password=document.getElementById("password").value
 
 await signInWithEmailAndPassword(auth,email,password)
 
-window.location="index.html"
+window.location.href="index.html"
 
 }catch(err){
 
@@ -115,7 +113,9 @@ alert(err.message)
 
 }
 
-window.googleLogin = async () => {
+/* GOOGLE LOGIN */
+
+document.getElementById("googleBtn").onclick = async ()=>{
 
 try{
 
@@ -123,7 +123,7 @@ const provider=new GoogleAuthProvider()
 
 await signInWithPopup(auth,provider)
 
-window.location="index.html"
+window.location.href="index.html"
 
 }catch(err){
 
