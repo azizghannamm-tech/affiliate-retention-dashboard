@@ -1,342 +1,164 @@
-<!DOCTYPE html>
-<html>
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+getAuth,
+GoogleAuthProvider,
+signInWithPopup,
+onAuthStateChanged,
+signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-<head>
+import {
+getFirestore,
+collection,
+addDoc,
+getDocs,
+query,
+where,
+orderBy,
+serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-<title>Knowledge Hub</title>
-
-<style>
-
-body{
-margin:0;
-font-family:Arial;
-background:#f4f7fb;
-}
-
-header{
-background:#1e4fa1;
-color:white;
-padding:18px 30px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-}
-
-header h1{
-font-size:20px;
-margin:0;
-}
-
-.header-right{
-display:flex;
-gap:10px;
-align-items:center;
-}
-
-.header-right button{
-border:none;
-padding:8px 12px;
-border-radius:6px;
-cursor:pointer;
-}
-
-.profileBtn{
-background:white;
-}
-
-.logoutBtn{
-background:#ff4b4b;
-color:white;
-}
-
-nav{
-background:#f1f4f8;
-padding:12px 20px;
-display:flex;
-gap:10px;
-flex-wrap:wrap;
-border-bottom:1px solid #e1e6ed;
-}
-
-nav button{
-
-background:white;
-border:1px solid #d8e0ea;
-padding:8px 16px;
-border-radius:20px;
-cursor:pointer;
-transition:.2s;
-
-}
-
-nav button:hover{
-
-background:#1e4fa1;
-color:white;
-
-}
-
-.container{
-max-width:1000px;
-margin:auto;
-padding:30px;
-}
-
-.search{
-width:100%;
-padding:12px;
-border-radius:10px;
-border:1px solid #ddd;
-margin-bottom:25px;
-}
-
-.card{
-background:white;
-padding:20px;
-border-radius:12px;
-margin-bottom:15px;
-box-shadow:0 4px 15px rgba(0,0,0,0.05);
-}
-
-.profilePanel{
-position:fixed;
-top:70px;
-right:20px;
-background:white;
-padding:20px;
-border-radius:10px;
-box-shadow:0 10px 30px rgba(0,0,0,0.2);
-display:none;
-}
-
-body.dark{
-background:#0f172a;
-color:white;
-}
-
-body.dark nav{
-background:#0b1f44;
-}
-
-body.dark nav button{
-background:#1e3a8a;
-color:white;
-border:none;
-}
-
-body.dark .card{
-background:#1e293b;
-color:white;
-}
-
-body.dark .search{
-background:#1e293b;
-color:white;
-border:1px solid #334155;
-}
-
-</style>
-
-</head>
-
-
-
-<body>
-
-<header>
-
-<h1>Knowledge Hub</h1>
-
-<div class="header-right">
-
-<button onclick="toggleMode()">🌙</button>
-
-<button class="profileBtn" onclick="toggleProfile()">Profile</button>
-
-<button class="logoutBtn" onclick="logout()">Logout</button>
-
-</div>
-
-</header>
-
-
-<nav>
-
-<button onclick="loadSection('home')">Home</button>
-<button onclick="loadSection('contacts')">Contacts</button>
-<button onclick="loadSection('updates')">Updates</button>
-<button onclick="loadSection('uw_guidelines')">UW Guidelines</button>
-<button onclick="loadSection('payments')">Payments</button>
-<button onclick="loadSection('retention')">Retention</button>
-<button onclick="loadSection('evertrust')">Evertrust</button>
-<button onclick="loadSection('tools')">Agent Tools</button>
-<button onclick="loadSection('files')">Files</button>
-
-</nav>
-
-
-
-<div class="container">
-
-<input class="search" id="searchBox" placeholder="Search knowledge..." onkeyup="loadSection(currentSection)">
-
-<div id="content">Loading...</div>
-
-</div>
-
-
-
-<div class="profilePanel" id="profilePanel">
-
-<h3>Agent Profile</h3>
-
-<p id="pName"></p>
-<p id="pEmail"></p>
-<p>Access: Agent</p>
-
-</div>
-
-
-
-<script type="module">
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"
-import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"
-import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
-
+/* ------------------ FIREBASE CONFIG ------------------ */
 
 const firebaseConfig = {
+apiKey: "YOUR_API_KEY",
+authDomain: "YOUR_DOMAIN",
+projectId: "YOUR_PROJECT",
+storageBucket: "YOUR_BUCKET",
+messagingSenderId: "YOUR_ID",
+appId: "YOUR_APP"
+};
 
-apiKey: "AIzaSyB8dDTnpPQVRAs7dkfc8QU3L5qUJtm-2jg",
-authDomain: "affiliate-relations-17687.firebaseapp.com",
-projectId: "affiliate-relations-17687",
-storageBucket: "affiliate-relations-17687.firebasestorage.app",
-messagingSenderId: "642027131905",
-appId: "1:642027131905:web:5f0076ee7b34578b9f9c00"
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const provider = new GoogleAuthProvider();
+
+/* ------------------ LOGIN ------------------ */
+
+const loginBtn = document.getElementById("googleLogin");
+
+if (loginBtn) {
+loginBtn.onclick = async () => {
+await signInWithPopup(auth, provider);
+};
+}
+
+/* ------------------ LOGOUT ------------------ */
+
+const logoutBtn = document.getElementById("logoutBtn");
+
+if (logoutBtn) {
+logoutBtn.onclick = () => signOut(auth);
+}
+
+/* ------------------ AUTH STATE ------------------ */
+
+onAuthStateChanged(auth, async user => {
+
+if (!user) {
+window.location.href = "login.html";
+return;
+}
+
+document.getElementById("agentName").innerText = user.displayName;
+document.getElementById("agentEmail").innerText = user.email;
+
+/* CHECK ACCESS LEVEL */
+
+const q = query(collection(db,"users"), where("email","==",user.email));
+const snap = await getDocs(q);
+
+let role = "agent";
+
+snap.forEach(doc=>{
+role = doc.data().role;
+});
+
+document.getElementById("accessLevel").innerText = role;
+
+/* SHOW ADMIN PANEL */
+
+if(role === "admin"){
+document.getElementById("adminPanel").style.display = "block";
+}
+
+loadSection("home");
+
+});
+
+/* ------------------ LOAD POSTS ------------------ */
+
+async function loadSection(section){
+
+const content = document.getElementById("contentArea");
+
+content.innerHTML = "Loading...";
+
+const q = query(
+collection(db,"posts"),
+where("section","==",section),
+orderBy("date","desc")
+);
+
+const snap = await getDocs(q);
+
+content.innerHTML = "";
+
+snap.forEach(doc=>{
+
+const data = doc.data();
+
+const card = document.createElement("div");
+
+card.className = "postCard";
+
+card.innerHTML = `
+<h2>${data.title}</h2>
+<div>${data.content}</div>
+`;
+
+content.appendChild(card);
+
+});
 
 }
 
-const app = initializeApp(firebaseConfig)
+/* ------------------ NAVIGATION ------------------ */
 
-const auth = getAuth(app)
+window.openSection = function(section){
+loadSection(section);
+};
 
-const db = getFirestore(app)
+/* ------------------ ADMIN POST ------------------ */
 
-let currentSection="home"
+const postBtn = document.getElementById("publishPost");
 
+if(postBtn){
 
-onAuthStateChanged(auth,(user)=>{
+postBtn.onclick = async ()=>{
 
-if(!user){
+const title = document.getElementById("postTitle").value;
+const section = document.getElementById("postSection").value;
+const content = document.getElementById("postContent").value;
+const tags = document.getElementById("postTags").value;
 
-window.location="login.html"
+await addDoc(collection(db,"posts"),{
 
-}else{
+title:title,
+section:section,
+content:content,
+tags:tags,
+date:serverTimestamp()
 
-document.getElementById("pEmail").innerText="Email: "+user.email
-document.getElementById("pName").innerText="Agent: "+user.email.split("@")[0]
+});
 
-}
+alert("Post published!");
 
-})
+document.getElementById("postTitle").value="";
+document.getElementById("postContent").value="";
 
-
-
-window.logout=async()=>{
-
-await signOut(auth)
-
-window.location="login.html"
-
-}
-
-
-
-window.toggleProfile=()=>{
-
-const panel=document.getElementById("profilePanel")
-
-panel.style.display=panel.style.display==="block"?"none":"block"
+};
 
 }
-
-
-
-window.toggleMode=()=>{
-
-document.body.classList.toggle("dark")
-
-}
-
-
-
-window.loadSection=async(section)=>{
-
-currentSection=section
-
-const container=document.getElementById("content")
-
-container.innerHTML="Loading..."
-
-const q=query(collection(db,"posts"),where("section","==",section))
-
-const snapshot=await getDocs(q)
-
-container.innerHTML=""
-
-if(snapshot.empty){
-
-container.innerHTML=`
-
-<div class="card">
-
-<h3>No content yet</h3>
-
-<p>This section does not have posts yet.</p>
-
-</div>
-
-`
-
-return
-
-}
-
-const search=document.getElementById("searchBox").value.toLowerCase()
-
-snapshot.forEach(doc=>{
-
-const post=doc.data()
-
-if(search && !post.title.toLowerCase().includes(search)) return
-
-container.innerHTML+=`
-
-<div class="card">
-
-<h2>${post.title}</h2>
-
-<p>${post.content}</p>
-
-${post.embedHTML ? post.embedHTML : ""}
-
-</div>
-
-`
-
-})
-
-}
-
-
-
-window.onload=()=>{
-
-loadSection("home")
-
-}
-
-</script>
-
-</body>
-</html>
