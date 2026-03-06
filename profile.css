@@ -57,6 +57,16 @@ border:1px solid #ccc;
 border-radius:6px;
 }
 
+.avatarPreview{
+width:80px;
+height:80px;
+border-radius:50%;
+object-fit:cover;
+display:block;
+margin:10px auto 20px auto;
+background:#eee;
+}
+
 textarea{
 height:100px;
 }
