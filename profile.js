@@ -2,8 +2,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebas
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-
-/* FIREBASE */
+/* FIREBASE CONFIG */
 
 const firebaseConfig = {
 apiKey: "AIzaSyB8dDTnpPQVRAs7dkfc8QU3L5qUJtm-2jg",
@@ -18,22 +17,24 @@ const db = getFirestore(app);
 
 /* ELEMENTS */
 
-const profileAvatar = document.getElementById("profileAvatar");
-const avatarUpload = document.getElementById("avatarUpload");
-
 const nameInput = document.getElementById("profileName");
 const bioInput = document.getElementById("profileBio");
+const avatarUpload = document.getElementById("avatarUpload");
+const profileAvatar = document.getElementById("profileAvatar");
 const saveBtn = document.getElementById("saveProfile");
 
 let currentUser;
 let avatarBase64 = "";
 
 
-/* AUTH */
+/* LOAD USER */
 
 onAuthStateChanged(auth, async (user) => {
 
-if(user){
+if(!user){
+window.location.href = "login.html";
+return;
+}
 
 currentUser = user;
 
@@ -54,31 +55,27 @@ avatarBase64 = data.photo;
 
 }
 
-}
-
 });
 
 
-/* IMAGE UPLOAD */
+/* AVATAR UPLOAD */
 
 avatarUpload.addEventListener("change", function(){
 
 const file = this.files[0];
 
-if(file){
+if(!file) return;
 
 const reader = new FileReader();
 
 reader.onload = function(e){
 
-profileAvatar.src = e.target.result;
 avatarBase64 = e.target.result;
+profileAvatar.src = avatarBase64;
 
 };
 
 reader.readAsDataURL(file);
-
-}
 
 });
 
@@ -95,6 +92,6 @@ photo: avatarBase64
 
 });
 
-alert("Profile Saved");
+alert("Profile saved successfully");
 
 };
