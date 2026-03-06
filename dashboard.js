@@ -1,4 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+
 import { 
 getAuth,
 onAuthStateChanged,
@@ -25,10 +26,11 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 
-/* HEADER ELEMENTS */
+/* HEADER ELEMENTS (MATCHING YOUR HTML IDS) */
 
-const headerAvatar = document.getElementById("headerAvatar");
-const headerName = document.getElementById("headerName");
+const agentAvatar = document.getElementById("agentAvatar");
+const agentName = document.getElementById("agentName");
+const agentEmail = document.getElementById("agentEmail");
 
 const profileBtn = document.getElementById("profileBtn");
 const dropdown = document.getElementById("profileDropdown");
@@ -73,25 +75,35 @@ if(snap.exists()){
 
 const data = snap.data();
 
+
 /* SET NAME */
 
-if(headerName){
-headerName.textContent = data.name || "Agent";
+if(agentName){
+agentName.textContent = data.name || "Agent";
 }
+
+
+/* SET EMAIL */
+
+if(agentEmail){
+agentEmail.textContent = user.email;
+}
+
 
 /* SET PHOTO */
 
-if(headerAvatar){
+if(agentAvatar){
 
 if(data.photo){
-headerAvatar.src = data.photo;
+agentAvatar.src = data.photo;
 }
 else{
 
 /* fallback avatar */
+
 const name = data.name || "Agent";
 
-headerAvatar.src =
+agentAvatar.src =
 `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=6b46c1&color=fff`;
 
 }
