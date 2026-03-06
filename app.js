@@ -3,7 +3,7 @@ import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-aut
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "YOUR_KEY",
+  apiKey: "AIzaSyB8dDTnpPQVRAs7dkfc8QU3L5qUJtm-2jg",
   authDomain: "affiliate-relations-17687.firebaseapp.com",
   projectId: "affiliate-relations-17687",
   storageBucket: "affiliate-relations-17687.appspot.com",
