@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
-
 <head>
+
 <title>Agent Login</title>
 
 <style>
@@ -22,6 +22,11 @@ padding:40px;
 border-radius:12px;
 width:320px;
 box-shadow:0 10px 30px rgba(0,0,0,0.1);
+text-align:center;
+}
+
+h2{
+margin-bottom:20px;
 }
 
 input{
@@ -40,15 +45,15 @@ background:#1e4fa1;
 color:white;
 border-radius:6px;
 cursor:pointer;
-font-weight:bold;
+margin-top:5px;
 }
 
 .google{
 background:#ea4335;
-margin-top:10px;
 }
 
 </style>
+
 </head>
 
 <body>
@@ -60,8 +65,9 @@ margin-top:10px;
 <input id="email" placeholder="Email">
 <input id="password" type="password" placeholder="Password">
 
-<button id="loginBtn">Login</button>
-<button class="google" id="googleBtn">Sign in with Google</button>
+<button onclick="login()">Login</button>
+
+<button class="google" onclick="googleLogin()">Sign in with Google</button>
 
 </div>
 
@@ -71,11 +77,10 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 
 import {
 getAuth,
-setPersistence,
-browserLocalPersistence,
 signInWithEmailAndPassword,
 GoogleAuthProvider,
-signInWithPopup
+signInWithPopup,
+onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"
 
 const firebaseConfig = {
@@ -90,24 +95,30 @@ appId: "1:642027131905:web:5f0076ee7b34578b9f9c00"
 const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
 
-await setPersistence(auth, browserLocalPersistence)
+/* If already logged in → go to dashboard */
+
+onAuthStateChanged(auth,(user)=>{
+if(user){
+window.location.replace("index.html")
+}
+})
 
 /* EMAIL LOGIN */
 
-document.getElementById("loginBtn").onclick = async ()=>{
-
-try{
+window.login = async () => {
 
 const email=document.getElementById("email").value
 const password=document.getElementById("password").value
 
+try{
+
 await signInWithEmailAndPassword(auth,email,password)
 
-window.location.href="index.html"
+window.location.replace("index.html")
 
-}catch(err){
+}catch(e){
 
-alert(err.message)
+alert(e.message)
 
 }
 
@@ -115,19 +126,19 @@ alert(err.message)
 
 /* GOOGLE LOGIN */
 
-document.getElementById("googleBtn").onclick = async ()=>{
+window.googleLogin = async () => {
+
+const provider = new GoogleAuthProvider()
 
 try{
 
-const provider=new GoogleAuthProvider()
-
 await signInWithPopup(auth,provider)
 
-window.location.href="index.html"
+window.location.replace("index.html")
 
-}catch(err){
+}catch(e){
 
-alert(err.message)
+alert(e.message)
 
 }
 
