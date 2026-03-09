@@ -1,224 +1,229 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <title>Operations Dashboard</title>
 
 <style>
 
+/* PAGE */
+
 body{
-font-family: 'Segoe UI', Arial, sans-serif;
+font-family:Arial, Helvetica, sans-serif;
 margin:0;
-background:#f4f6fb;
+background:#cfd3d8;
 }
 
-/* Top Navigation */
+/* NAVBAR */
 
 .navbar{
-display:flex;
-background:#0f172a;
+background:#0b1a36;
 padding:14px 20px;
-color:white;
-gap:20px;
+display:flex;
+gap:30px;
 }
 
-.navbar button{
-background:none;
-border:none;
+.navbar a{
 color:white;
-font-size:15px;
+text-decoration:none;
+font-weight:500;
 cursor:pointer;
 }
 
-.navbar button:hover{
-opacity:.7;
-}
+/* CONTENT */
 
-/* Tabs */
-
-.tab{
-display:none;
+.container{
 padding:20px;
 }
 
-.active{
-display:block;
-}
-
-/* Post Box */
+/* POST BOX */
 
 .post-box{
-background:white;
+background:#e6e6e6;
 padding:15px;
 border-radius:10px;
-margin-bottom:20px;
-box-shadow:0 4px 12px rgba(0,0,0,0.08);
+margin-bottom:25px;
 }
 
 .post-box textarea{
 width:100%;
-height:60px;
-border:1px solid #ddd;
-border-radius:8px;
+height:80px;
 padding:10px;
+border-radius:6px;
+border:1px solid #bbb;
 resize:none;
 }
 
 .post-box button{
-margin-top:8px;
-padding:8px 16px;
-background:#2563eb;
+margin-top:10px;
+background:#2f62d6;
 color:white;
 border:none;
-border-radius:6px;
+padding:8px 14px;
+border-radius:5px;
 cursor:pointer;
 }
 
-/* Agent Directory */
+/* SECTION TITLE */
 
-.agent-directory{
-display:grid;
-grid-template-columns:repeat(5,1fr);
-gap:18px;
+.section-title{
+font-size:22px;
+font-weight:bold;
+margin:20px 0;
 }
 
-.agent-card{
-background:white;
-border-radius:14px;
-padding:18px;
-text-align:center;
-box-shadow:0 6px 18px rgba(0,0,0,0.12);
-transition:transform .2s ease, box-shadow .2s ease;
-}
-
-.agent-card:hover{
-transform:translateY(-4px);
-box-shadow:0 12px 26px rgba(0,0,0,0.2);
-}
-
-.agent-avatar{
-width:60px;
-height:60px;
-border-radius:50%;
-object-fit:cover;
-margin-bottom:10px;
-}
-
-.agent-name{
-font-weight:700;
-font-size:15px;
-}
-
-.agent-role{
-font-size:12px;
-color:#666;
-}
-
-.agent-status{
-font-size:11px;
-margin-top:5px;
-}
-
-/* Timezone Tool */
+/* TIME ZONE GRID */
 
 .time-grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-gap:18px;
-max-width:1100px;
+display:flex;
+flex-wrap:wrap;
+gap:20px;
 }
 
-.zone-card{
-padding:16px;
-border-radius:14px;
+.time-card{
 color:white;
-box-shadow:0 8px 20px rgba(0,0,0,0.15);
+padding:18px;
+border-radius:14px;
+width:220px;
+box-shadow:0 8px 18px rgba(0,0,0,0.15);
 }
 
-.zone-name{
-font-weight:700;
+.time-title{
+font-weight:bold;
+margin-bottom:8px;
 }
 
 .time{
 font-size:26px;
-font-weight:800;
-margin-top:6px;
+font-weight:bold;
 }
 
-.east{background:linear-gradient(135deg,#2563eb,#1e40af);}
-.central{background:linear-gradient(135deg,#16a34a,#065f46);}
-.mountain{background:linear-gradient(135deg,#f59e0b,#b45309);}
-.pacific{background:linear-gradient(135deg,#9333ea,#6b21a8);}
-.dr{background:linear-gradient(135deg,#0ea5e9,#0369a1);}
-.jordan{background:linear-gradient(135deg,#dc2626,#7f1d1d);}
+/* COLORS */
 
-/* Responsive */
+.blue{background:linear-gradient(135deg,#3a5ed8,#223c9a);}
+.green{background:linear-gradient(135deg,#1d8f53,#0f6a3b);}
+.orange{background:linear-gradient(135deg,#f19a00,#b76500);}
+.purple{background:linear-gradient(135deg,#9c4cff,#5b22a8);}
+.teal{background:linear-gradient(135deg,#259ed4,#176c9c);}
+.red{background:linear-gradient(135deg,#e33030,#9e1c1c);}
+
+/* AGENT DIRECTORY GRID */
+
+#agentDirectoryGrid{
+display:grid;
+grid-template-columns:repeat(5,1fr);
+gap:20px;
+margin-top:20px;
+}
+
+.agentCard{
+background:white;
+border-radius:12px;
+padding:16px;
+text-align:center;
+box-shadow:0 6px 14px rgba(0,0,0,0.1);
+transition:.2s;
+}
+
+.agentCard:hover{
+transform:translateY(-3px);
+box-shadow:0 10px 20px rgba(0,0,0,0.15);
+}
+
+.agentAvatar{
+width:60px;
+height:60px;
+border-radius:50%;
+margin-bottom:10px;
+object-fit:cover;
+}
+
+.agentName{
+font-weight:600;
+}
+
+.agentRole{
+font-size:13px;
+color:#666;
+}
+
+/* RESPONSIVE */
 
 @media(max-width:1200px){
-.agent-directory{grid-template-columns:repeat(4,1fr);}
+#agentDirectoryGrid{
+grid-template-columns:repeat(4,1fr);
+}
 }
 
 @media(max-width:900px){
-.agent-directory{grid-template-columns:repeat(3,1fr);}
+#agentDirectoryGrid{
+grid-template-columns:repeat(3,1fr);
+}
 }
 
 @media(max-width:600px){
-.agent-directory{grid-template-columns:repeat(2,1fr);}
+#agentDirectoryGrid{
+grid-template-columns:repeat(2,1fr);
+}
 }
 
 </style>
 </head>
 
+
 <body>
 
-<!-- Navigation -->
+<!-- NAVBAR -->
 
 <div class="navbar">
-<button onclick="openTab('home')">Home</button>
-<button onclick="openTab('agents')">Agent Directory</button>
-<button onclick="openTab('updates')">Updates</button>
+<a onclick="showTab('home')">Home</a>
+<a onclick="showTab('agents')">Agent Directory</a>
+<a onclick="showTab('updates')">Updates</a>
 </div>
+
+<div class="container">
 
 <!-- HOME TAB -->
 
-<div id="home" class="tab active">
+<div id="homeTab">
 
 <div class="post-box">
 <textarea placeholder="Post an update..."></textarea>
+<br>
 <button>Post</button>
 </div>
 
-<h2>🌍 Global Operations Time Zones</h2>
+<div class="section-title">🌍 Global Operations Time Zones</div>
 
 <div class="time-grid">
 
-<div class="zone-card east">
-<div class="zone-name">Eastern Time</div>
+<div class="time-card blue">
+<div class="time-title">Eastern Time</div>
 <div class="time" id="est"></div>
 </div>
 
-<div class="zone-card central">
-<div class="zone-name">Central Time</div>
+<div class="time-card green">
+<div class="time-title">Central Time</div>
 <div class="time" id="cst"></div>
 </div>
 
-<div class="zone-card mountain">
-<div class="zone-name">Mountain Time</div>
+<div class="time-card orange">
+<div class="time-title">Mountain Time</div>
 <div class="time" id="mst"></div>
 </div>
 
-<div class="zone-card pacific">
-<div class="zone-name">Pacific Time</div>
+<div class="time-card purple">
+<div class="time-title">Pacific Time</div>
 <div class="time" id="pst"></div>
 </div>
 
-<div class="zone-card dr">
-<div class="zone-name">Dominican Republic</div>
+<div class="time-card teal">
+<div class="time-title">Dominican Republic</div>
 <div class="time" id="dr"></div>
 </div>
 
-<div class="zone-card jordan">
-<div class="zone-name">Amman · Jordan</div>
+<div class="time-card red">
+<div class="time-title">Amman · Jordan</div>
 <div class="time" id="amman"></div>
 </div>
 
@@ -228,98 +233,79 @@ margin-top:6px;
 
 <!-- AGENTS TAB -->
 
-<div id="agents" class="tab">
+<div id="agentsTab" style="display:none">
 
-<div class="post-box">
-<textarea placeholder="Post an update..."></textarea>
-<button>Post</button>
+<h2>Agent Directory</h2>
+
+<div id="agentDirectoryGrid">
+
+<div class="agentCard">
+<img class="agentAvatar" src="https://i.pravatar.cc/100?img=1">
+<div class="agentName">John Smith</div>
+<div class="agentRole">Acquisitions</div>
 </div>
 
-<div class="agent-directory">
-
-<div class="agent-card">
-<img class="agent-avatar" src="https://i.pravatar.cc/100?img=1">
-<div class="agent-name">John Smith</div>
-<div class="agent-role">Acquisitions</div>
-<div class="agent-status">🟢 Online</div>
+<div class="agentCard">
+<img class="agentAvatar" src="https://i.pravatar.cc/100?img=2">
+<div class="agentName">Maria Lopez</div>
+<div class="agentRole">Dispositions</div>
 </div>
 
-<div class="agent-card">
-<img class="agent-avatar" src="https://i.pravatar.cc/100?img=2">
-<div class="agent-name">Maria Lopez</div>
-<div class="agent-role">Dispositions</div>
-<div class="agent-status">🟢 Online</div>
+<div class="agentCard">
+<img class="agentAvatar" src="https://i.pravatar.cc/100?img=3">
+<div class="agentName">David Chen</div>
+<div class="agentRole">Lead Manager</div>
 </div>
 
-<div class="agent-card">
-<img class="agent-avatar" src="https://i.pravatar.cc/100?img=3">
-<div class="agent-name">David Chen</div>
-<div class="agent-role">Lead Manager</div>
-<div class="agent-status">🟡 Busy</div>
+<div class="agentCard">
+<img class="agentAvatar" src="https://i.pravatar.cc/100?img=4">
+<div class="agentName">Sarah Johnson</div>
+<div class="agentRole">Transaction Coordinator</div>
 </div>
 
-<div class="agent-card">
-<img class="agent-avatar" src="https://i.pravatar.cc/100?img=4">
-<div class="agent-name">Sarah Johnson</div>
-<div class="agent-role">TC</div>
-<div class="agent-status">🟢 Online</div>
-</div>
-
-<div class="agent-card">
-<img class="agent-avatar" src="https://i.pravatar.cc/100?img=5">
-<div class="agent-name">Omar Khalid</div>
-<div class="agent-role">Admin</div>
-<div class="agent-status">🔴 Offline</div>
+<div class="agentCard">
+<img class="agentAvatar" src="https://i.pravatar.cc/100?img=5">
+<div class="agentName">Omar Khalid</div>
+<div class="agentRole">Admin</div>
 </div>
 
 </div>
 
 </div>
-
-<!-- UPDATES TAB -->
-
-<div id="updates" class="tab">
-
-<div class="post-box">
-<textarea placeholder="Post an update..."></textarea>
-<button>Post</button>
-</div>
-
-<p>No updates yet.</p>
 
 </div>
 
 <script>
 
-/* Tab Switching */
+/* TAB SWITCH */
 
-function openTab(tab){
+function showTab(tab){
 
-document.querySelectorAll('.tab').forEach(t=>{
-t.classList.remove('active')
-})
+document.getElementById("homeTab").style.display="none"
+document.getElementById("agentsTab").style.display="none"
 
-document.getElementById(tab).classList.add('active')
+if(tab==="home") document.getElementById("homeTab").style.display="block"
+if(tab==="agents") document.getElementById("agentsTab").style.display="block"
 
 }
 
-/* Timezones */
+/* TIME ZONES */
 
 function updateTimes(){
 
 const options={hour:'2-digit',minute:'2-digit',second:'2-digit'}
 
-est.textContent=new Date().toLocaleTimeString('en-US',{...options,timeZone:'America/New_York'})
-cst.textContent=new Date().toLocaleTimeString('en-US',{...options,timeZone:'America/Chicago'})
-mst.textContent=new Date().toLocaleTimeString('en-US',{...options,timeZone:'America/Denver'})
-pst.textContent=new Date().toLocaleTimeString('en-US',{...options,timeZone:'America/Los_Angeles'})
-dr.textContent=new Date().toLocaleTimeString('en-US',{...options,timeZone:'America/Santo_Domingo'})
-amman.textContent=new Date().toLocaleTimeString('en-US',{...options,timeZone:'Asia/Amman'})
+document.getElementById("est").innerText=new Date().toLocaleTimeString("en-US",{...options,timeZone:"America/New_York"})
+document.getElementById("cst").innerText=new Date().toLocaleTimeString("en-US",{...options,timeZone:"America/Chicago"})
+document.getElementById("mst").innerText=new Date().toLocaleTimeString("en-US",{...options,timeZone:"America/Denver"})
+document.getElementById("pst").innerText=new Date().toLocaleTimeString("en-US",{...options,timeZone:"America/Los_Angeles"})
+document.getElementById("dr").innerText=new Date().toLocaleTimeString("en-US",{...options,timeZone:"America/Santo_Domingo"})
+document.getElementById("amman").innerText=new Date().toLocaleTimeString("en-US",{...options,timeZone:"Asia/Amman"})
 
 }
 
-updateTimes()
 setInterval(updateTimes,1000)
+updateTimes()
 
 </script>
 
