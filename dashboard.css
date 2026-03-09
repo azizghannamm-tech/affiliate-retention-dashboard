@@ -50,9 +50,16 @@ color:#777;
 
 .agentDirectoryGrid{
 display:grid;
-grid-template-columns:repeat(5,1fr);
+grid-template-columns:repeat(5, minmax(0,1fr));
 gap:18px;
 margin-top:20px;
+align-items:start;
+}
+
+.agentCard{
+width:100%;
+max-width:100%;
+box-sizing:border-box;
 }
 
 .agentSearch{
