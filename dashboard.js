@@ -24,9 +24,10 @@ getDocs
 // ==========================
 
 const firebaseConfig = {
-apiKey: "AIzaSyB8dDTnpPQVRAs7dkfc8QU3L5qUJtm-2jg",
+apiKey: "AIzaSy...",
 authDomain: "affiliate-relations-17687.firebaseapp.com",
-projectId: "affiliate-relations-17687"
+projectId: "affiliate-relations-17687",
+databaseURL: "https://affiliate-relations-17687-default-rtdb.firebaseio.com"
 };
 
 
