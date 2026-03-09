@@ -98,8 +98,6 @@ cursor:pointer;
 display:block;
 }
 
-/* DARK MODE */
-
 .dark{
 background:#1f1f1f;
 color:white;
@@ -199,10 +197,7 @@ transform:translateX(20px);
 
 </header>
 
-
 <div class="container">
-
-<!-- TABS -->
 
 <div class="tabs">
 
@@ -219,31 +214,29 @@ transform:translateX(20px);
 
 </div>
 
-<!-- TAB CONTENT -->
+<!-- TAB TEMPLATE -->
 
 <div id="home" class="tabContent active">
 <div class="tool">
+<h3>Home</h3>
 
-<h3>Agent Tools Dashboard</h3>
-
-<input id="postTitle" placeholder="Post title">
-
-<input id="postTags" placeholder="Tags">
+<input class="postTitle" placeholder="Post title">
+<input class="postTags" placeholder="Tags">
 
 <label>
-<input type="checkbox" id="postPinned"> Pin post
+<input type="checkbox" class="postPinned"> Pin post
 </label>
 
-<div id="postContent" contenteditable="true"
+<div class="postContent" contenteditable="true"
 style="border:1px solid #ccc;padding:10px;border-radius:6px;min-height:120px;margin-top:10px;">
 Write your post here...
 </div>
 
-<button id="createPostBtn" style="margin-top:10px;">Publish Post</button>
+<button class="createPostBtn">Publish Post</button>
 
-<input id="postSearchHome" placeholder="Search posts" style="margin-top:15px;width:100%;padding:8px;">
+<input class="postSearch" placeholder="Search posts" style="margin-top:15px;width:100%;padding:8px;">
 
-<div id="postsContainerHome" data-section="home"></div>
+<div class="postsContainer" data-section="home"></div>
 
 </div>
 </div>
@@ -251,46 +244,119 @@ Write your post here...
 <div id="retention" class="tabContent">
 <div class="tool">
 <h3>Retention</h3>
-<p>Retention scripts and strategies will appear here.</p>
+
+<input class="postTitle" placeholder="Post title">
+<input class="postTags" placeholder="Tags">
+<label><input type="checkbox" class="postPinned"> Pin post</label>
+
+<div class="postContent" contenteditable="true"
+style="border:1px solid #ccc;padding:10px;border-radius:6px;min-height:120px;margin-top:10px;"></div>
+
+<button class="createPostBtn">Publish Post</button>
+
+<input class="postSearch" placeholder="Search posts">
+
+<div class="postsContainer" data-section="retention"></div>
+
 </div>
 </div>
 
 <div id="updates" class="tabContent">
 <div class="tool">
 <h3>Updates</h3>
-<p>Company updates and announcements.</p>
+
+<input class="postTitle" placeholder="Post title">
+<input class="postTags" placeholder="Tags">
+<label><input type="checkbox" class="postPinned"> Pin post</label>
+
+<div class="postContent" contenteditable="true"
+style="border:1px solid #ccc;padding:10px;border-radius:6px;min-height:120px;margin-top:10px;"></div>
+
+<button class="createPostBtn">Publish Post</button>
+
+<input class="postSearch" placeholder="Search posts">
+
+<div class="postsContainer" data-section="updates"></div>
+
 </div>
 </div>
 
 <div id="tools" class="tabContent">
 <div class="tool">
 <h3>Tools</h3>
-<p>Calculators, wheel spinner, automation tools.</p>
+
+<input class="postTitle" placeholder="Post title">
+<input class="postTags" placeholder="Tags">
+<label><input type="checkbox" class="postPinned"> Pin post</label>
+
+<div class="postContent" contenteditable="true"
+style="border:1px solid #ccc;padding:10px;border-radius:6px;min-height:120px;margin-top:10px;"></div>
+
+<button class="createPostBtn">Publish Post</button>
+
+<input class="postSearch" placeholder="Search posts">
+
+<div class="postsContainer" data-section="tools"></div>
+
 </div>
 </div>
 
 <div id="evertrust" class="tabContent">
 <div class="tool">
 <h3>Evertrust</h3>
-<p>Evertrust partner documentation.</p>
+
+<input class="postTitle" placeholder="Post title">
+<input class="postTags" placeholder="Tags">
+<label><input type="checkbox" class="postPinned"> Pin post</label>
+
+<div class="postContent" contenteditable="true"
+style="border:1px solid #ccc;padding:10px;border-radius:6px;min-height:120px;margin-top:10px;"></div>
+
+<button class="createPostBtn">Publish Post</button>
+
+<input class="postSearch" placeholder="Search posts">
+
+<div class="postsContainer" data-section="evertrust"></div>
+
 </div>
 </div>
 
 <div id="uw" class="tabContent">
 <div class="tool">
 <h3>UW Guidelines</h3>
-<p>Underwriting guidelines and requirements.</p>
+
+<input class="postTitle" placeholder="Post title">
+<input class="postTags" placeholder="Tags">
+<label><input type="checkbox" class="postPinned"> Pin post</label>
+
+<div class="postContent" contenteditable="true"
+style="border:1px solid #ccc;padding:10px;border-radius:6px;min-height:120px;margin-top:10px;"></div>
+
+<button class="createPostBtn">Publish Post</button>
+
+<input class="postSearch" placeholder="Search posts">
+
+<div class="postsContainer" data-section="uw"></div>
+
 </div>
 </div>
 
 <div id="payments" class="tabContent">
 <div class="tool">
-
 <h3>Payments</h3>
 
-<input id="postSearchPayments" placeholder="Search posts">
+<input class="postTitle" placeholder="Post title">
+<input class="postTags" placeholder="Tags">
+<label><input type="checkbox" class="postPinned"> Pin post</label>
 
-<div id="postsContainerPayments" data-section="payments"></div>
+<div class="postContent" contenteditable="true"
+style="border:1px solid #ccc;padding:10px;border-radius:6px;min-height:120px;margin-top:10px;"></div>
+
+<button class="createPostBtn">Publish Post</button>
+
+<input class="postSearch" placeholder="Search posts">
+
+<div class="postsContainer" data-section="payments"></div>
 
 </div>
 </div>
@@ -298,25 +364,21 @@ Write your post here...
 <div id="files" class="tabContent">
 <div class="tool">
 <h3>Files</h3>
-<p>Important company files.</p>
+<div class="postsContainer" data-section="files"></div>
 </div>
 </div>
 
 <div id="contacts" class="tabContent">
 <div class="tool">
 <h3>Contacts</h3>
-<p>Internal company contacts.</p>
+<div class="postsContainer" data-section="contacts"></div>
 </div>
 </div>
 
 <div id="agents" class="tabContent">
 <div class="tool">
-
 <h3>Agent Directory</h3>
-<p>All registered agents in the system.</p>
-
 <div id="agentDirectory"></div>
-
 </div>
 </div>
 
