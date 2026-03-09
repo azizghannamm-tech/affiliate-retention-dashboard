@@ -166,6 +166,8 @@ card.innerHTML = `
 
 grid.appendChild(card);
 
+card.onclick = () => openAgentModal(name,role,bio,photo);
+
 });
 
 container.innerHTML = "";
