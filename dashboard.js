@@ -1,3 +1,7 @@
+// ==========================
+// FIREBASE IMPORTS
+// ==========================
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 
 import {
@@ -15,16 +19,29 @@ getDocs
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 
+// ==========================
+// FIREBASE CONFIG
+// ==========================
+
 const firebaseConfig = {
 apiKey: "AIzaSyB8dDTnpPQVRAs7dkfc8QU3L5qUJtm-2jg",
 authDomain: "affiliate-relations-17687.firebaseapp.com",
 projectId: "affiliate-relations-17687"
 };
 
+
+// ==========================
+// INITIALIZE FIREBASE
+// ==========================
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+
+// ==========================
+// DOM ELEMENTS
+// ==========================
 
 const agentAvatar = document.getElementById("agentAvatar");
 const agentName = document.getElementById("agentName");
@@ -35,7 +52,9 @@ const dropdown = document.getElementById("profileDropdown");
 const logoutBtn = document.getElementById("logoutBtn");
 
 
-/* PROFILE MENU */
+// ==========================
+// PROFILE MENU
+// ==========================
 
 if(profileBtn){
 profileBtn.onclick = () => {
@@ -51,7 +70,9 @@ window.location.href = "login.html";
 }
 
 
-/* AUTH CHECK */
+// ==========================
+// AUTH CHECK
+// ==========================
 
 onAuthStateChanged(auth, async (user) => {
 
@@ -60,6 +81,7 @@ window.location.href = "login.html";
 return;
 }
 
+// load profile
 const ref = doc(db,"profiles",user.uid);
 const snap = await getDoc(ref);
 
@@ -92,14 +114,15 @@ agentAvatar.src =
 
 }
 
-/* LOAD AGENT DIRECTORY */
-
+// load directory
 loadAgentDirectory();
 
 });
 
 
-/* AGENT DIRECTORY */
+// ==========================
+// AGENT DIRECTORY
+// ==========================
 
 async function loadAgentDirectory(){
 
@@ -107,12 +130,14 @@ const container = document.getElementById("agentDirectory");
 
 if(!container) return;
 
-container.innerHTML = "";
+container.innerHTML = "Loading agents...";
+
+try{
+
+const querySnapshot = await getDocs(collection(db,"profiles"));
 
 const grid = document.createElement("div");
 grid.className = "agentGrid";
-
-const querySnapshot = await getDocs(collection(db,"profiles"));
 
 querySnapshot.forEach((docSnap)=>{
 
@@ -139,6 +164,14 @@ grid.appendChild(card);
 
 });
 
+container.innerHTML = "";
 container.appendChild(grid);
+
+}catch(error){
+
+console.error("Agent Directory Error:",error);
+container.innerHTML = "Failed to load agents.";
+
+}
 
 }
