@@ -1,4 +1,3 @@
-
 // ==========================
 // FIREBASE IMPORTS
 // ==========================
@@ -44,9 +43,7 @@ appId: "1:642027131905:web:5f0076ee7b34578b9f9c00"
 // ==========================
 
 const app = initializeApp(firebaseConfig);
-
 const auth = getAuth(app);
-
 const db = getFirestore(app);
 
 
@@ -54,7 +51,8 @@ const db = getFirestore(app);
 // PAGE DETECTION
 // ==========================
 
-const currentPage = window.location.pathname.split("/").pop();
+const currentPage =
+window.location.pathname.split("/").pop() || "index.html";
 
 
 // ==========================
@@ -63,18 +61,20 @@ const currentPage = window.location.pathname.split("/").pop();
 
 onAuthStateChanged(auth, async (user) => {
 
+// LOGIN PAGE
 if(currentPage === "login.html"){
 
 if(user){
-window.location.href = "index.html";
+window.location.replace("index.html");
 }
 
 return;
 
 }
 
+// PROTECTED PAGES
 if(!user){
-window.location.href = "login.html";
+window.location.replace("login.html");
 return;
 }
 
@@ -88,12 +88,20 @@ const emailEl = document.getElementById("agentEmail");
 const roleEl = document.getElementById("accessLevel");
 const avatarEl = document.getElementById("agentAvatar");
 
-if(nameEl) nameEl.innerText = user.displayName || "Agent";
+if(nameEl){
+nameEl.innerText =
+user.displayName ||
+(user.email ? user.email.split("@")[0] : "Agent");
+}
 
-if(emailEl) emailEl.innerText = user.email;
+if(emailEl){
+emailEl.innerText = user.email || "";
+}
 
 if(avatarEl){
-avatarEl.src = user.photoURL || "https://i.imgur.com/6VBx3io.png";
+avatarEl.src =
+user.photoURL ||
+"https://ui-avatars.com/api/?name=Agent&background=2e5aac&color=fff";
 }
 
 
@@ -110,7 +118,9 @@ if(userSnap.exists()){
 
 const data = userSnap.data();
 
-if(roleEl) roleEl.innerText = data.role || "agent";
+if(roleEl){
+roleEl.innerText = data.role || "agent";
+}
 
 }else{
 
@@ -120,7 +130,9 @@ role:"agent",
 created:new Date()
 });
 
-if(roleEl) roleEl.innerText = "agent";
+if(roleEl){
+roleEl.innerText = "agent";
+}
 
 }
 
@@ -134,7 +146,7 @@ console.log("User role error:",err);
 
 
 // ==========================
-// BUTTON EVENT LISTENERS
+// BUTTON ELEMENTS
 // ==========================
 
 const loginBtn = document.getElementById("loginBtn");
@@ -159,11 +171,13 @@ try{
 
 await signInWithEmailAndPassword(auth,email,password);
 
-window.location.href = "index.html";
+window.location.replace("index.html");
 
 }catch(err){
 
-if(error) error.innerText = err.message;
+if(error){
+error.innerText = err.message;
+}
 
 }
 
@@ -186,7 +200,8 @@ const error = document.getElementById("error");
 
 try{
 
-const userCredential = await createUserWithEmailAndPassword(auth,email,password);
+const userCredential =
+await createUserWithEmailAndPassword(auth,email,password);
 
 await setDoc(doc(db,"users",userCredential.user.uid),{
 
@@ -196,11 +211,13 @@ created:new Date()
 
 });
 
-window.location.href="index.html";
+window.location.replace("index.html");
 
 }catch(err){
 
-if(error) error.innerText = err.message;
+if(error){
+error.innerText = err.message;
+}
 
 }
 
@@ -238,13 +255,15 @@ created:new Date()
 
 }
 
-window.location.href="index.html";
+window.location.replace("index.html");
 
 }catch(err){
 
 const error = document.getElementById("error");
 
-if(error) error.innerText = err.message;
+if(error){
+error.innerText = err.message;
+}
 
 }
 
@@ -263,7 +282,7 @@ logoutBtn.addEventListener("click", async ()=>{
 
 await signOut(auth);
 
-window.location.href="login.html";
+window.location.replace("login.html");
 
 });
 
