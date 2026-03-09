@@ -177,6 +177,24 @@ const photo = data.photo ||
 const card = document.createElement("div");
 card.className = "agentCard";
 
+const statusRef = ref(rtdb, "presence/" + docSnap.id);
+
+onValue(statusRef, (snapshot) => {
+
+if (!snapshot.exists()) return;
+
+const status = snapshot.val();
+
+const dot = card.querySelector(".agentStatus");
+
+if (status.online) {
+dot.style.background = "#4CAF50";
+} else {
+dot.style.background = "#bbb";
+}
+
+});  
+
 card.innerHTML = `
 <div class="avatarWrapper">
 <img src="${photo}" alt="${name}">
