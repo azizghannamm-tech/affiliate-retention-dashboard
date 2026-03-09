@@ -50,7 +50,7 @@ const db = getFirestore(app);
 const agentAvatar = document.getElementById("agentAvatar");
 const agentName = document.getElementById("agentName");
 const agentEmail = document.getElementById("agentEmail");
-const agentRole = document.getElementById("agentRole");
+const agentRole = document.getElementById("accessLevel");
 
 const profileBtn = document.getElementById("profileBtn");
 const dropdown = document.getElementById("profileDropdown");
@@ -86,7 +86,6 @@ window.location.href = "login.html";
 return;
 }
 
-// load profile
 const ref = doc(db,"profiles",user.uid);
 const snap = await getDoc(ref);
 
@@ -146,7 +145,7 @@ console.error("Role loading error:",err);
 }
 
 loadAgentDirectory();
-detectSectionAndLoadPosts();
+setupPostSystem();
 loadActivity();
 
 });
@@ -238,61 +237,84 @@ container.innerHTML="Failed to load agents.";
 
 
 // ==========================
-// RICH TEXT EDITOR
+// POST SYSTEM
 // ==========================
 
-window.formatText = function(command){
+function setupPostSystem(){
 
-if(command === "createLink"){
-const url = prompt("Enter URL");
-document.execCommand(command,false,url);
-}else{
-document.execCommand(command,false,null);
-}
+const sections = document.querySelectorAll(".tabContent");
 
-}
+sections.forEach(section=>{
 
+const title = section.querySelector(".postTitle");
+const tags = section.querySelector(".postTags");
+const content = section.querySelector(".postContent");
+const pinned = section.querySelector(".postPinned");
+const button = section.querySelector(".createPostBtn");
+const container = section.querySelector(".postsContainer");
+const search = section.querySelector(".postSearch");
 
-// ==========================
-// CREATE POST
-// ==========================
+if(button){
 
-const createBtn = document.getElementById("createPostBtn");
+button.onclick = async ()=>{
 
-if(createBtn){
+if(!title || !content || !container) return;
 
-createBtn.onclick = async ()=>{
+const sectionName = container.dataset.section;
 
-const title = document.getElementById("postTitle").value;
-const content = document.getElementById("postContent").innerHTML;
-const tags = document.getElementById("postTags").value;
-const pinned = document.getElementById("postPinned").checked;
-
-const container = document.getElementById("postsContainer");
-const section = container.dataset.section;
-
-if(!title || !content){
+if(!title.value || !content.innerHTML){
 alert("Missing fields");
 return;
 }
 
 await addDoc(collection(db,"posts"),{
 
-title,
-content,
-tags,
-pinned,
-section,
+title: title.value,
+content: content.innerHTML,
+tags: tags ? tags.value : "",
+pinned: pinned ? pinned.checked : false,
+section: sectionName,
 author: agentName.textContent,
 created: serverTimestamp()
 
 });
 
-logActivity("created post: "+title);
+logActivity("created post: "+title.value);
 
-detectSectionAndLoadPosts();
+title.value="";
+if(tags) tags.value="";
+content.innerHTML="";
+
+loadPosts(sectionName);
 
 };
+
+}
+
+if(search){
+
+search.oninput = ()=>{
+
+const term = search.value.toLowerCase();
+
+section.querySelectorAll(".postCard").forEach(post=>{
+
+post.style.display =
+post.innerText.toLowerCase().includes(term)
+? "block"
+: "none";
+
+});
+
+};
+
+}
+
+if(container){
+loadPosts(container.dataset.section);
+}
+
+});
 
 }
 
@@ -303,7 +325,7 @@ detectSectionAndLoadPosts();
 
 async function loadPosts(section){
 
-const container = document.getElementById("postsContainer");
+const container = document.querySelector(`.postsContainer[data-section="${section}"]`);
 if(!container) return;
 
 container.innerHTML="Loading posts...";
@@ -357,24 +379,6 @@ container.innerHTML="No posts yet.";
 
 
 // ==========================
-// AUTO SECTION DETECT
-// ==========================
-
-function detectSectionAndLoadPosts(){
-
-const container = document.getElementById("postsContainer");
-if(!container) return;
-
-const section = container.dataset.section;
-
-if(section){
-loadPosts(section);
-}
-
-}
-
-
-// ==========================
 // DELETE POST
 // ==========================
 
@@ -390,7 +394,9 @@ await deleteDoc(doc(db,"posts",id));
 
 logActivity("deleted post");
 
-detectSectionAndLoadPosts();
+document.querySelectorAll(".postsContainer").forEach(c=>{
+loadPosts(c.dataset.section);
+});
 
 }
 
@@ -421,37 +427,13 @@ content:newContent
 
 logActivity("edited post");
 
-detectSectionAndLoadPosts();
+document.querySelectorAll(".postsContainer").forEach(c=>{
+loadPosts(c.dataset.section);
+});
 
 }
 
 });
-
-
-// ==========================
-// SEARCH POSTS
-// ==========================
-
-const searchInput = document.getElementById("postSearch");
-
-if(searchInput){
-
-searchInput.oninput = ()=>{
-
-const term = searchInput.value.toLowerCase();
-
-document.querySelectorAll(".postCard").forEach(post=>{
-
-post.style.display =
-post.innerText.toLowerCase().includes(term)
-? "block"
-: "none";
-
-});
-
-};
-
-}
 
 
 // ==========================
