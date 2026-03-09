@@ -1,4 +1,3 @@
-
 // ==========================
 // FIREBASE IMPORTS
 // ==========================
@@ -25,7 +24,7 @@ getDocs
 // ==========================
 
 const firebaseConfig = {
-apiKey: "AIzaSyB8dDTnpPQVRAs7dkfc8QU3L5qUJtm-2jg",
+apiKey: "AIzaSy...",
 authDomain: "affiliate-relations-17687.firebaseapp.com",
 projectId: "affiliate-relations-17687"
 };
@@ -64,9 +63,12 @@ dropdown.classList.toggle("show");
 }
 
 if(logoutBtn){
-logoutBtn.onclick = () => {
-signOut(auth);
-window.location.href = "login.html";
+logoutBtn.onclick = async () => {
+
+await signOut(auth);
+
+window.location.replace("login.html");
+
 };
 }
 
@@ -78,13 +80,13 @@ window.location.href = "login.html";
 onAuthStateChanged(auth, async (user) => {
 
 if(!user){
-window.location.href = "login.html";
+window.location.replace("login.html");
 return;
 }
 
 // load profile
-const ref = doc(db,"profiles",user.uid);
-const snap = await getDoc(ref);
+const profileRef = doc(db,"profiles",user.uid);
+const snap = await getDoc(profileRef);
 
 if(snap.exists()){
 
@@ -155,13 +157,20 @@ const card = document.createElement("div");
 card.className = "agentCard";
 
 card.innerHTML = `
+
 <img src="${photo}" alt="${name}">
+
 <h4>${name}</h4>
+
 <div class="agentRole">${role}</div>
+
 <div class="agentBio">${bio}</div>
+
 `;
 
 grid.appendChild(card);
+
+card.onclick = () => openAgentModal(name,role,bio,photo);
 
 });
 
@@ -171,8 +180,35 @@ container.appendChild(grid);
 }catch(error){
 
 console.error("Agent Directory Error:",error);
+
 container.innerHTML = "Failed to load agents.";
 
 }
 
 }
+
+
+// ==========================
+// AGENT MODAL
+// ==========================
+
+function openAgentModal(name,role,bio,photo){
+
+const modal = document.getElementById("agentModal");
+
+document.getElementById("modalAvatar").src = photo;
+document.getElementById("modalName").innerText = name;
+document.getElementById("modalRole").innerText = role;
+document.getElementById("modalBio").innerText = bio;
+
+modal.style.display = "flex";
+
+}
+
+window.closeAgentModal = function(){
+
+const modal = document.getElementById("agentModal");
+
+modal.style.display = "none";
+
+};
