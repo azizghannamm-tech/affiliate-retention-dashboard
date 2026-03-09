@@ -43,6 +43,7 @@ databaseURL: "https://affiliate-relations-17687-default-rtdb.firebaseio.com"
 // ==========================
 
 const app = initializeApp(firebaseConfig);
+const rtdb = getDatabase(app);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
@@ -84,6 +85,21 @@ window.location.href = "login.html";
 
 onAuthStateChanged(auth, async (user) => {
 
+if (user) {
+
+const presenceRef = ref(rtdb, "presence/" + user.uid);
+
+set(presenceRef, {
+online: true
+});
+
+onDisconnect(presenceRef).set({
+online: false,
+lastSeen: Date.now()
+});
+
+}
+  
 if(!user){
 window.location.href = "login.html";
 return;
