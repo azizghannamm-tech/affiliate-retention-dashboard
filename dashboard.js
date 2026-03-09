@@ -180,4 +180,24 @@ container.innerHTML = "Failed to load agents.";
 
 }
 
+function openAgentModal(name,role,bio,photo){
+
+const modal = document.getElementById("agentModal");
+
+document.getElementById("modalAvatar").src = photo;
+document.getElementById("modalName").innerText = name;
+document.getElementById("modalRole").innerText = role;
+document.getElementById("modalBio").innerText = bio;
+
+modal.classList.add("show");
+
+}
+
+window.closeAgentModal = function(){
+
+const modal = document.getElementById("agentModal");
+modal.classList.remove("show");
+
+};
+  
 }
