@@ -154,7 +154,11 @@ const card = document.createElement("div");
 card.className = "agentCard";
 
 card.innerHTML = `
+<div class="avatarWrapper">
 <img src="${photo}" alt="${name}">
+<div class="agentStatus"></div>
+</div>
+
 <h4>${name}</h4>
 <div class="agentRole">${role}</div>
 <div class="agentBio">${bio}</div>
