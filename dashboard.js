@@ -15,7 +15,11 @@ getFirestore,
 doc,
 getDoc,
 collection,
-getDocs
+getDocs,
+addDoc,
+updateDoc,
+deleteDoc,
+serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 
@@ -141,18 +145,15 @@ agentRole.textContent = userRole.toUpperCase();
 console.error("Role loading error:",err);
 }
 
-
-// load directory
 loadAgentDirectory();
-
-// load posts automatically
 detectSectionAndLoadPosts();
+loadActivity();
 
 });
 
 
 // ==========================
-// ROLE PERMISSIONS FUNCTION
+// ROLE PERMISSIONS
 // ==========================
 
 function applyRolePermissions(role){
@@ -177,12 +178,6 @@ el.style.display="none";
 
 }
 
-if(role === "admin"){
-
-// full access
-
-}
-
 }
 
 
@@ -193,7 +188,6 @@ if(role === "admin"){
 async function loadAgentDirectory(){
 
 const container = document.getElementById("agentDirectory");
-
 if(!container) return;
 
 container.innerHTML = "Loading agents...";
@@ -220,7 +214,7 @@ const card = document.createElement("div");
 card.className = "agentCard";
 
 card.innerHTML = `
-<img src="${photo}" alt="${name}">
+<img src="${photo}">
 <h4>${name}</h4>
 <div class="agentRole">${role}</div>
 <div class="agentBio">${bio}</div>
@@ -230,13 +224,13 @@ grid.appendChild(card);
 
 });
 
-container.innerHTML = "";
+container.innerHTML="";
 container.appendChild(grid);
 
-}catch(error){
+}catch(err){
 
-console.error("Agent Directory Error:",error);
-container.innerHTML = "Failed to load agents.";
+console.error(err);
+container.innerHTML="Failed to load agents.";
 
 }
 
@@ -244,18 +238,75 @@ container.innerHTML = "Failed to load agents.";
 
 
 // ==========================
-// LOAD POSTS SYSTEM
+// RICH TEXT EDITOR
+// ==========================
+
+window.formatText = function(command){
+
+if(command === "createLink"){
+const url = prompt("Enter URL");
+document.execCommand(command,false,url);
+}else{
+document.execCommand(command,false,null);
+}
+
+}
+
+
+// ==========================
+// CREATE POST
+// ==========================
+
+const createBtn = document.getElementById("createPostBtn");
+
+if(createBtn){
+
+createBtn.onclick = async ()=>{
+
+const title = document.getElementById("postTitle").value;
+const content = document.getElementById("postContent").innerHTML;
+const tags = document.getElementById("postTags").value;
+const pinned = document.getElementById("postPinned").checked;
+
+const container = document.getElementById("postsContainer");
+const section = container.dataset.section;
+
+if(!title || !content){
+alert("Missing fields");
+return;
+}
+
+await addDoc(collection(db,"posts"),{
+
+title,
+content,
+tags,
+pinned,
+section,
+author: agentName.textContent,
+created: serverTimestamp()
+
+});
+
+logActivity("created post: "+title);
+
+detectSectionAndLoadPosts();
+
+};
+
+}
+
+
+// ==========================
+// LOAD POSTS
 // ==========================
 
 async function loadPosts(section){
 
 const container = document.getElementById("postsContainer");
-
 if(!container) return;
 
-container.innerHTML = "Loading posts...";
-
-try{
+container.innerHTML="Loading posts...";
 
 const snapshot = await getDocs(collection(db,"posts"));
 
@@ -272,13 +323,25 @@ card.className="postCard";
 
 card.innerHTML=`
 
+${data.pinned ? "<div class='pinned'>📌 PINNED</div>" : ""}
+
 <h3>${data.title}</h3>
 
 <div class="postMeta">
-${data.tags || ""}
+${data.author || ""} • ${data.tags || ""}
 </div>
 
-<p>${data.content}</p>
+<div class="postContent">
+${data.content}
+</div>
+
+<div class="postActions">
+
+<button class="editPost" data-id="${docSnap.id}">Edit</button>
+
+<button class="deletePost" data-id="${docSnap.id}">Delete</button>
+
+</div>
 
 `;
 
@@ -290,18 +353,11 @@ if(container.innerHTML===""){
 container.innerHTML="No posts yet.";
 }
 
-}catch(err){
-
-console.error("Posts loading error:",err);
-container.innerHTML="Failed to load posts.";
-
-}
-
 }
 
 
 // ==========================
-// AUTO DETECT TAB SECTION
+// AUTO SECTION DETECT
 // ==========================
 
 function detectSectionAndLoadPosts(){
@@ -316,6 +372,60 @@ loadPosts(section);
 }
 
 }
+
+
+// ==========================
+// DELETE POST
+// ==========================
+
+document.addEventListener("click",async(e)=>{
+
+if(e.target.classList.contains("deletePost")){
+
+const id = e.target.dataset.id;
+
+if(!confirm("Delete this post?")) return;
+
+await deleteDoc(doc(db,"posts",id));
+
+logActivity("deleted post");
+
+detectSectionAndLoadPosts();
+
+}
+
+});
+
+
+// ==========================
+// EDIT POST
+// ==========================
+
+document.addEventListener("click",async(e)=>{
+
+if(e.target.classList.contains("editPost")){
+
+const id = e.target.dataset.id;
+
+const newTitle = prompt("Edit title");
+const newContent = prompt("Edit content");
+
+if(!newTitle || !newContent) return;
+
+await updateDoc(doc(db,"posts",id),{
+
+title:newTitle,
+content:newContent
+
+});
+
+logActivity("edited post");
+
+detectSectionAndLoadPosts();
+
+}
+
+});
 
 
 // ==========================
@@ -340,5 +450,52 @@ post.innerText.toLowerCase().includes(term)
 });
 
 };
+
+}
+
+
+// ==========================
+// ACTIVITY LOG
+// ==========================
+
+async function logActivity(action){
+
+await addDoc(collection(db,"activity"),{
+
+user: agentName.textContent,
+action: action,
+time: serverTimestamp()
+
+});
+
+}
+
+
+// ==========================
+// LOAD ACTIVITY FEED
+// ==========================
+
+async function loadActivity(){
+
+const container = document.getElementById("activityFeed");
+if(!container) return;
+
+const snapshot = await getDocs(collection(db,"activity"));
+
+container.innerHTML="";
+
+snapshot.forEach(doc=>{
+
+const data = doc.data();
+
+const item=document.createElement("div");
+
+item.innerHTML=`
+<strong>${data.user}</strong> ${data.action}
+`;
+
+container.appendChild(item);
+
+});
 
 }
