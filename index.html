@@ -241,9 +241,9 @@ Write your post here...
 
 <button id="createPostBtn" style="margin-top:10px;">Publish Post</button>
 
-<input id="postSearch" placeholder="Search posts" style="margin-top:15px;width:100%;padding:8px;">
+<input id="postSearchHome" placeholder="Search posts" style="margin-top:15px;width:100%;padding:8px;">
 
-<div id="postsContainer" data-section="home"></div>
+<div id="postsContainerHome" data-section="home"></div>
 
 </div>
 </div>
@@ -288,9 +288,9 @@ Write your post here...
 
 <h3>Payments</h3>
 
-<input id="postSearch" placeholder="Search posts">
+<input id="postSearchPayments" placeholder="Search posts">
 
-<div id="postsContainer" data-section="payments"></div>
+<div id="postsContainerPayments" data-section="payments"></div>
 
 </div>
 </div>
@@ -308,8 +308,6 @@ Write your post here...
 <p>Internal company contacts.</p>
 </div>
 </div>
-
-<!-- AGENT DIRECTORY -->
 
 <div id="agents" class="tabContent">
 <div class="tool">
@@ -329,8 +327,6 @@ Write your post here...
 
 <script>
 
-/* PROFILE DROPDOWN */
-
 const profileBtn = document.getElementById("profileBtn");
 const dropdown = document.getElementById("profileDropdown");
 
@@ -344,15 +340,11 @@ dropdown.classList.remove("show");
 }
 };
 
-/* DARK MODE */
-
 const darkToggle = document.getElementById("darkToggle");
 
 darkToggle.addEventListener("change", () => {
 document.body.classList.toggle("dark");
 });
-
-/* TABS */
 
 const tabs = document.querySelectorAll(".tab");
 const contents = document.querySelectorAll(".tabContent");
