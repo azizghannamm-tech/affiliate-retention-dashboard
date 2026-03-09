@@ -26,6 +26,7 @@ onValue,
 onDisconnect
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
+
 // ==========================
 // FIREBASE CONFIG
 // ==========================
@@ -99,15 +100,15 @@ lastSeen: Date.now()
 });
 
 }
-  
+
 if(!user){
 window.location.href = "login.html";
 return;
 }
 
 // load profile
-const ref = doc(db,"profiles",user.uid);
-const snap = await getDoc(ref);
+const profileRef = doc(db,"profiles",user.uid);
+const snap = await getDoc(profileRef);
 
 if(snap.exists()){
 
@@ -177,24 +178,6 @@ const photo = data.photo ||
 const card = document.createElement("div");
 card.className = "agentCard";
 
-const statusRef = ref(rtdb, "presence/" + docSnap.id);
-
-onValue(statusRef, (snapshot) => {
-
-if (!snapshot.exists()) return;
-
-const status = snapshot.val();
-
-const dot = card.querySelector(".agentStatus");
-
-if (status.online) {
-dot.style.background = "#4CAF50";
-} else {
-dot.style.background = "#bbb";
-}
-
-});  
-
 card.innerHTML = `
 <div class="avatarWrapper">
 <img src="${photo}" alt="${name}">
@@ -205,6 +188,26 @@ card.innerHTML = `
 <div class="agentRole">${role}</div>
 <div class="agentBio">${bio}</div>
 `;
+
+// realtime status AFTER HTML exists
+const statusRef = ref(rtdb, "presence/" + docSnap.id);
+
+onValue(statusRef, (snapshot) => {
+
+const dot = card.querySelector(".agentStatus");
+if(!dot) return;
+
+if (!snapshot.exists()) return;
+
+const status = snapshot.val();
+
+if (status.online) {
+dot.style.background = "#4CAF50";
+} else {
+dot.style.background = "#bbb";
+}
+
+});
 
 grid.appendChild(card);
 
@@ -241,5 +244,5 @@ const modal = document.getElementById("agentModal");
 modal.classList.remove("show");
 
 };
-  
+
 }
