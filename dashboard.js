@@ -186,16 +186,53 @@ el.style.display="none";
 
 async function loadAgentDirectory(){
 
-const container = document.getElementById("agentDirectory");
+const container = document.getElementById("agentGrid");
 if(!container) return;
 
-container.innerHTML = "Loading agents...";
+container.innerHTML="Loading agents...";
 
 try{
 
 const snapshot = await getDocs(collection(db,"profiles"));
 
 container.innerHTML="";
+
+snapshot.forEach((docSnap)=>{
+
+const data = docSnap.data();
+
+const name = data.name || "Agent";
+const role = data.role || "Agent";
+const bio = data.bio || "";
+
+const photo =
+data.photo ||
+`https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=2e5aac&color=fff`;
+
+const card = document.createElement("div");
+card.className="agentCard";
+
+card.innerHTML=`
+<img src="${photo}">
+<div class="agentName">${name}</div>
+<div class="agentRole">${role}</div>
+<div class="agentBio">${bio}</div>
+`;
+
+card.onclick=()=>{
+window.location.href="profile.html?uid="+docSnap.id;
+};
+
+container.appendChild(card);
+
+});
+
+}catch(err){
+console.error(err);
+container.innerHTML="Failed to load agents";
+}
+
+}
 
 // SEARCH BAR
 
