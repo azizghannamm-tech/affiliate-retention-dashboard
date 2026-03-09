@@ -114,10 +114,68 @@ agentAvatar.src =
 
 }
 
+
+// ==========================
+// ROLE SYSTEM (NEW)
+// ==========================
+
+let userRole = "agent";
+
+try{
+
+const roleRef = doc(db,"users",user.uid);
+const roleSnap = await getDoc(roleRef);
+
+if(roleSnap.exists()){
+userRole = roleSnap.data().role || "agent";
+}
+
+applyRolePermissions(userRole);
+
+}catch(err){
+console.error("Role loading error:",err);
+}
+
+
 // load directory
 loadAgentDirectory();
 
 });
+
+
+// ==========================
+// ROLE PERMISSIONS FUNCTION (NEW)
+// ==========================
+
+function applyRolePermissions(role){
+
+if(role === "agent"){
+
+document.querySelectorAll(".adminOnly").forEach(el=>{
+el.style.display = "none";
+});
+
+document.querySelectorAll(".managerOnly").forEach(el=>{
+el.style.display = "none";
+});
+
+}
+
+if(role === "manager"){
+
+document.querySelectorAll(".adminOnly").forEach(el=>{
+el.style.display = "none";
+});
+
+}
+
+if(role === "admin"){
+
+// full access
+
+}
+
+}
 
 
 // ==========================
