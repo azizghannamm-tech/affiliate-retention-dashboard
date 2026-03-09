@@ -1,230 +1,141 @@
 <!DOCTYPE html>
 <html>
 <head>
-
 <meta charset="UTF-8">
-<title>Knowledge Hub</title>
+<title>Operations Dashboard</title>
 
 <style>
 
 body{
-font-family:Arial;
-background:#f4f7fb;
+font-family: 'Segoe UI', Arial, sans-serif;
 margin:0;
+background:#f4f6fb;
 }
 
-/* HEADER */
+/* Top Navigation */
 
-header{
-background:#2e5aac;
+.navbar{
+display:flex;
+background:#0f172a;
+padding:14px 20px;
 color:white;
-padding:15px;
-display:flex;
-justify-content:space-between;
-align-items:center;
+gap:20px;
 }
 
-.logo{
-font-size:18px;
-font-weight:bold;
-}
-
-.profileArea{
-display:flex;
-align-items:center;
-gap:15px;
-position:relative;
-}
-
-.profile{
-display:flex;
-align-items:center;
-gap:10px;
-cursor:pointer;
-}
-
-.profile img{
-width:38px;
-height:38px;
-border-radius:50%;
-object-fit:cover;
-}
-
-.profileInfo{
-font-size:13px;
-}
-
-.role{
-font-size:11px;
-color:#ddd;
-}
-
-.dropdown{
-position:absolute;
-right:0;
-top:60px;
-background:white;
-border-radius:8px;
-box-shadow:0 6px 20px rgba(0,0,0,0.15);
-padding:15px;
-display:none;
-min-width:200px;
-color:black;
-}
-
-.dropdown.show{
-display:block;
-}
-
-.dropdown button{
-width:100%;
-margin-top:10px;
-padding:8px;
+.navbar button{
+background:none;
 border:none;
-background:#1e4fa1;
 color:white;
-border-radius:6px;
+font-size:15px;
 cursor:pointer;
 }
 
-/* CONTAINER */
-
-.container{
-padding:40px;
+.navbar button:hover{
+opacity:.7;
 }
 
-/* TABS */
-
-.tabs{
-display:flex;
-gap:10px;
-margin-bottom:25px;
-flex-wrap:wrap;
-}
+/* Tabs */
 
 .tab{
-padding:8px 14px;
-background:#e4e9f3;
-border-radius:6px;
-cursor:pointer;
-}
-
-.tab.active{
-background:#2e5aac;
-color:white;
-}
-
-.tabContent{
 display:none;
+padding:20px;
 }
 
-.tabContent.active{
+.active{
 display:block;
 }
 
-/* TOOL BOX */
+/* Post Box */
 
-.tool{
+.post-box{
 background:white;
-padding:20px;
+padding:15px;
+border-radius:10px;
 margin-bottom:20px;
+box-shadow:0 4px 12px rgba(0,0,0,0.08);
+}
+
+.post-box textarea{
+width:100%;
+height:60px;
+border:1px solid #ddd;
 border-radius:8px;
-box-shadow:0 2px 8px rgba(0,0,0,0.08);
+padding:10px;
+resize:none;
 }
 
-/* POST EDITOR */
-
-.editorToolbar{
-display:flex;
-gap:6px;
-margin:10px 0;
-}
-
-.editorToolbar button{
-border:1px solid #ccc;
-background:white;
-padding:4px 8px;
+.post-box button{
+margin-top:8px;
+padding:8px 16px;
+background:#2563eb;
+color:white;
+border:none;
 border-radius:6px;
 cursor:pointer;
 }
 
-/* POSTS */
+/* Agent Directory */
 
-.postCard{
-background:#fff;
-border-radius:10px;
-padding:16px;
-margin-top:15px;
-box-shadow:0 2px 8px rgba(0,0,0,.05);
-}
-
-/* AGENT DIRECTORY GRID */
-
-#agentDirectory{
+.agent-directory{
 display:grid;
-grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+grid-template-columns:repeat(5,1fr);
 gap:18px;
-margin-top:20px;
 }
 
-.agentCard{
+.agent-card{
 background:white;
-border-radius:12px;
+border-radius:14px;
 padding:18px;
 text-align:center;
-box-shadow:0 6px 16px rgba(0,0,0,0.08);
-transition:transform .2s, box-shadow .2s;
+box-shadow:0 6px 18px rgba(0,0,0,0.12);
+transition:transform .2s ease, box-shadow .2s ease;
 }
 
-.agentCard:hover{
+.agent-card:hover{
 transform:translateY(-4px);
-box-shadow:0 12px 28px rgba(0,0,0,0.15);
+box-shadow:0 12px 26px rgba(0,0,0,0.2);
 }
 
-.agentCard img{
-width:70px;
-height:70px;
+.agent-avatar{
+width:60px;
+height:60px;
 border-radius:50%;
 object-fit:cover;
 margin-bottom:10px;
 }
 
-.agentName{
-font-weight:600;
+.agent-name{
+font-weight:700;
+font-size:15px;
 }
 
-.agentRole{
+.agent-role{
 font-size:12px;
 color:#666;
 }
 
-/* TIMEZONE TOOL */
-
-.title{
-text-align:center;
-font-size:22px;
-font-weight:700;
-margin-bottom:20px;
+.agent-status{
+font-size:11px;
+margin-top:5px;
 }
 
-.map{
+/* Timezone Tool */
+
+.time-grid{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
 gap:18px;
 max-width:1100px;
-margin:auto;
 }
 
 .zone-card{
-position:relative;
-padding:16px 18px;
+padding:16px;
 border-radius:14px;
-box-shadow:0 8px 20px rgba(0,0,0,0.15);
 color:white;
+box-shadow:0 8px 20px rgba(0,0,0,0.15);
 }
 
 .zone-name{
-font-size:14px;
 font-weight:700;
 }
 
@@ -234,123 +145,79 @@ font-weight:800;
 margin-top:6px;
 }
 
-.states{
-font-size:11px;
-margin-top:8px;
-}
-
 .east{background:linear-gradient(135deg,#2563eb,#1e40af);}
 .central{background:linear-gradient(135deg,#16a34a,#065f46);}
 .mountain{background:linear-gradient(135deg,#f59e0b,#b45309);}
 .pacific{background:linear-gradient(135deg,#9333ea,#6b21a8);}
-.jordan{background:linear-gradient(135deg,#dc2626,#7f1d1d);}
 .dr{background:linear-gradient(135deg,#0ea5e9,#0369a1);}
+.jordan{background:linear-gradient(135deg,#dc2626,#7f1d1d);}
 
-.tag{
-position:absolute;
-top:12px;
-right:12px;
-font-size:10px;
-padding:3px 8px;
-border-radius:999px;
-background:rgba(255,255,255,0.2);
+/* Responsive */
+
+@media(max-width:1200px){
+.agent-directory{grid-template-columns:repeat(4,1fr);}
+}
+
+@media(max-width:900px){
+.agent-directory{grid-template-columns:repeat(3,1fr);}
+}
+
+@media(max-width:600px){
+.agent-directory{grid-template-columns:repeat(2,1fr);}
 }
 
 </style>
-
 </head>
 
 <body>
 
-<header>
+<!-- Navigation -->
 
-<div class="logo">Knowledge Hub</div>
-
-<div class="profileArea">
-
-<div class="profile" id="profileBtn">
-
-<img id="agentAvatar">
-
-<div class="profileInfo">
-<div id="agentName">Agent</div>
-<div class="role" id="accessLevel">Agent</div>
+<div class="navbar">
+<button onclick="openTab('home')">Home</button>
+<button onclick="openTab('agents')">Agent Directory</button>
+<button onclick="openTab('updates')">Updates</button>
 </div>
 
+<!-- HOME TAB -->
+
+<div id="home" class="tab active">
+
+<div class="post-box">
+<textarea placeholder="Post an update..."></textarea>
+<button>Post</button>
 </div>
 
-<div class="dropdown" id="profileDropdown">
+<h2>🌍 Global Operations Time Zones</h2>
 
-<div id="agentEmail"></div>
-<hr>
-<button onclick="location.href='profile.html'">Edit Profile</button>
-<button id="logoutBtn">Logout</button>
-
-</div>
-
-</div>
-
-</header>
-
-<div class="container">
-
-<div class="tabs">
-
-<div class="tab active" data-tab="home">Home</div>
-<div class="tab" data-tab="retention">Retention</div>
-<div class="tab" data-tab="updates">Updates</div>
-<div class="tab" data-tab="tools">Tools</div>
-<div class="tab" data-tab="evertrust">Evertrust</div>
-<div class="tab" data-tab="uw">UW Guidelines</div>
-<div class="tab" data-tab="payments">Payments</div>
-<div class="tab" data-tab="files">Files</div>
-<div class="tab" data-tab="contacts">Contacts</div>
-<div class="tab" data-tab="agents">Agents</div>
-
-</div>
-
-<!-- HOME -->
-
-<div id="home" class="tabContent active">
-
-<div class="tool">
-
-<div class="title">🌍 Global Operations Time Zones</div>
-
-<div class="map">
+<div class="time-grid">
 
 <div class="zone-card east">
-<div class="tag">USA</div>
 <div class="zone-name">Eastern Time</div>
 <div class="time" id="est"></div>
 </div>
 
 <div class="zone-card central">
-<div class="tag">USA</div>
 <div class="zone-name">Central Time</div>
 <div class="time" id="cst"></div>
 </div>
 
 <div class="zone-card mountain">
-<div class="tag">USA</div>
 <div class="zone-name">Mountain Time</div>
 <div class="time" id="mst"></div>
 </div>
 
 <div class="zone-card pacific">
-<div class="tag">USA</div>
 <div class="zone-name">Pacific Time</div>
 <div class="time" id="pst"></div>
 </div>
 
 <div class="zone-card dr">
-<div class="tag">CARIBBEAN</div>
 <div class="zone-name">Dominican Republic</div>
 <div class="time" id="dr"></div>
 </div>
 
 <div class="zone-card jordan">
-<div class="tag">MENA</div>
 <div class="zone-name">Amman · Jordan</div>
 <div class="time" id="amman"></div>
 </div>
@@ -359,112 +226,95 @@ background:rgba(255,255,255,0.2);
 
 </div>
 
-<!-- POST TOOL -->
+<!-- AGENTS TAB -->
 
-<div class="tool">
+<div id="agents" class="tab">
 
-<h3>Post Update</h3>
-
-<input class="postTitle" placeholder="Post title">
-<input class="postTags" placeholder="Tags">
-
-<label>
-<input type="checkbox" class="postPinned"> Pin post
-</label>
-
-<div class="editorToolbar">
-<button data-format="bold"><b>B</b></button>
-<button data-format="italic"><i>I</i></button>
-<button data-format="underline"><u>U</u></button>
+<div class="post-box">
+<textarea placeholder="Post an update..."></textarea>
+<button>Post</button>
 </div>
 
-<div class="postContent" contenteditable="true" style="border:1px solid #ccc;padding:10px;border-radius:6px;min-height:120px;"></div>
+<div class="agent-directory">
 
-<button class="createPostBtn">Publish Post</button>
-
-<input class="postSearch" placeholder="Search posts">
-
-<div class="postsContainer"></div>
-
+<div class="agent-card">
+<img class="agent-avatar" src="https://i.pravatar.cc/100?img=1">
+<div class="agent-name">John Smith</div>
+<div class="agent-role">Acquisitions</div>
+<div class="agent-status">🟢 Online</div>
 </div>
 
+<div class="agent-card">
+<img class="agent-avatar" src="https://i.pravatar.cc/100?img=2">
+<div class="agent-name">Maria Lopez</div>
+<div class="agent-role">Dispositions</div>
+<div class="agent-status">🟢 Online</div>
 </div>
 
-<!-- OTHER TABS (POST TOOL) -->
-
-<div id="retention" class="tabContent"><div class="tool"><h3>Retention</h3><div class="postsContainer"></div></div></div>
-<div id="updates" class="tabContent"><div class="tool"><h3>Updates</h3><div class="postsContainer"></div></div></div>
-<div id="tools" class="tabContent"><div class="tool"><h3>Tools</h3><div class="postsContainer"></div></div></div>
-<div id="evertrust" class="tabContent"><div class="tool"><h3>Evertrust</h3><div class="postsContainer"></div></div></div>
-<div id="uw" class="tabContent"><div class="tool"><h3>UW Guidelines</h3><div class="postsContainer"></div></div></div>
-<div id="payments" class="tabContent"><div class="tool"><h3>Payments</h3><div class="postsContainer"></div></div></div>
-<div id="files" class="tabContent"><div class="tool"><h3>Files</h3><div class="postsContainer"></div></div></div>
-<div id="contacts" class="tabContent"><div class="tool"><h3>Contacts</h3><div class="postsContainer"></div></div></div>
-
-<!-- AGENTS -->
-
-<div id="agents" class="tabContent">
-<div class="tool">
-<h3>Agent Directory</h3>
-<div id="agentDirectory"></div>
+<div class="agent-card">
+<img class="agent-avatar" src="https://i.pravatar.cc/100?img=3">
+<div class="agent-name">David Chen</div>
+<div class="agent-role">Lead Manager</div>
+<div class="agent-status">🟡 Busy</div>
 </div>
+
+<div class="agent-card">
+<img class="agent-avatar" src="https://i.pravatar.cc/100?img=4">
+<div class="agent-name">Sarah Johnson</div>
+<div class="agent-role">TC</div>
+<div class="agent-status">🟢 Online</div>
+</div>
+
+<div class="agent-card">
+<img class="agent-avatar" src="https://i.pravatar.cc/100?img=5">
+<div class="agent-name">Omar Khalid</div>
+<div class="agent-role">Admin</div>
+<div class="agent-status">🔴 Offline</div>
 </div>
 
 </div>
 
-<script type="module" src="app.js"></script>
-<script type="module" src="dashboard.js"></script>
+</div>
+
+<!-- UPDATES TAB -->
+
+<div id="updates" class="tab">
+
+<div class="post-box">
+<textarea placeholder="Post an update..."></textarea>
+<button>Post</button>
+</div>
+
+<p>No updates yet.</p>
+
+</div>
 
 <script>
 
-/* PROFILE DROPDOWN */
+/* Tab Switching */
 
-const profileBtn=document.getElementById("profileBtn")
-const dropdown=document.getElementById("profileDropdown")
+function openTab(tab){
 
-profileBtn.onclick=()=>dropdown.classList.toggle("show")
+document.querySelectorAll('.tab').forEach(t=>{
+t.classList.remove('active')
+})
 
-window.onclick=function(e){
-if(!profileBtn.contains(e.target)){
-dropdown.classList.remove("show")
+document.getElementById(tab).classList.add('active')
+
 }
-}
 
-/* TABS */
-
-const tabs=document.querySelectorAll(".tab")
-const contents=document.querySelectorAll(".tabContent")
-
-tabs.forEach(tab=>{
-tab.addEventListener("click",()=>{
-
-tabs.forEach(t=>t.classList.remove("active"))
-contents.forEach(c=>c.classList.remove("active"))
-
-tab.classList.add("active")
-document.getElementById(tab.dataset.tab).classList.add("active")
-
-})
-})
-
-/* EDITOR TOOLBAR */
-
-document.querySelectorAll(".editorToolbar button").forEach(btn=>{
-btn.onclick=()=>document.execCommand(btn.dataset.format,false,null)
-})
-
-/* TIMEZONES */
+/* Timezones */
 
 function updateTimes(){
 
-const opt={hour:'2-digit',minute:'2-digit',second:'2-digit'}
+const options={hour:'2-digit',minute:'2-digit',second:'2-digit'}
 
-est.textContent=new Date().toLocaleTimeString('en-US',{...opt,timeZone:'America/New_York'})
-cst.textContent=new Date().toLocaleTimeString('en-US',{...opt,timeZone:'America/Chicago'})
-mst.textContent=new Date().toLocaleTimeString('en-US',{...opt,timeZone:'America/Denver'})
-pst.textContent=new Date().toLocaleTimeString('en-US',{...opt,timeZone:'America/Los_Angeles'})
-dr.textContent=new Date().toLocaleTimeString('en-US',{...opt,timeZone:'America/Santo_Domingo'})
-amman.textContent=new Date().toLocaleTimeString('en-US',{...opt,timeZone:'Asia/Amman'})
+est.textContent=new Date().toLocaleTimeString('en-US',{...options,timeZone:'America/New_York'})
+cst.textContent=new Date().toLocaleTimeString('en-US',{...options,timeZone:'America/Chicago'})
+mst.textContent=new Date().toLocaleTimeString('en-US',{...options,timeZone:'America/Denver'})
+pst.textContent=new Date().toLocaleTimeString('en-US',{...options,timeZone:'America/Los_Angeles'})
+dr.textContent=new Date().toLocaleTimeString('en-US',{...options,timeZone:'America/Santo_Domingo'})
+amman.textContent=new Date().toLocaleTimeString('en-US',{...options,timeZone:'Asia/Amman'})
 
 }
 
