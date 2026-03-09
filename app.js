@@ -32,6 +32,7 @@ apiKey: "AIzaSyB8dDTnpPQVRAs7dkfc8QU3L5qUJtm-2jg",
 authDomain: "affiliate-relations-17687.firebaseapp.com",
 projectId: "affiliate-relations-17687",
 storageBucket: "affiliate-relations-17687.appspot.com",
+databaseURL: "https://affiliate-relations-17687-default-rtdb.firebaseio.com",
 messagingSenderId: "642027131905",
 appId: "1:642027131905:web:5f0076ee7b34578b9f9c00"
 
@@ -43,9 +44,7 @@ appId: "1:642027131905:web:5f0076ee7b34578b9f9c00"
 // ==========================
 
 const app = initializeApp(firebaseConfig);
-
 const auth = getAuth(app);
-
 const db = getFirestore(app);
 
 
@@ -53,7 +52,7 @@ const db = getFirestore(app);
 // PAGE DETECTION
 // ==========================
 
-const currentPage = window.location.pathname.split("/").pop();
+const currentPage = window.location.pathname.split("/").pop() || "index.html";
 
 
 // ==========================
@@ -267,5 +266,3 @@ window.location.href="login.html";
 });
 
 }
-
-
