@@ -154,3 +154,21 @@ font-size:13px;
 color:#666;
 line-height:1.4;
 }
+
+/* ONLINE STATUS */
+
+.agentStatus{
+position:absolute;
+width:12px;
+height:12px;
+border-radius:50%;
+background:#4caf50;
+border:2px solid white;
+right:6px;
+bottom:6px;
+}
+
+.avatarWrapper{
+position:relative;
+display:inline-block;
+}
