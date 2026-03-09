@@ -48,6 +48,35 @@ font-size:12px;
 color:#777;
 }
 
+.agentDirectoryGrid{
+display:grid;
+grid-template-columns:repeat(5,1fr);
+gap:18px;
+margin-top:20px;
+}
+
+.agentSearch{
+width:100%;
+padding:10px;
+margin-bottom:15px;
+border-radius:6px;
+border:1px solid #ddd;
+}
+
+.role-admin{
+color:#c62828;
+font-weight:600;
+}
+
+.role-manager{
+color:#2e7d32;
+font-weight:600;
+}
+
+.role-agent{
+color:#555;
+}
+
 /* responsive */
 
 @media (max-width:1200px){
