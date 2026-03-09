@@ -225,14 +225,20 @@ container.innerHTML = "Failed to load agents.";
 
 }
 
-function openAgentModal(name,role,bio,photo){
+function openAgentModal(name, role, bio, photo) {
 
 const modal = document.getElementById("agentModal");
+if(!modal) return;
 
-document.getElementById("modalAvatar").src = photo;
-document.getElementById("modalName").innerText = name;
-document.getElementById("modalRole").innerText = role;
-document.getElementById("modalBio").innerText = bio;
+const avatar = document.getElementById("modalAvatar");
+const nameEl = document.getElementById("modalName");
+const roleEl = document.getElementById("modalRole");
+const bioEl = document.getElementById("modalBio");
+
+if(avatar) avatar.src = photo;
+if(nameEl) nameEl.innerText = name;
+if(roleEl) roleEl.innerText = role;
+if(bioEl) bioEl.innerText = bio;
 
 modal.classList.add("show");
 
