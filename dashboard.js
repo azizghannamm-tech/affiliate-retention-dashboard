@@ -46,6 +46,7 @@ const db = getFirestore(app);
 const agentAvatar = document.getElementById("agentAvatar");
 const agentName = document.getElementById("agentName");
 const agentEmail = document.getElementById("agentEmail");
+const agentRole = document.getElementById("agentRole"); // NEW
 
 const profileBtn = document.getElementById("profileBtn");
 const dropdown = document.getElementById("profileDropdown");
@@ -116,7 +117,7 @@ agentAvatar.src =
 
 
 // ==========================
-// ROLE SYSTEM (NEW)
+// ROLE SYSTEM
 // ==========================
 
 let userRole = "agent";
@@ -132,6 +133,11 @@ userRole = roleSnap.data().role || "agent";
 
 applyRolePermissions(userRole);
 
+// SHOW ROLE IN PROFILE (NEW)
+if(agentRole){
+agentRole.textContent = userRole.toUpperCase();
+}
+
 }catch(err){
 console.error("Role loading error:",err);
 }
@@ -144,7 +150,7 @@ loadAgentDirectory();
 
 
 // ==========================
-// ROLE PERMISSIONS FUNCTION (NEW)
+// ROLE PERMISSIONS FUNCTION
 // ==========================
 
 function applyRolePermissions(role){
@@ -152,11 +158,11 @@ function applyRolePermissions(role){
 if(role === "agent"){
 
 document.querySelectorAll(".adminOnly").forEach(el=>{
-el.style.display = "none";
+el.style.display="none";
 });
 
 document.querySelectorAll(".managerOnly").forEach(el=>{
-el.style.display = "none";
+el.style.display="none";
 });
 
 }
@@ -164,7 +170,7 @@ el.style.display = "none";
 if(role === "manager"){
 
 document.querySelectorAll(".adminOnly").forEach(el=>{
-el.style.display = "none";
+el.style.display="none";
 });
 
 }
