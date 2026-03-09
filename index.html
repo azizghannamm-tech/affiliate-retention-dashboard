@@ -223,8 +223,28 @@ transform:translateX(20px);
 
 <div id="home" class="tabContent active">
 <div class="tool">
+
 <h3>Agent Tools Dashboard</h3>
-<p>This is your internal tools workspace.</p>
+
+<input id="postTitle" placeholder="Post title">
+
+<input id="postTags" placeholder="Tags">
+
+<label>
+<input type="checkbox" id="postPinned"> Pin post
+</label>
+
+<div id="postContent" contenteditable="true"
+style="border:1px solid #ccc;padding:10px;border-radius:6px;min-height:120px;margin-top:10px;">
+Write your post here...
+</div>
+
+<button id="createPostBtn" style="margin-top:10px;">Publish Post</button>
+
+<input id="postSearch" placeholder="Search posts" style="margin-top:15px;width:100%;padding:8px;">
+
+<div id="postsContainer" data-section="home"></div>
+
 </div>
 </div>
 
@@ -265,8 +285,13 @@ transform:translateX(20px);
 
 <div id="payments" class="tabContent">
 <div class="tool">
+
 <h3>Payments</h3>
-<p>Payment processes and information.</p>
+
+<input id="postSearch" placeholder="Search posts">
+
+<div id="postsContainer" data-section="payments"></div>
+
 </div>
 </div>
 
