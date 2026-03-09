@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -83,10 +84,6 @@ min-width:200px;
 color:black;
 }
 
-.dropdown.show{
-display:block;
-}
-
 .dropdown button{
 width:100%;
 margin-top:10px;
@@ -98,30 +95,64 @@ border-radius:6px;
 cursor:pointer;
 }
 
-/* AGENT GRID */
-
-#agentDirectory{
-display:grid;
-grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
-gap:20px;
-margin-top:20px;
+.dropdown.show{
+display:block;
 }
 
-.agentCard{
-background:white;
-padding:20px;
-border-radius:10px;
-box-shadow:0 4px 12px rgba(0,0,0,0.08);
-text-align:center;
+/* DARK MODE */
+
+.dark{
+background:#1f1f1f;
+color:white;
+}
+
+.dark .tool{
+background:#2c2c2c;
+}
+
+.switch{
+position:relative;
+display:inline-block;
+width:44px;
+height:24px;
+}
+
+.switch input{
+opacity:0;
+width:0;
+height:0;
+}
+
+.slider{
+position:absolute;
 cursor:pointer;
+top:0;
+left:0;
+right:0;
+bottom:0;
+background:#ccc;
+border-radius:24px;
+transition:.3s;
 }
 
-.agentCard img{
-width:90px;
-height:90px;
+.slider:before{
+position:absolute;
+content:"";
+height:18px;
+width:18px;
+left:3px;
+bottom:3px;
+background:white;
 border-radius:50%;
-object-fit:cover;
-margin-bottom:10px;
+transition:.3s;
+}
+
+input:checked + .slider{
+background:#1e4fa1;
+}
+
+input:checked + .slider:before{
+transform:translateX(20px);
 }
 
 </style>
@@ -132,9 +163,16 @@ margin-bottom:10px;
 
 <header>
 
-<div class="logo"><b>Knowledge Hub</b></div>
+<div class="logo">
+<b>Knowledge Hub</b>
+</div>
 
 <div class="profileArea">
+
+<label class="switch">
+<input type="checkbox" id="darkToggle">
+<span class="slider"></span>
+</label>
 
 <div class="profile" id="profileBtn">
 
@@ -142,7 +180,7 @@ margin-bottom:10px;
 
 <div class="profileInfo">
 <div id="agentName">Agent</div>
-<div class="role">Agent</div>
+<div class="role" id="accessLevel">Agent</div>
 </div>
 
 </div>
@@ -153,8 +191,8 @@ margin-bottom:10px;
 
 <hr>
 
-<button onclick="location.href='profile.html'">Edit Profile</button>
-<button id="logoutBtn">Logout</button>
+<button type="button" onclick="location.href='profile.html'">Edit Profile</button>
+<button type="button" id="logoutBtn">Logout</button>
 
 </div>
 
@@ -162,57 +200,107 @@ margin-bottom:10px;
 
 </header>
 
+
 <div class="container">
+
+<!-- TABS -->
 
 <div class="tabs">
 
 <div class="tab active" data-tab="home">Home</div>
+<div class="tab" data-tab="retention">Retention</div>
+<div class="tab" data-tab="updates">Updates</div>
+<div class="tab" data-tab="tools">Tools</div>
+<div class="tab" data-tab="evertrust">Evertrust</div>
+<div class="tab" data-tab="uw">UW Guidelines</div>
+<div class="tab" data-tab="payments">Payments</div>
+<div class="tab" data-tab="files">Files</div>
+<div class="tab" data-tab="contacts">Contacts</div>
 <div class="tab" data-tab="agents">Agents</div>
 
 </div>
 
-<div id="home" class="tabContent active">
+<!-- TAB CONTENT -->
 
+<div id="home" class="tabContent active">
 <div class="tool">
 <h3>Agent Tools Dashboard</h3>
-<p>This is your internal workspace.</p>
+<p>This is your internal tools workspace.</p>
+</div>
 </div>
 
+<div id="retention" class="tabContent">
+<div class="tool">
+<h3>Retention</h3>
+<p>Retention scripts and strategies will appear here.</p>
 </div>
+</div>
+
+<div id="updates" class="tabContent">
+<div class="tool">
+<h3>Updates</h3>
+<p>Company updates and announcements.</p>
+</div>
+</div>
+
+<div id="tools" class="tabContent">
+<div class="tool">
+<h3>Tools</h3>
+<p>Calculators, wheel spinner, automation tools.</p>
+</div>
+</div>
+
+<div id="evertrust" class="tabContent">
+<div class="tool">
+<h3>Evertrust</h3>
+<p>Evertrust partner documentation.</p>
+</div>
+</div>
+
+<div id="uw" class="tabContent">
+<div class="tool">
+<h3>UW Guidelines</h3>
+<p>Underwriting guidelines and requirements.</p>
+</div>
+</div>
+
+<div id="payments" class="tabContent">
+<div class="tool">
+<h3>Payments</h3>
+<p>Payment processes and information.</p>
+</div>
+</div>
+
+<div id="files" class="tabContent">
+<div class="tool">
+<h3>Files</h3>
+<p>Important company files.</p>
+</div>
+</div>
+
+<div id="contacts" class="tabContent">
+<div class="tool">
+<h3>Contacts</h3>
+<p>Internal company contacts.</p>
+</div>
+</div>
+
+<!-- AGENT DIRECTORY -->
 
 <div id="agents" class="tabContent">
-
 <div class="tool">
 
 <h3>Agent Directory</h3>
-<p>All registered agents.</p>
+<p>All registered agents in the system.</p>
 
 <div id="agentDirectory"></div>
 
 </div>
-
 </div>
 
 </div>
 
-<!-- AGENT MODAL -->
-
-<div id="agentModal" class="profileModal">
-
-<div class="profileCard">
-
-<img id="modalAvatar" class="profileAvatar">
-
-<h3 id="modalName"></h3>
-<p id="modalRole"></p>
-<p id="modalBio"></p>
-
-<button onclick="closeAgentModal()">Close</button>
-
-</div>
-
-</div>
-
+<script type="module" src="app.js"></script>
 <script type="module" src="dashboard.js"></script>
 
 <script>
@@ -232,28 +320,37 @@ dropdown.classList.remove("show");
 }
 };
 
+/* DARK MODE */
+
+const darkToggle = document.getElementById("darkToggle");
+
+darkToggle.addEventListener("change", () => {
+document.body.classList.toggle("dark");
+});
+
 /* TABS */
 
 const tabs = document.querySelectorAll(".tab");
 const contents = document.querySelectorAll(".tabContent");
 
-tabs.forEach(tab=>{
-tab.onclick=()=>{
-tabs.forEach(t=>t.classList.remove("active"));
-contents.forEach(c=>c.classList.remove("active"));
+tabs.forEach(tab => {
+
+tab.addEventListener("click", () => {
+
+tabs.forEach(t => t.classList.remove("active"));
+contents.forEach(c => c.classList.remove("active"));
 
 tab.classList.add("active");
-document.getElementById(tab.dataset.tab).classList.add("active");
-};
+
+const target = document.getElementById(tab.dataset.tab);
+target.classList.add("active");
+
 });
 
-/* MODAL */
-
-function closeAgentModal(){
-document.getElementById("agentModal").style.display="none";
-}
+});
 
 </script>
 
 </body>
 </html>
+
