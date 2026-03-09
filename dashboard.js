@@ -1,3 +1,4 @@
+
 // ==========================
 // FIREBASE IMPORTS
 // ==========================
@@ -18,24 +19,15 @@ collection,
 getDocs
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-import {
-getDatabase,
-ref,
-set,
-onValue,
-onDisconnect
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-
 
 // ==========================
 // FIREBASE CONFIG
 // ==========================
 
 const firebaseConfig = {
-apiKey: "AIzaSy...",
+apiKey: "AIzaSyB8dDTnpPQVRAs7dkfc8QU3L5qUJtm-2jg",
 authDomain: "affiliate-relations-17687.firebaseapp.com",
-projectId: "affiliate-relations-17687",
-databaseURL: "https://affiliate-relations-17687-default-rtdb.firebaseio.com"
+projectId: "affiliate-relations-17687"
 };
 
 
@@ -44,7 +36,6 @@ databaseURL: "https://affiliate-relations-17687-default-rtdb.firebaseio.com"
 // ==========================
 
 const app = initializeApp(firebaseConfig);
-const rtdb = getDatabase(app);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
@@ -86,29 +77,14 @@ window.location.href = "login.html";
 
 onAuthStateChanged(auth, async (user) => {
 
-if (user) {
-
-const presenceRef = ref(rtdb, "presence/" + user.uid);
-
-set(presenceRef, {
-online: true
-});
-
-onDisconnect(presenceRef).set({
-online: false,
-lastSeen: Date.now()
-});
-
-}
-
 if(!user){
 window.location.href = "login.html";
 return;
 }
 
 // load profile
-const profileRef = doc(db,"profiles",user.uid);
-const snap = await getDoc(profileRef);
+const ref = doc(db,"profiles",user.uid);
+const snap = await getDoc(ref);
 
 if(snap.exists()){
 
@@ -179,39 +155,13 @@ const card = document.createElement("div");
 card.className = "agentCard";
 
 card.innerHTML = `
-<div class="avatarWrapper">
 <img src="${photo}" alt="${name}">
-<div class="agentStatus"></div>
-</div>
-
 <h4>${name}</h4>
 <div class="agentRole">${role}</div>
 <div class="agentBio">${bio}</div>
 `;
 
-// realtime status AFTER HTML exists
-const statusRef = ref(rtdb, "presence/" + docSnap.id);
-
-onValue(statusRef, (snapshot) => {
-
-const dot = card.querySelector(".agentStatus");
-if(!dot) return;
-
-if (!snapshot.exists()) return;
-
-const status = snapshot.val();
-
-if (status.online) {
-dot.style.background = "#4CAF50";
-} else {
-dot.style.background = "#bbb";
-}
-
-});
-
 grid.appendChild(card);
-
-card.onclick = () => openAgentModal(name,role,bio,photo);
 
 });
 
@@ -224,31 +174,5 @@ console.error("Agent Directory Error:",error);
 container.innerHTML = "Failed to load agents.";
 
 }
-
-function openAgentModal(name, role, bio, photo) {
-
-const modal = document.getElementById("agentModal");
-if(!modal) return;
-
-const avatar = document.getElementById("modalAvatar");
-const nameEl = document.getElementById("modalName");
-const roleEl = document.getElementById("modalRole");
-const bioEl = document.getElementById("modalBio");
-
-if(avatar) avatar.src = photo;
-if(nameEl) nameEl.innerText = name;
-if(roleEl) roleEl.innerText = role;
-if(bioEl) bioEl.innerText = bio;
-
-modal.classList.add("show");
-
-}
-
-window.closeAgentModal = function(){
-
-const modal = document.getElementById("agentModal");
-modal.classList.remove("show");
-
-};
 
 }
