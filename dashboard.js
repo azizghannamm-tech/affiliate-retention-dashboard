@@ -193,12 +193,24 @@ container.innerHTML = "Loading agents...";
 
 try{
 
-const querySnapshot = await getDocs(collection(db,"profiles"));
+const snapshot = await getDocs(collection(db,"profiles"));
+
+container.innerHTML="";
+
+// SEARCH BAR
+
+const search = document.createElement("input");
+search.placeholder="Search agents...";
+search.className="agentSearch";
+container.appendChild(search);
+
+// GRID
 
 const grid = document.createElement("div");
-grid.className = "agentGrid";
+grid.className="agentDirectoryGrid";
+container.appendChild(grid);
 
-querySnapshot.forEach((docSnap)=>{
+snapshot.forEach((docSnap)=>{
 
 const data = docSnap.data();
 
@@ -210,21 +222,48 @@ const photo = data.photo ||
 `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=2e5aac&color=fff`;
 
 const card = document.createElement("div");
-card.className = "agentCard";
+card.className="agentCard";
 
 card.innerHTML = `
+
 <img src="${photo}">
+
 <h4>${name}</h4>
-<div class="agentRole">${role}</div>
-<div class="agentBio">${bio}</div>
+
+<div class="agentRole role-${role.toLowerCase()}">
+${role}
+</div>
+
+<div class="agentBio">
+${bio}
+</div>
+
 `;
+
+card.onclick = ()=>{
+window.location.href = "profile.html?user="+docSnap.id;
+};
 
 grid.appendChild(card);
 
 });
 
-container.innerHTML="";
-container.appendChild(grid);
+// SEARCH FILTER
+
+search.oninput = ()=>{
+
+const term = search.value.toLowerCase();
+
+grid.querySelectorAll(".agentCard").forEach(card=>{
+
+card.style.display =
+card.innerText.toLowerCase().includes(term)
+? "block"
+: "none";
+
+});
+
+};
 
 }catch(err){
 
@@ -359,9 +398,13 @@ ${data.content}
 
 <div class="postActions">
 
-<button class="editPost" data-id="${docSnap.id}">Edit</button>
+<button class="editPost" data-id="${docSnap.id}">
+Edit
+</button>
 
-<button class="deletePost" data-id="${docSnap.id}">Delete</button>
+<button class="deletePost" data-id="${docSnap.id}">
+Delete
+</button>
 
 </div>
 
