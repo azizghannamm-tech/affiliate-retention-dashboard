@@ -32,7 +32,6 @@ apiKey: "AIzaSyB8dDTnpPQVRAs7dkfc8QU3L5qUJtm-2jg",
 authDomain: "affiliate-relations-17687.firebaseapp.com",
 projectId: "affiliate-relations-17687",
 storageBucket: "affiliate-relations-17687.appspot.com",
-databaseURL: "https://affiliate-relations-17687-default-rtdb.firebaseio.com",  
 messagingSenderId: "642027131905",
 appId: "1:642027131905:web:5f0076ee7b34578b9f9c00"
 
@@ -268,3 +267,5 @@ window.location.href="login.html";
 });
 
 }
+
+
