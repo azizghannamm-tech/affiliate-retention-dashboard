@@ -46,7 +46,7 @@ const db = getFirestore(app);
 const agentAvatar = document.getElementById("agentAvatar");
 const agentName = document.getElementById("agentName");
 const agentEmail = document.getElementById("agentEmail");
-const agentRole = document.getElementById("agentRole"); // NEW
+const agentRole = document.getElementById("agentRole");
 
 const profileBtn = document.getElementById("profileBtn");
 const dropdown = document.getElementById("profileDropdown");
@@ -133,7 +133,6 @@ userRole = roleSnap.data().role || "agent";
 
 applyRolePermissions(userRole);
 
-// SHOW ROLE IN PROFILE (NEW)
 if(agentRole){
 agentRole.textContent = userRole.toUpperCase();
 }
@@ -145,6 +144,9 @@ console.error("Role loading error:",err);
 
 // load directory
 loadAgentDirectory();
+
+// load posts automatically
+detectSectionAndLoadPosts();
 
 });
 
@@ -237,5 +239,106 @@ console.error("Agent Directory Error:",error);
 container.innerHTML = "Failed to load agents.";
 
 }
+
+}
+
+
+// ==========================
+// LOAD POSTS SYSTEM
+// ==========================
+
+async function loadPosts(section){
+
+const container = document.getElementById("postsContainer");
+
+if(!container) return;
+
+container.innerHTML = "Loading posts...";
+
+try{
+
+const snapshot = await getDocs(collection(db,"posts"));
+
+container.innerHTML="";
+
+snapshot.forEach(docSnap=>{
+
+const data = docSnap.data();
+
+if(data.section !== section) return;
+
+const card = document.createElement("div");
+card.className="postCard";
+
+card.innerHTML=`
+
+<h3>${data.title}</h3>
+
+<div class="postMeta">
+${data.tags || ""}
+</div>
+
+<p>${data.content}</p>
+
+`;
+
+container.appendChild(card);
+
+});
+
+if(container.innerHTML===""){
+container.innerHTML="No posts yet.";
+}
+
+}catch(err){
+
+console.error("Posts loading error:",err);
+container.innerHTML="Failed to load posts.";
+
+}
+
+}
+
+
+// ==========================
+// AUTO DETECT TAB SECTION
+// ==========================
+
+function detectSectionAndLoadPosts(){
+
+const container = document.getElementById("postsContainer");
+if(!container) return;
+
+const section = container.dataset.section;
+
+if(section){
+loadPosts(section);
+}
+
+}
+
+
+// ==========================
+// SEARCH POSTS
+// ==========================
+
+const searchInput = document.getElementById("postSearch");
+
+if(searchInput){
+
+searchInput.oninput = ()=>{
+
+const term = searchInput.value.toLowerCase();
+
+document.querySelectorAll(".postCard").forEach(post=>{
+
+post.style.display =
+post.innerText.toLowerCase().includes(term)
+? "block"
+: "none";
+
+});
+
+};
 
 }
