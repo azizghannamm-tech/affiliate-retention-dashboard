@@ -2,35 +2,24 @@
 AGENT DIRECTORY GRID
 ========================= */
 
-.agentDirectoryGrid{
-
+#agentGrid{
 display:grid;
-
 grid-template-columns:repeat(4,1fr);
-
 gap:30px;
-
 margin-top:25px;
-
 }
 
 /* =========================
 AGENT CARD
 ========================= */
 
-.agentCard{
+#agentGrid .agentCard{
 
 background:#ffffff;
 
 border-radius:14px;
 
-padding:30px 20px;
-
-display:flex;
-
-flex-direction:column;
-
-align-items:center;
+padding:25px;
 
 text-align:center;
 
@@ -38,30 +27,27 @@ box-shadow:0 4px 12px rgba(0,0,0,0.08);
 
 border:1px solid #e6e6e6;
 
+display:flex;
+flex-direction:column;
+align-items:center;
+
+height:340px;
+
 transition:0.25s;
-
-min-height:340px;
-
 }
 
-/* hover */
-
-.agentCard:hover{
-
+#agentGrid .agentCard:hover{
 transform:translateY(-6px);
-
 box-shadow:0 12px 26px rgba(0,0,0,0.15);
-
 }
 
 /* =========================
 PROFILE IMAGE
 ========================= */
 
-.agentCard img{
+#agentGrid .agentCard img{
 
 width:150px;
-
 height:150px;
 
 border-radius:50%;
@@ -78,13 +64,13 @@ border:4px solid #f2f2f2;
 NAME
 ========================= */
 
-.agentName{
+#agentGrid .agentName{
 
 font-size:18px;
 
 font-weight:700;
 
-margin-bottom:6px;
+margin-bottom:5px;
 
 }
 
@@ -92,13 +78,13 @@ margin-bottom:6px;
 ROLE
 ========================= */
 
-.agentRole{
+#agentGrid .agentRole{
 
 font-size:14px;
 
 font-weight:600;
 
-margin-bottom:12px;
+margin-bottom:10px;
 
 color:#555;
 
@@ -108,7 +94,7 @@ color:#555;
 BIO
 ========================= */
 
-.agentBio{
+#agentGrid .agentBio{
 
 font-size:13px;
 
@@ -126,20 +112,16 @@ RESPONSIVE
 
 @media (max-width:1200px){
 
-.agentDirectoryGrid{
-
+#agentGrid{
 grid-template-columns:repeat(3,1fr);
-
 }
 
 }
 
 @media (max-width:700px){
 
-.agentDirectoryGrid{
-
+#agentGrid{
 grid-template-columns:repeat(2,1fr);
-
 }
 
 }
