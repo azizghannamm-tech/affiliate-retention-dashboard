@@ -1,135 +1,185 @@
-<!DOCTYPE html>
-<html>
-<head>
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 
-<meta charset="UTF-8">
-<title>Agent Dashboard</title>
+import {
+getAuth,
+onAuthStateChanged,
+signOut
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-<link rel="stylesheet" href="dashboard.css">
-
-</head>
-
-<body>
-
-<header class="topBar">
-
-<div class="logo">
-Agent Tools
-</div>
-
-<div class="profileSection">
-
-<img id="agentAvatar" class="avatar">
-
-<div class="profileInfo">
-<div id="agentName">Agent</div>
-<div id="agentEmail"></div>
-</div>
-
-<button id="profileBtn">☰</button>
-
-<div id="profileDropdown" class="dropdown">
-<a href="profile.html">Edit Profile</a>
-<button id="logoutBtn">Logout</button>
-</div>
-
-</div>
-
-</header>
+import {
+getFirestore,
+doc,
+getDoc,
+collection,
+getDocs,
+addDoc,
+updateDoc,
+deleteDoc,
+serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 
+const firebaseConfig = {
+apiKey: "AIzaSyB8dDTnpPQVRAs7dkfc8QU3L5qUJtm-2jg",
+authDomain: "affiliate-relations-17687.firebaseapp.com",
+projectId: "affiliate-relations-17687"
+};
 
-<!-- TAB MENU -->
-
-<div class="tabs">
-
-<button class="tabBtn" onclick="openTab('tools')">Tools</button>
-<button class="tabBtn" onclick="openTab('agents')">Agent Directory</button>
-<button class="tabBtn" onclick="openTab('resources')">Resources</button>
-
-</div>
-
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
 
-<div class="mainContainer">
+/* AUTH */
+
+onAuthStateChanged(auth, async (user)=>{
+
+if(!user){
+window.location.href="login.html"
+return
+}
+
+loadAgentDirectory()
+setupPostSystem()
+
+})
 
 
-<!-- TOOLS TAB -->
+/* AGENT DIRECTORY */
 
-<div id="tools" class="tabContent">
+async function loadAgentDirectory(){
 
-<div class="tool">
+const container=document.getElementById("agentGrid")
+if(!container) return
 
-<h3>Internal Tools</h3>
+container.innerHTML="Loading..."
 
-<p>Your tools will appear here.</p>
+const snapshot=await getDocs(collection(db,"profiles"))
 
-</div>
+container.innerHTML=""
 
-</div>
+snapshot.forEach(docSnap=>{
 
+const data=docSnap.data()
 
+const card=document.createElement("div")
+card.className="agentCard"
 
-<!-- AGENT DIRECTORY -->
+card.innerHTML=`
 
-<div id="agents" class="tabContent">
+<img src="${data.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name || "Agent")}` }">
 
-<div class="tool">
+<div class="agentName">${data.name || "Agent"}</div>
 
-<h3>Agent Directory</h3>
+<div class="agentRole">${data.role || "Agent"}</div>
 
-<div id="agentDirectory">
+<div class="agentBio">${data.bio || ""}</div>
 
-<div id="agentGrid"></div>
+`
 
-</div>
+container.appendChild(card)
 
-</div>
-
-</div>
-
-
-
-<!-- RESOURCES TAB -->
-
-<div id="resources" class="tabContent">
-
-<div class="tool">
-
-<h3>Resources</h3>
-
-<p>Add scripts, training docs, or links here.</p>
-
-</div>
-
-</div>
-
-
-</div>
-
-
-
-<script>
-
-function openTab(tabId){
-
-let tabs=document.querySelectorAll(".tabContent");
-
-tabs.forEach(tab=>{
-tab.style.display="none";
-});
-
-document.getElementById(tabId).style.display="block";
+})
 
 }
 
-// default tab
-openTab("tools");
 
-</script>
+/* POSTS */
+
+function setupPostSystem(){
+
+document.querySelectorAll(".tabContent").forEach(section=>{
+
+const title=section.querySelector(".postTitle")
+const content=section.querySelector(".postContent")
+const tags=section.querySelector(".postTags")
+const pinned=section.querySelector(".postPinned")
+const button=section.querySelector(".createPostBtn")
+const container=section.querySelector(".postsContainer")
+
+if(!container) return
+
+const sectionName=container.dataset.section
+
+loadPosts(sectionName)
+
+button.onclick=async()=>{
+
+await addDoc(collection(db,"posts"),{
+
+title:title.value,
+content:content.innerHTML,
+tags:tags.value,
+pinned:pinned.checked,
+section:sectionName,
+created:serverTimestamp()
+
+})
+
+title.value=""
+tags.value=""
+content.innerHTML=""
+
+loadPosts(sectionName)
+
+}
+
+})
+
+}
 
 
-<script type="module" src="dashboard.js"></script>
+/* LOAD POSTS */
 
-</body>
-</html>
+async function loadPosts(section){
+
+const container=document.querySelector(`.postsContainer[data-section="${section}"]`)
+if(!container) return
+
+const snapshot=await getDocs(collection(db,"posts"))
+
+container.innerHTML=""
+
+snapshot.forEach(docSnap=>{
+
+const data=docSnap.data()
+
+if(data.section!==section) return
+
+const card=document.createElement("div")
+card.className="postCard"
+
+card.innerHTML=`
+
+${data.pinned ? "<div class='pinned'>📌 PINNED</div>" : ""}
+
+<h3>${data.title}</h3>
+
+<div class="postMeta">${data.tags || ""}</div>
+
+<div>${data.content}</div>
+
+<button class="deletePost" data-id="${docSnap.id}">Delete</button>
+
+`
+
+container.appendChild(card)
+
+})
+
+}
+
+
+/* DELETE */
+
+document.addEventListener("click",async(e)=>{
+
+if(e.target.classList.contains("deletePost")){
+
+await deleteDoc(doc(db,"posts",e.target.dataset.id))
+
+location.reload()
+
+}
+
+})
