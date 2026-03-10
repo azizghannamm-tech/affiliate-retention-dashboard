@@ -213,9 +213,9 @@ const card = document.createElement("div");
 card.className="agentCard";
 
 card.innerHTML=`
-<img src="${photo}">
+<img src="${photo}" alt="${name}">
 <div class="agentName">${name}</div>
-<div class="agentRole role-${role.toLowerCase()}">${role}</div>
+<div class="agentRole role-${role.toLowerCase()}">${role.toUpperCase()}</div>
 <div class="agentBio">${bio}</div>
 `;
 
