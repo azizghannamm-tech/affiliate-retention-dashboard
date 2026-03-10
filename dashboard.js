@@ -45,30 +45,6 @@ const profileBtn = document.getElementById("profileBtn");
 const dropdown = document.getElementById("profileDropdown");
 const logoutBtn = document.getElementById("logoutBtn");
 
-/* LOGOUT BUTTON */
-
-if (logoutBtn) {
-
-logoutBtn.addEventListener("click", async () => {
-
-try {
-
-await signOut(auth);
-
-window.location.href = "login.html";
-
-} catch (err) {
-
-console.error("Logout failed:", err);
-
-alert("Failed to logout");
-
-}
-
-});
-
-}
-
 let currentUser;
 
 
@@ -107,24 +83,43 @@ avatar.src = photo;
 
 /* PROFILE CLICK -> EDIT PAGE */
 
+if(profileBtn){
 profileBtn.onclick = () => {
 window.location.href="profile.html";
 };
+}
 
 
-/* LOGOUT */
+/* LOGOUT BUTTON */
 
-logoutBtn.onclick = () => {
-signOut(auth);
-window.location.href="login.html";
+if (logoutBtn) {
+
+logoutBtn.onclick = async () => {
+
+try {
+
+await signOut(auth);
+
+window.location.href = "login.html";
+
+} catch (err) {
+
+console.error("Logout failed:", err);
+alert("Failed to logout");
+
+}
+
 };
+
+}
 
 
 /* LOAD FEATURES */
 
 loadAgentDirectory();
 
-/* wait a moment for tabs to exist */
+/* wait for tabs to render */
+
 setTimeout(()=>{
 setupPostSystem();
 },200);
