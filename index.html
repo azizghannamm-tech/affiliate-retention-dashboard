@@ -3,34 +3,218 @@
 <head>
 
 <meta charset="UTF-8">
-<title>Agent Dashboard</title>
+<title>Knowledge Hub</title>
 
 <link rel="stylesheet" href="dashboard.css">
+
+<style>
+body{
+font-family:Arial;
+background:#f4f7fb;
+margin:0;
+}
+
+header{
+background:#2e5aac;
+color:white;
+padding:15px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.container{
+padding:40px;
+}
+
+.logo{
+font-size:18px;
+}
+
+.profileArea{
+display:flex;
+align-items:center;
+gap:20px;
+position:relative;
+}
+
+.profile{
+display:flex;
+align-items:center;
+gap:10px;
+cursor:pointer;
+}
+
+.profile img{
+width:38px;
+height:38px;
+border-radius:50%;
+object-fit:cover;
+}
+
+.profileInfo{
+font-size:13px;
+}
+
+.role{
+font-size:11px;
+color:#ddd;
+}
+
+.dropdown{
+position:absolute;
+right:0;
+top:60px;
+background:white;
+border-radius:8px;
+box-shadow:0 6px 20px rgba(0,0,0,0.15);
+padding:15px;
+display:none;
+min-width:200px;
+color:black;
+}
+
+.dropdown.show{
+display:block;
+}
+
+.dropdown button{
+width:100%;
+margin-top:10px;
+padding:8px;
+border:none;
+background:#1e4fa1;
+color:white;
+border-radius:6px;
+cursor:pointer;
+}
+
+/* tabs */
+
+.tabs{
+display:flex;
+gap:10px;
+margin-bottom:20px;
+flex-wrap:wrap;
+}
+
+.tab{
+padding:8px 14px;
+background:#e4e9f3;
+border-radius:6px;
+cursor:pointer;
+}
+
+.tab.active{
+background:#2e5aac;
+color:white;
+}
+
+.tabContent{
+display:none;
+}
+
+.tabContent.active{
+display:block;
+}
+
+/* posts */
+
+.postCard{
+background:#fff;
+border-radius:10px;
+padding:16px;
+margin-top:15px;
+box-shadow:0 2px 8px rgba(0,0,0,.05);
+}
+
+.postMeta{
+font-size:13px;
+color:#666;
+margin-bottom:6px;
+}
+
+.postActions{
+display:flex;
+gap:8px;
+margin-top:12px;
+}
+
+.postActions button{
+border:none;
+background:#f2f4f8;
+padding:6px 10px;
+border-radius:6px;
+cursor:pointer;
+}
+
+.postContent{
+border:1px solid #ccc;
+padding:10px;
+border-radius:6px;
+min-height:120px;
+margin-top:10px;
+}
+
+.editorToolbar{
+display:flex;
+gap:6px;
+margin-top:10px;
+}
+
+.editorToolbar button{
+border:1px solid #ccc;
+background:white;
+padding:4px 8px;
+border-radius:6px;
+cursor:pointer;
+}
+
+.pinned{
+font-size:12px;
+color:#d97706;
+font-weight:bold;
+margin-bottom:5px;
+}
+
+.tool{
+background:white;
+padding:20px;
+margin-bottom:20px;
+border-radius:8px;
+box-shadow:0 2px 8px rgba(0,0,0,0.08);
+}
+
+</style>
 
 </head>
 
 <body>
 
-<header class="topBar">
+<header>
 
-<div class="logo">
-Agent Tools
-</div>
+<div class="logo"><b>Knowledge Hub</b></div>
 
-<div class="profileSection">
+<div class="profileArea">
 
-<img id="agentAvatar" class="avatar">
+<div class="profile" id="profileBtn">
+<img id="agentAvatar">
 
 <div class="profileInfo">
 <div id="agentName">Agent</div>
-<div id="agentEmail"></div>
+<div class="role" id="accessLevel">Agent</div>
 </div>
 
-<button id="profileBtn">☰</button>
+</div>
 
-<div id="profileDropdown" class="dropdown">
-<a href="profile.html">Edit Profile</a>
+<div class="dropdown" id="profileDropdown">
+
+<div id="agentEmail"></div>
+<hr>
+
+<button onclick="location.href='profile.html'">Edit Profile</button>
 <button id="logoutBtn">Logout</button>
+
 </div>
 
 </div>
@@ -38,7 +222,68 @@ Agent Tools
 </header>
 
 
-<div class="mainContainer">
+<div class="container">
+
+<div class="tabs">
+
+<div class="tab active" data-tab="home">Home</div>
+<div class="tab" data-tab="retention">Retention</div>
+<div class="tab" data-tab="updates">Updates</div>
+<div class="tab" data-tab="tools">Tools</div>
+<div class="tab" data-tab="evertrust">Evertrust</div>
+<div class="tab" data-tab="uw">UW Guidelines</div>
+<div class="tab" data-tab="payments">Payments</div>
+<div class="tab" data-tab="files">Files</div>
+<div class="tab" data-tab="contacts">Contacts</div>
+<div class="tab" data-tab="agents">Agents</div>
+
+</div>
+
+
+<!-- POST TAB TEMPLATE -->
+
+<script>
+function createTab(section,title){
+
+return `
+<div id="${section}" class="tabContent">
+
+<div class="tool">
+
+<h3>${title}</h3>
+
+<input class="postTitle" placeholder="Post title">
+<input class="postTags" placeholder="Tags">
+
+<label>
+<input type="checkbox" class="postPinned"> Pin post
+</label>
+
+<div class="editorToolbar">
+<button data-format="bold"><b>B</b></button>
+<button data-format="italic"><i>I</i></button>
+<button data-format="underline"><u>U</u></button>
+</div>
+
+<div class="postContent" contenteditable="true"></div>
+
+<button class="createPostBtn">Publish Post</button>
+
+<input class="postSearch" placeholder="Search posts" style="margin-top:15px;width:100%;padding:8px;">
+
+<div class="postsContainer" data-section="${section}"></div>
+
+</div>
+</div>
+`
+}
+</script>
+
+
+<div id="tabsArea"></div>
+
+
+<!-- AGENTS -->
 
 <div id="agents" class="tabContent">
 
@@ -47,9 +292,7 @@ Agent Tools
 <h3>Agent Directory</h3>
 
 <div id="agentDirectory">
-
-<div id="agentGrid"></div>
-
+<div class="agentDirectoryGrid" id="agentGrid"></div>
 </div>
 
 </div>
@@ -57,8 +300,61 @@ Agent Tools
 </div>
 
 </div>
+
 
 <script type="module" src="dashboard.js"></script>
+
+
+<script>
+
+/* BUILD ALL TABS */
+
+const tabsArea=document.getElementById("tabsArea")
+
+tabsArea.innerHTML=
+createTab("home","Home")+
+createTab("retention","Retention")+
+createTab("updates","Updates")+
+createTab("tools","Tools")+
+createTab("evertrust","Evertrust")+
+createTab("uw","UW Guidelines")+
+createTab("payments","Payments")+
+createTab("files","Files")+
+createTab("contacts","Contacts")
+
+/* TAB SWITCHING */
+
+const tabs=document.querySelectorAll(".tab")
+const contents=document.querySelectorAll(".tabContent")
+
+tabs.forEach(tab=>{
+
+tab.addEventListener("click",()=>{
+
+tabs.forEach(t=>t.classList.remove("active"))
+contents.forEach(c=>c.classList.remove("active"))
+
+tab.classList.add("active")
+
+document.getElementById(tab.dataset.tab).classList.add("active")
+
+})
+
+})
+
+/* EDITOR */
+
+document.addEventListener("click",(e)=>{
+
+if(e.target.dataset.format){
+
+document.execCommand(e.target.dataset.format,false,null)
+
+}
+
+})
+
+</script>
 
 </body>
 </html>
