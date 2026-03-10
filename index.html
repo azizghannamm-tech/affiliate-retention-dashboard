@@ -3,295 +3,9 @@
 <head>
 
 <meta charset="UTF-8">
-<title>Knowledge Hub</title>
+<title>Agent Hub</title>
 
-<style>
-
-body{
-font-family:Arial;
-background:#f4f7fb;
-margin:0;
-}
-
-header{
-background:#2e5aac;
-color:white;
-padding:15px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-}
-
-.container{
-padding:40px;
-}
-
-.tool{
-background:white;
-padding:20px;
-margin-bottom:20px;
-border-radius:8px;
-box-shadow:0 2px 8px rgba(0,0,0,0.08);
-}
-
-.logo{
-font-size:18px;
-}
-
-.profileArea{
-display:flex;
-align-items:center;
-gap:20px;
-position:relative;
-}
-
-.profile{
-display:flex;
-align-items:center;
-gap:10px;
-cursor:pointer;
-}
-
-.profile img{
-width:38px;
-height:38px;
-border-radius:50%;
-object-fit:cover;
-}
-
-.profileInfo{
-font-size:13px;
-}
-
-.role{
-font-size:11px;
-color:#ddd;
-}
-
-.dropdown{
-position:absolute;
-right:0;
-top:60px;
-background:white;
-border-radius:8px;
-box-shadow:0 6px 20px rgba(0,0,0,0.15);
-padding:15px;
-display:none;
-min-width:200px;
-color:black;
-}
-
-.dropdown.show{
-display:block;
-}
-
-.dropdown button{
-width:100%;
-margin-top:10px;
-padding:8px;
-border:none;
-background:#1e4fa1;
-color:white;
-border-radius:6px;
-cursor:pointer;
-}
-
-.dark{
-background:#1f1f1f;
-color:white;
-}
-
-.dark .tool{
-background:#2c2c2c;
-}
-
-/* tabs */
-
-.tabs{
-display:flex;
-gap:10px;
-margin-bottom:20px;
-flex-wrap:wrap;
-}
-
-.tab{
-padding:8px 14px;
-background:#e4e9f3;
-border-radius:6px;
-cursor:pointer;
-}
-
-.tab.active{
-background:#2e5aac;
-color:white;
-}
-
-.tabContent{
-display:none;
-}
-
-.tabContent.active{
-display:block;
-}
-
-/* editor */
-
-.editorToolbar{
-display:flex;
-gap:6px;
-margin-top:10px;
-}
-
-.editorToolbar button{
-border:1px solid #ccc;
-background:white;
-padding:4px 8px;
-border-radius:6px;
-cursor:pointer;
-}
-
-/* posts */
-
-.postCard{
-background:#fff;
-border-radius:10px;
-padding:16px;
-margin-top:15px;
-box-shadow:0 2px 8px rgba(0,0,0,.05);
-}
-
-.postMeta{
-font-size:13px;
-color:#666;
-margin-bottom:6px;
-}
-
-.postTags{
-margin-bottom:8px;
-}
-
-.tag{
-background:#eef2ff;
-padding:3px 8px;
-border-radius:6px;
-margin-right:6px;
-font-size:12px;
-cursor:pointer;
-}
-
-.postContent.collapsed{
-max-height:120px;
-overflow:hidden;
-}
-
-.expandPost{
-background:none;
-border:none;
-color:#2e5aac;
-cursor:pointer;
-margin-top:6px;
-}
-
-.postActions{
-display:flex;
-gap:8px;
-margin-top:12px;
-}
-
-.postActions button{
-border:none;
-background:#f2f4f8;
-padding:6px 10px;
-border-radius:6px;
-cursor:pointer;
-}
-
-.pinned{
-font-size:12px;
-color:#d97706;
-font-weight:bold;
-margin-bottom:5px;
-}
-
-/* AGENT DIRECTORY GRID (FIXED) */
-
-.agentDirectoryGrid{
-display:grid;
-grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
-gap:15px;
-margin-top:15px;
-}
-
-.agentCard{
-background:white;
-border-radius:10px;
-padding:12px;
-display:flex;
-align-items:center;
-gap:10px;
-box-shadow:0 2px 8px rgba(0,0,0,0.08);
-transition:0.2s;
-}
-
-.agentCard img{
-width:40px;
-height:40px;
-border-radius:50%;
-object-fit:cover;
-}
-
-.agentCard:hover{
-transform:translateY(-2px);
-}
-
-/* delete modal */
-
-.modal{
-display:none;
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:rgba(0,0,0,.45);
-align-items:center;
-justify-content:center;
-z-index:999;
-}
-
-.modalBox{
-background:white;
-padding:20px;
-border-radius:10px;
-width:320px;
-text-align:center;
-}
-
-.modalButtons{
-display:flex;
-gap:10px;
-justify-content:center;
-margin-top:15px;
-}
-
-#confirmDelete{
-background:#dc2626;
-color:white;
-border:none;
-padding:8px 14px;
-border-radius:6px;
-cursor:pointer;
-}
-
-#cancelDelete{
-background:#ddd;
-border:none;
-padding:8px 14px;
-border-radius:6px;
-cursor:pointer;
-}
-
-</style>
+<link rel="stylesheet" href="dashboard.css">
 
 </head>
 
@@ -299,30 +13,21 @@ cursor:pointer;
 
 <header>
 
-<div class="logo">
-<b>Knowledge Hub</b>
-</div>
+<h2>Agent Knowledge Hub</h2>
 
 <div class="profileArea">
 
-<div class="profile" id="profileBtn">
+<img id="agentAvatar" src="" width="40">
 
-<img id="agentAvatar" src="https://ui-avatars.com/api/?name=Agent&background=2e5aac&color=fff">
+<span id="agentName"></span>
 
-<div class="profileInfo">
-<div id="agentName">Agent</div>
-<div class="role" id="accessLevel">Agent</div>
-</div>
+<button id="profileBtn">Profile</button>
 
-</div>
+<div id="profileDropdown">
 
-<div class="dropdown" id="profileDropdown">
+<p id="agentEmail"></p>
+<p id="accessLevel"></p>
 
-<div id="agentEmail"></div>
-
-<hr>
-
-<button onclick="location.href='profile.html'">Edit Profile</button>
 <button id="logoutBtn">Logout</button>
 
 </div>
@@ -331,58 +36,61 @@ cursor:pointer;
 
 </header>
 
-<div class="container">
+
+<!-- =========================
+TABS
+========================= -->
 
 <div class="tabs">
 
-<div class="tab active" data-tab="home">Home</div>
-<div class="tab" data-tab="retention">Retention</div>
-<div class="tab" data-tab="updates">Updates</div>
-<div class="tab" data-tab="tools">Tools</div>
-<div class="tab" data-tab="evertrust">Evertrust</div>
-<div class="tab" data-tab="uw">UW Guidelines</div>
-<div class="tab" data-tab="payments">Payments</div>
-<div class="tab" data-tab="files">Files</div>
-<div class="tab" data-tab="contacts">Contacts</div>
-<div class="tab" data-tab="agents">Agents</div>
+<button class="tabButton" data-tab="tools">Tools</button>
+
+<button class="tabButton" data-tab="knowledge">Knowledge</button>
+
+<button class="tabButton" data-tab="agents">Agents</button>
 
 </div>
 
-<!-- HOME -->
 
-<div id="home" class="tabContent active">
+<!-- =========================
+TOOLS
+========================= -->
+
+<div id="tools" class="tabContent">
+
+<div class="tool">
+<h3>Agent Tools</h3>
+<p>Internal tools go here</p>
+</div>
+
+</div>
+
+
+<!-- =========================
+KNOWLEDGE
+========================= -->
+
+<div id="knowledge" class="tabContent">
+
 <div class="tool">
 
-<h3>Home</h3>
+<h3>Knowledge Base</h3>
 
-<input class="postTitle" placeholder="Post title">
-<input class="postTags" placeholder="Tags">
-
-<label>
-<input type="checkbox" class="postPinned"> Pin post
-</label>
-
-<div class="editorToolbar">
-<button data-format="bold"><b>B</b></button>
-<button data-format="italic"><i>I</i></button>
-<button data-format="underline"><u>U</u></button>
-</div>
-
-<div class="postContent" contenteditable="true" style="border:1px solid #ccc;padding:10px;border-radius:6px;min-height:120px;margin-top:10px;"></div>
-
-<button class="createPostBtn">Publish Post</button>
-
-<input class="postSearch" placeholder="Search posts" style="margin-top:15px;width:100%;padding:8px;">
-
-<div class="postsContainer" data-section="home"></div>
+<div class="postsContainer" data-section="knowledge"></div>
 
 </div>
+
 </div>
 
-<!-- AGENTS -->
+
+<!-- =========================
+AGENT DIRECTORY
+========================= -->
 
 <div id="agents" class="tabContent">
+
 <div class="tool">
+
 <h3>Agent Directory</h3>
 
 <div id="agentDirectory">
@@ -390,87 +98,37 @@ cursor:pointer;
 </div>
 
 </div>
-</div>
 
 </div>
 
-<!-- DELETE MODAL -->
 
-<div id="deleteModal" class="modal">
 
-<div class="modalBox">
-
-<h3>Delete Post</h3>
-
-<p>Are you sure you want to delete this post?</p>
-
-<div class="modalButtons">
-<button id="confirmDelete">Delete</button>
-<button id="cancelDelete">Cancel</button>
-</div>
-
-</div>
-
-</div>
-
-<script type="module" src="app.js"></script>
 <script type="module" src="dashboard.js"></script>
 
-<script>
 
-const profileBtn = document.getElementById("profileBtn");
-const dropdown = document.getElementById("profileDropdown");
 
-profileBtn.onclick = () => {
-dropdown.classList.toggle("show");
-};
+<!-- =========================
+TAWK CHAT
+========================= -->
 
-window.onclick = function(e){
-if(!profileBtn.contains(e.target)){
-dropdown.classList.remove("show");
-}
-};
-
-const tabs = document.querySelectorAll(".tab");
-const contents = document.querySelectorAll(".tabContent");
-
-tabs.forEach(tab => {
-
-tab.addEventListener("click", () => {
-
-tabs.forEach(t => t.classList.remove("active"));
-contents.forEach(c => c.classList.remove("active"));
-
-tab.classList.add("active");
-
-const target = document.getElementById(tab.dataset.tab);
-target.classList.add("active");
-
-});
-
-});
-
-document.querySelectorAll(".editorToolbar button").forEach(btn=>{
-btn.addEventListener("click",()=>{
-document.execCommand(btn.dataset.format,false,null);
-});
-});
-
-</script>
-
-<!--Start of Tawk.to Script-->
 <script type="text/javascript">
+
 var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+
 (function(){
-var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+var s1=document.createElement("script"),
+s0=document.getElementsByTagName("script")[0];
+
 s1.async=true;
 s1.src='https://embed.tawk.to/69b0878d801efb1c38c6a920/1jjcp30f6';
 s1.charset='UTF-8';
 s1.setAttribute('crossorigin','*');
+
 s0.parentNode.insertBefore(s1,s0);
+
 })();
+
 </script>
-<!--End of Tawk.to Script-->  
 
 </body>
 </html>
