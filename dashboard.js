@@ -81,14 +81,6 @@ avatar.src = photo;
 }
 
 
-/* PROFILE CLICK -> EDIT PAGE */
-
-if(profileBtn){
-profileBtn.onclick = () => {
-window.location.href="profile.html";
-};
-}
-
 
 /* LOGOUT BUTTON */
 
