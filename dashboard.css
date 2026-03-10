@@ -1,32 +1,22 @@
-/* GENERAL PAGE */
-
 body{
 font-family:Arial;
 background:#f4f7fb;
 margin:0;
 }
 
-
-
-/* TOP BAR */
-
 .topBar{
 background:#2e5aac;
 color:white;
-padding:15px 25px;
+padding:15px;
 display:flex;
 justify-content:space-between;
 align-items:center;
 }
 
 .logo{
-font-size:18px;
 font-weight:bold;
+font-size:18px;
 }
-
-
-
-/* PROFILE AREA */
 
 .profileSection{
 display:flex;
@@ -45,7 +35,6 @@ background:white;
 
 .profileInfo{
 font-size:13px;
-line-height:1.2;
 }
 
 #profileBtn{
@@ -56,169 +45,80 @@ font-size:20px;
 cursor:pointer;
 }
 
-
-
-/* DROPDOWN */
-
 .dropdown{
 display:none;
 position:absolute;
 right:0;
-top:55px;
+top:50px;
 background:white;
-border-radius:8px;
-box-shadow:0 6px 20px rgba(0,0,0,0.15);
+border-radius:6px;
+box-shadow:0 4px 10px rgba(0,0,0,0.15);
 overflow:hidden;
-min-width:160px;
-z-index:10;
 }
 
 .dropdown a,
 .dropdown button{
 display:block;
+padding:10px 15px;
 width:100%;
-padding:12px;
-text-align:left;
 border:none;
 background:none;
+text-align:left;
 cursor:pointer;
-font-size:14px;
-}
-
-.dropdown a:hover,
-.dropdown button:hover{
-background:#f2f2f2;
 }
 
 .dropdown.show{
 display:block;
 }
 
-
-
-/* MAIN CONTAINER */
-
 .mainContainer{
 padding:40px;
-max-width:1200px;
+max-width:1000px;
 margin:auto;
 }
 
-
-
-/* TOOL BOX */
-
 .tool{
 background:white;
-padding:30px;
-border-radius:10px;
-box-shadow:0 4px 15px rgba(0,0,0,0.08);
+padding:25px;
+border-radius:8px;
+box-shadow:0 4px 10px rgba(0,0,0,0.08);
 }
 
-.tool h3{
-margin-top:0;
-margin-bottom:25px;
-}
-
-
-
-/* AGENT DIRECTORY GRID */
-
-.agentDirectoryGrid{
-
+#agentGrid{
 display:grid;
-
-/* 3-4 agents per row */
-grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-
-gap:25px;
-
+grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+gap:20px;
+margin-top:20px;
 }
-
-
-
-/* AGENT CARD */
 
 .agentCard{
-
 background:white;
-
-border-radius:12px;
-
 padding:20px;
-
+border-radius:8px;
 text-align:center;
-
-box-shadow:0 4px 12px rgba(0,0,0,0.08);
-
-transition:transform .2s, box-shadow .2s;
-
+box-shadow:0 2px 8px rgba(0,0,0,0.08);
 }
-
-.agentCard:hover{
-
-transform:translateY(-5px);
-
-box-shadow:0 8px 22px rgba(0,0,0,0.12);
-
-}
-
-
-
-/* AGENT PHOTO */
 
 .agentCard img{
-
-width:120px;
-
-height:120px;
-
+width:80px;
+height:80px;
 border-radius:50%;
-
 object-fit:cover;
-
-margin-bottom:15px;
-
+margin-bottom:10px;
 }
-
-
-
-/* AGENT NAME */
 
 .agentName{
-
-font-size:18px;
-
 font-weight:bold;
-
 margin-bottom:5px;
-
 }
-
-
-
-/* AGENT ROLE */
 
 .agentRole{
-
 font-size:13px;
-
 color:#2e5aac;
-
-margin-bottom:10px;
-
+margin-bottom:5px;
 }
 
-
-
-/* AGENT BIO */
-
 .agentBio{
-
 font-size:13px;
-
 color:#666;
-
-line-height:1.4;
-
 }
