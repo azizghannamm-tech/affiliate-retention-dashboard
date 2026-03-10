@@ -212,10 +212,12 @@ data.photo ||
 const card = document.createElement("div");
 card.className="agentCard";
 
-card.innerHTML=`
-<img src="${photo}" alt="${name}">
+card.className = "agentCard";
+
+card.innerHTML = `
+<img src="${photo}">
 <div class="agentName">${name}</div>
-<div class="agentRole role-${role.toLowerCase()}">${role.toUpperCase()}</div>
+<div class="agentRole">${role}</div>
 <div class="agentBio">${bio}</div>
 `;
 
