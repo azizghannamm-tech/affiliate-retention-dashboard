@@ -24,19 +24,12 @@ getDocs
 // ==========================
 
 const firebaseConfig = {
-
 apiKey: "AIzaSyB8dDTnpPQVRAs7dkfc8QU3L5qUJtm-2jg",
-
 authDomain: "affiliate-relations-17687.firebaseapp.com",
-
 projectId: "affiliate-relations-17687",
-
 storageBucket: "affiliate-relations-17687.appspot.com",
-
 messagingSenderId: "000000000000",
-
 appId: "1:000000000:web:000000000000"
-
 };
 
 
@@ -72,9 +65,7 @@ const logoutBtn = document.getElementById("logoutBtn");
 if(profileBtn){
 
 profileBtn.onclick = () => {
-
 dropdown.classList.toggle("show");
-
 };
 
 }
@@ -111,11 +102,9 @@ return;
 
 }
 
-
 const ref = doc(db,"profiles",user.uid);
 
 const snap = await getDoc(ref);
-
 
 if(snap.exists()){
 
@@ -139,31 +128,6 @@ agentAvatar.src =
 }
 
 }
-
-}
-
-
-// ==========================
-// IDENTIFY USER IN TAWK CHAT
-// ==========================
-
-if (typeof Tawk_API !== "undefined") {
-
-Tawk_API.onLoad = function(){
-
-Tawk_API.setAttributes({
-
-name : agentName.textContent || "Agent",
-
-email : agentEmail.textContent || ""
-
-}, function(error){
-
-console.log("Tawk error:", error);
-
-});
-
-};
 
 }
 
@@ -209,22 +173,15 @@ const photo =
 data.photo ||
 `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=2e5aac&color=fff`;
 
-
 const card = document.createElement("div");
 
 card.className = "agentCard";
 
-
 card.innerHTML = `
-
 <img src="${photo}" alt="${name}">
-
 <div class="agentName">${name}</div>
-
 <div class="agentRole">${role}</div>
-
 <div class="agentBio">${bio}</div>
-
 `;
 
 container.appendChild(card);
