@@ -215,7 +215,7 @@ card.className="agentCard";
 card.innerHTML=`
 <img src="${photo}">
 <div class="agentName">${name}</div>
-<div class="agentRole">${role}</div>
+<div class="agentRole role-${role.toLowerCase()}">${role}</div>
 <div class="agentBio">${bio}</div>
 `;
 
@@ -230,83 +230,6 @@ container.appendChild(card);
 }catch(err){
 console.error(err);
 container.innerHTML="Failed to load agents";
-}
-
-}
-
-// SEARCH BAR
-
-const search = document.createElement("input");
-search.placeholder="Search agents...";
-search.className="agentSearch";
-container.appendChild(search);
-
-// GRID
-
-const grid = document.createElement("div");
-grid.className="agentDirectoryGrid";
-container.appendChild(grid);
-
-snapshot.forEach((docSnap)=>{
-
-const data = docSnap.data();
-
-const name = data.name || "Agent";
-const role = data.role || "Agent";
-const bio = data.bio || "";
-
-const photo = data.photo ||
-`https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=2e5aac&color=fff`;
-
-const card = document.createElement("div");
-card.className="agentCard";
-
-card.innerHTML = `
-
-<img src="${photo}">
-
-<h4>${name}</h4>
-
-<div class="agentRole role-${role.toLowerCase()}">
-${role}
-</div>
-
-<div class="agentBio">
-${bio}
-</div>
-
-`;
-
-card.onclick = ()=>{
-window.location.href = "profile.html?user="+docSnap.id;
-};
-
-grid.appendChild(card);
-
-});
-
-// SEARCH FILTER
-
-search.oninput = ()=>{
-
-const term = search.value.toLowerCase();
-
-grid.querySelectorAll(".agentCard").forEach(card=>{
-
-card.style.display =
-card.innerText.toLowerCase().includes(term)
-? "block"
-: "none";
-
-});
-
-};
-
-}catch(err){
-
-console.error(err);
-container.innerHTML="Failed to load agents.";
-
 }
 
 }
@@ -354,8 +277,6 @@ author: agentName.textContent,
 created: serverTimestamp()
 
 });
-
-logActivity("created post: "+title.value);
 
 title.value="";
 if(tags) tags.value="";
@@ -472,8 +393,6 @@ if(!confirm("Delete this post?")) return;
 
 await deleteDoc(doc(db,"posts",id));
 
-logActivity("deleted post");
-
 document.querySelectorAll(".postsContainer").forEach(c=>{
 loadPosts(c.dataset.section);
 });
@@ -505,8 +424,6 @@ content:newContent
 
 });
 
-logActivity("edited post");
-
 document.querySelectorAll(".postsContainer").forEach(c=>{
 loadPosts(c.dataset.section);
 });
@@ -517,24 +434,7 @@ loadPosts(c.dataset.section);
 
 
 // ==========================
-// ACTIVITY LOG
-// ==========================
-
-async function logActivity(action){
-
-await addDoc(collection(db,"activity"),{
-
-user: agentName.textContent,
-action: action,
-time: serverTimestamp()
-
-});
-
-}
-
-
-// ==========================
-// LOAD ACTIVITY FEED
+// ACTIVITY FEED
 // ==========================
 
 async function loadActivity(){
@@ -546,9 +446,9 @@ const snapshot = await getDocs(collection(db,"activity"));
 
 container.innerHTML="";
 
-snapshot.forEach(doc=>{
+snapshot.forEach(docSnap=>{
 
-const data = doc.data();
+const data = docSnap.data();
 
 const item=document.createElement("div");
 
