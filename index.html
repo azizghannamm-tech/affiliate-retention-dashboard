@@ -198,6 +198,7 @@ box-shadow:0 2px 8px rgba(0,0,0,0.08);
 <div class="profileArea">
 
 <div class="profile" id="profileBtn">
+
 <img id="agentAvatar">
 
 <div class="profileInfo">
@@ -210,6 +211,7 @@ box-shadow:0 2px 8px rgba(0,0,0,0.08);
 <div class="dropdown" id="profileDropdown">
 
 <div id="agentEmail"></div>
+
 <hr>
 
 <button onclick="location.href='profile.html'">Edit Profile</button>
@@ -239,8 +241,6 @@ box-shadow:0 2px 8px rgba(0,0,0,0.08);
 
 </div>
 
-
-<!-- POST TAB TEMPLATE -->
 
 <script>
 function createTab(section,title){
@@ -283,8 +283,6 @@ return `
 <div id="tabsArea"></div>
 
 
-<!-- AGENTS -->
-
 <div id="agents" class="tabContent">
 
 <div class="tool">
@@ -322,6 +320,7 @@ createTab("payments","Payments")+
 createTab("files","Files")+
 createTab("contacts","Contacts")
 
+
 /* TAB SWITCHING */
 
 const tabs=document.querySelectorAll(".tab")
@@ -342,16 +341,32 @@ document.getElementById(tab.dataset.tab).classList.add("active")
 
 })
 
+
 /* EDITOR */
 
 document.addEventListener("click",(e)=>{
 
 if(e.target.dataset.format){
-
 document.execCommand(e.target.dataset.format,false,null)
-
 }
 
+})
+
+
+/* PROFILE DROPDOWN */
+
+const profileBtn=document.getElementById("profileBtn")
+const dropdown=document.getElementById("profileDropdown")
+
+profileBtn.addEventListener("click",(e)=>{
+e.stopPropagation()
+dropdown.classList.toggle("show")
+})
+
+window.addEventListener("click",(e)=>{
+if(!profileBtn.contains(e.target)){
+dropdown.classList.remove("show")
+}
 })
 
 </script>
