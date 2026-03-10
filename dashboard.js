@@ -13,11 +13,12 @@ getDoc,
 collection,
 getDocs,
 addDoc,
-updateDoc,
 deleteDoc,
 serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+
+/* FIREBASE CONFIG */
 
 const firebaseConfig = {
 apiKey: "AIzaSyB8dDTnpPQVRAs7dkfc8QU3L5qUJtm-2jg",
@@ -25,49 +26,114 @@ authDomain: "affiliate-relations-17687.firebaseapp.com",
 projectId: "affiliate-relations-17687"
 };
 
+
+/* INIT */
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
 
-/* AUTH */
+/* ELEMENTS */
+
+const avatar = document.getElementById("agentAvatar");
+const name = document.getElementById("agentName");
+const email = document.getElementById("agentEmail");
+const role = document.getElementById("accessLevel");
+
+const profileBtn = document.getElementById("profileBtn");
+const dropdown = document.getElementById("profileDropdown");
+const logoutBtn = document.getElementById("logoutBtn");
+
+let currentUser;
+
+
+/* AUTH CHECK */
 
 onAuthStateChanged(auth, async (user)=>{
 
 if(!user){
-window.location.href="login.html"
-return
+window.location.href="login.html";
+return;
 }
 
-loadAgentDirectory()
-setupPostSystem()
+currentUser=user;
 
-})
+
+/* LOAD PROFILE */
+
+const ref = doc(db,"profiles",user.uid);
+const snap = await getDoc(ref);
+
+if(snap.exists()){
+
+const data = snap.data();
+
+name.textContent = data.name || "Agent";
+email.textContent = user.email;
+
+const photo =
+data.photo ||
+`https://ui-avatars.com/api/?name=${encodeURIComponent(data.name || "Agent")}&background=2e5aac&color=fff`;
+
+avatar.src = photo;
+
+}
+
+
+/* PROFILE CLICK -> EDIT PAGE */
+
+profileBtn.onclick = () => {
+window.location.href="profile.html";
+};
+
+
+/* LOGOUT */
+
+logoutBtn.onclick = () => {
+signOut(auth);
+window.location.href="login.html";
+};
+
+
+/* LOAD FEATURES */
+
+loadAgentDirectory();
+
+/* wait a moment for tabs to exist */
+setTimeout(()=>{
+setupPostSystem();
+},200);
+
+});
 
 
 /* AGENT DIRECTORY */
 
 async function loadAgentDirectory(){
 
-const container=document.getElementById("agentGrid")
-if(!container) return
+const grid = document.getElementById("agentGrid");
+if(!grid) return;
 
-container.innerHTML="Loading..."
+grid.innerHTML="Loading agents...";
 
-const snapshot=await getDocs(collection(db,"profiles"))
+const snapshot = await getDocs(collection(db,"profiles"));
 
-container.innerHTML=""
+grid.innerHTML="";
 
 snapshot.forEach(docSnap=>{
 
-const data=docSnap.data()
+const data = docSnap.data();
 
-const card=document.createElement("div")
-card.className="agentCard"
+const card=document.createElement("div");
+card.className="agentCard";
 
 card.innerHTML=`
 
-<img src="${data.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name || "Agent")}` }">
+<img src="${
+data.photo ||
+`https://ui-avatars.com/api/?name=${encodeURIComponent(data.name || "Agent")}&background=2e5aac&color=fff`
+}">
 
 <div class="agentName">${data.name || "Agent"}</div>
 
@@ -75,35 +141,43 @@ card.innerHTML=`
 
 <div class="agentBio">${data.bio || ""}</div>
 
-`
+`;
 
-container.appendChild(card)
+grid.appendChild(card);
 
-})
+});
 
 }
 
 
-/* POSTS */
+/* POST SYSTEM */
 
 function setupPostSystem(){
 
-document.querySelectorAll(".tabContent").forEach(section=>{
+document.querySelectorAll(".postsContainer").forEach(container=>{
 
-const title=section.querySelector(".postTitle")
-const content=section.querySelector(".postContent")
-const tags=section.querySelector(".postTags")
-const pinned=section.querySelector(".postPinned")
-const button=section.querySelector(".createPostBtn")
-const container=section.querySelector(".postsContainer")
+const section = container.dataset.section;
 
-if(!container) return
+loadPosts(section);
 
-const sectionName=container.dataset.section
+const parent = container.closest(".tool");
 
-loadPosts(sectionName)
+const title = parent.querySelector(".postTitle");
+const tags = parent.querySelector(".postTags");
+const content = parent.querySelector(".postContent");
+const pinned = parent.querySelector(".postPinned");
+const button = parent.querySelector(".createPostBtn");
+const search = parent.querySelector(".postSearch");
 
-button.onclick=async()=>{
+
+/* CREATE POST */
+
+button.onclick = async ()=>{
+
+if(!title.value || !content.innerHTML){
+alert("Fill title and content");
+return;
+}
 
 await addDoc(collection(db,"posts"),{
 
@@ -111,20 +185,39 @@ title:title.value,
 content:content.innerHTML,
 tags:tags.value,
 pinned:pinned.checked,
-section:sectionName,
+section:section,
+author:name.textContent,
 created:serverTimestamp()
 
-})
+});
 
-title.value=""
-tags.value=""
-content.innerHTML=""
+title.value="";
+tags.value="";
+content.innerHTML="";
 
-loadPosts(sectionName)
+loadPosts(section);
 
-}
+};
 
-})
+
+/* SEARCH */
+
+search.oninput = ()=>{
+
+const term = search.value.toLowerCase();
+
+container.querySelectorAll(".postCard").forEach(post=>{
+
+post.style.display =
+post.innerText.toLowerCase().includes(term)
+? "block"
+: "none";
+
+});
+
+};
+
+});
 
 }
 
@@ -133,21 +226,21 @@ loadPosts(sectionName)
 
 async function loadPosts(section){
 
-const container=document.querySelector(`.postsContainer[data-section="${section}"]`)
-if(!container) return
+const container=document.querySelector(`.postsContainer[data-section="${section}"]`);
+if(!container) return;
 
-const snapshot=await getDocs(collection(db,"posts"))
+const snapshot=await getDocs(collection(db,"posts"));
 
-container.innerHTML=""
+container.innerHTML="";
 
 snapshot.forEach(docSnap=>{
 
-const data=docSnap.data()
+const data=docSnap.data();
 
-if(data.section!==section) return
+if(data.section!==section) return;
 
-const card=document.createElement("div")
-card.className="postCard"
+const card=document.createElement("div");
+card.className="postCard";
 
 card.innerHTML=`
 
@@ -155,31 +248,37 @@ ${data.pinned ? "<div class='pinned'>📌 PINNED</div>" : ""}
 
 <h3>${data.title}</h3>
 
-<div class="postMeta">${data.tags || ""}</div>
+<div class="postMeta">${data.author || ""} • ${data.tags || ""}</div>
 
 <div>${data.content}</div>
 
-<button class="deletePost" data-id="${docSnap.id}">Delete</button>
+<div class="postActions">
+<button class="deletePost" data-id="${docSnap.id}">
+Delete
+</button>
+</div>
 
-`
+`;
 
-container.appendChild(card)
+container.appendChild(card);
 
-})
+});
 
 }
 
 
-/* DELETE */
+/* DELETE POST */
 
 document.addEventListener("click",async(e)=>{
 
 if(e.target.classList.contains("deletePost")){
 
-await deleteDoc(doc(db,"posts",e.target.dataset.id))
+if(!confirm("Delete post?")) return;
 
-location.reload()
+await deleteDoc(doc(db,"posts",e.target.dataset.id));
+
+location.reload();
 
 }
 
-})
+});
