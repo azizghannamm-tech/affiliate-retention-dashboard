@@ -268,7 +268,7 @@ background:rgba(255,255,255,.2);
 
 <hr>
 
-<button onclick="location.href='profile.html'">Edit Profile</button>
+<button id="editProfileBtn">Edit Profile</button>
 <button id="logoutBtn">Logout</button>
 
 </div>
@@ -461,8 +461,13 @@ const profileBtn=document.getElementById("profileBtn")
 const dropdown=document.getElementById("profileDropdown")
 
 profileBtn.addEventListener("click",(e)=>{
+e.preventDefault()
 e.stopPropagation()
 dropdown.classList.toggle("show")
+})
+
+dropdown.addEventListener("click",(e)=>{
+e.stopPropagation()
 })
 
 window.addEventListener("click",(e)=>{
@@ -470,6 +475,13 @@ if(!profileBtn.contains(e.target)){
 dropdown.classList.remove("show")
 }
 })
+
+/* PROFILE BUTTON ACTIONS */
+
+document.getElementById("editProfileBtn").addEventListener("click",()=>{
+window.location.href="profile.html"
+})
+
 
 /* TIME SCRIPT */
 
