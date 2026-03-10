@@ -15,11 +15,7 @@ getFirestore,
 doc,
 getDoc,
 collection,
-getDocs,
-addDoc,
-updateDoc,
-deleteDoc,
-serverTimestamp
+getDocs
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 
@@ -28,9 +24,19 @@ serverTimestamp
 // ==========================
 
 const firebaseConfig = {
+
 apiKey: "AIzaSyB8dDTnpPQVRAs7dkfc8QU3L5qUJtm-2jg",
+
 authDomain: "affiliate-relations-17687.firebaseapp.com",
-projectId: "affiliate-relations-17687"
+
+projectId: "affiliate-relations-17687",
+
+storageBucket: "affiliate-relations-17687.appspot.com",
+
+messagingSenderId: "000000000000",
+
+appId: "1:000000000:web:000000000000"
+
 };
 
 
@@ -39,7 +45,9 @@ projectId: "affiliate-relations-17687"
 // ==========================
 
 const app = initializeApp(firebaseConfig);
+
 const auth = getAuth(app);
+
 const db = getFirestore(app);
 
 
@@ -62,16 +70,30 @@ const logoutBtn = document.getElementById("logoutBtn");
 // ==========================
 
 if(profileBtn){
+
 profileBtn.onclick = () => {
+
 dropdown.classList.toggle("show");
+
 };
+
 }
 
+
+// ==========================
+// LOGOUT
+// ==========================
+
 if(logoutBtn){
+
 logoutBtn.onclick = () => {
+
 signOut(auth);
+
 window.location.href = "login.html";
+
 };
+
 }
 
 
@@ -79,38 +101,40 @@ window.location.href = "login.html";
 // AUTH CHECK
 // ==========================
 
-onAuthStateChanged(auth, async (user) => {
+onAuthStateChanged(auth, async (user)=>{
 
 if(!user){
+
 window.location.href = "login.html";
+
 return;
+
 }
 
+
 const ref = doc(db,"profiles",user.uid);
+
 const snap = await getDoc(ref);
+
 
 if(snap.exists()){
 
 const data = snap.data();
 
-if(agentName){
 agentName.textContent = data.name || "Agent";
-}
 
-if(agentEmail){
-agentEmail.textContent = user.email;
-}
+agentEmail.textContent = user.email || "";
 
 if(agentAvatar){
 
 if(data.photo){
+
 agentAvatar.src = data.photo;
+
 }else{
 
-const name = data.name || "Agent";
-
 agentAvatar.src =
-`https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=2e5aac&color=fff`;
+`https://ui-avatars.com/api/?name=${encodeURIComponent(data.name)}&background=2e5aac&color=fff`;
 
 }
 
@@ -120,346 +144,99 @@ agentAvatar.src =
 
 
 // ==========================
-// ROLE SYSTEM
+// IDENTIFY USER IN TAWK CHAT
 // ==========================
 
-let userRole = "agent";
+if (typeof Tawk_API !== "undefined") {
 
-try{
+Tawk_API.onLoad = function(){
 
-const roleRef = doc(db,"users",user.uid);
-const roleSnap = await getDoc(roleRef);
+Tawk_API.setAttributes({
 
-if(roleSnap.exists()){
-userRole = roleSnap.data().role || "agent";
+name : agentName.textContent || "Agent",
+
+email : agentEmail.textContent || ""
+
+}, function(error){
+
+console.log("Tawk error:", error);
+
+});
+
+};
+
 }
 
-applyRolePermissions(userRole);
 
-if(agentRole){
-agentRole.textContent = userRole.toUpperCase();
-}
-
-}catch(err){
-console.error("Role loading error:",err);
-}
+// ==========================
+// LOAD AGENT DIRECTORY
+// ==========================
 
 loadAgentDirectory();
-setupPostSystem();
-loadActivity();
 
 });
 
 
 // ==========================
-// ROLE PERMISSIONS
-// ==========================
-
-function applyRolePermissions(role){
-
-if(role === "agent"){
-
-document.querySelectorAll(".adminOnly").forEach(el=>{
-el.style.display="none";
-});
-
-document.querySelectorAll(".managerOnly").forEach(el=>{
-el.style.display="none";
-});
-
-}
-
-if(role === "manager"){
-
-document.querySelectorAll(".adminOnly").forEach(el=>{
-el.style.display="none";
-});
-
-}
-
-}
-
-
-// ==========================
-// AGENT DIRECTORY
+// LOAD AGENT DIRECTORY
 // ==========================
 
 async function loadAgentDirectory(){
 
 const container = document.getElementById("agentGrid");
+
 if(!container) return;
 
-container.innerHTML="Loading agents...";
+container.innerHTML = "Loading agents...";
 
 try{
 
 const snapshot = await getDocs(collection(db,"profiles"));
 
-container.innerHTML="";
+container.innerHTML = "";
 
-snapshot.forEach((docSnap)=>{
+snapshot.forEach(docSnap => {
 
 const data = docSnap.data();
 
 const name = data.name || "Agent";
+
 const role = data.role || "Agent";
+
 const bio = data.bio || "";
 
 const photo =
 data.photo ||
 `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=2e5aac&color=fff`;
 
+
 const card = document.createElement("div");
-card.className="agentCard";
 
 card.className = "agentCard";
 
-card.innerHTML = `
-<img src="${photo}">
-<div class="agentName">${name}</div>
-<div class="agentRole">${role}</div>
-<div class="agentBio">${bio}</div>
-`;
 
-card.onclick=()=>{
-window.location.href="profile.html?uid="+docSnap.id;
-};
+card.innerHTML = `
+
+<img src="${photo}" alt="${name}">
+
+<div class="agentName">${name}</div>
+
+<div class="agentRole">${role}</div>
+
+<div class="agentBio">${bio}</div>
+
+`;
 
 container.appendChild(card);
 
 });
 
 }catch(err){
-console.error(err);
-container.innerHTML="Failed to load agents";
-}
+
+console.error("Directory error:", err);
+
+container.innerHTML = "Failed to load agents";
 
 }
-
-
-// ==========================
-// POST SYSTEM
-// ==========================
-
-function setupPostSystem(){
-
-const sections = document.querySelectorAll(".tabContent");
-
-sections.forEach(section=>{
-
-const title = section.querySelector(".postTitle");
-const tags = section.querySelector(".postTags");
-const content = section.querySelector(".postContent");
-const pinned = section.querySelector(".postPinned");
-const button = section.querySelector(".createPostBtn");
-const container = section.querySelector(".postsContainer");
-const search = section.querySelector(".postSearch");
-
-if(button){
-
-button.onclick = async ()=>{
-
-if(!title || !content || !container) return;
-
-const sectionName = container.dataset.section;
-
-if(!title.value || !content.innerHTML){
-alert("Missing fields");
-return;
-}
-
-await addDoc(collection(db,"posts"),{
-
-title: title.value,
-content: content.innerHTML,
-tags: tags ? tags.value : "",
-pinned: pinned ? pinned.checked : false,
-section: sectionName,
-author: agentName.textContent,
-created: serverTimestamp()
-
-});
-
-title.value="";
-if(tags) tags.value="";
-content.innerHTML="";
-
-loadPosts(sectionName);
-
-};
-
-}
-
-if(search){
-
-search.oninput = ()=>{
-
-const term = search.value.toLowerCase();
-
-section.querySelectorAll(".postCard").forEach(post=>{
-
-post.style.display =
-post.innerText.toLowerCase().includes(term)
-? "block"
-: "none";
-
-});
-
-};
-
-}
-
-if(container){
-loadPosts(container.dataset.section);
-}
-
-});
-
-}
-
-
-// ==========================
-// LOAD POSTS
-// ==========================
-
-async function loadPosts(section){
-
-const container = document.querySelector(`.postsContainer[data-section="${section}"]`);
-if(!container) return;
-
-container.innerHTML="Loading posts...";
-
-const snapshot = await getDocs(collection(db,"posts"));
-
-container.innerHTML="";
-
-snapshot.forEach(docSnap=>{
-
-const data = docSnap.data();
-
-if(data.section !== section) return;
-
-const card = document.createElement("div");
-card.className="postCard";
-
-card.innerHTML=`
-
-${data.pinned ? "<div class='pinned'>📌 PINNED</div>" : ""}
-
-<h3>${data.title}</h3>
-
-<div class="postMeta">
-${data.author || ""} • ${data.tags || ""}
-</div>
-
-<div class="postContent">
-${data.content}
-</div>
-
-<div class="postActions">
-
-<button class="editPost" data-id="${docSnap.id}">
-Edit
-</button>
-
-<button class="deletePost" data-id="${docSnap.id}">
-Delete
-</button>
-
-</div>
-
-`;
-
-container.appendChild(card);
-
-});
-
-if(container.innerHTML===""){
-container.innerHTML="No posts yet.";
-}
-
-}
-
-
-// ==========================
-// DELETE POST
-// ==========================
-
-document.addEventListener("click",async(e)=>{
-
-if(e.target.classList.contains("deletePost")){
-
-const id = e.target.dataset.id;
-
-if(!confirm("Delete this post?")) return;
-
-await deleteDoc(doc(db,"posts",id));
-
-document.querySelectorAll(".postsContainer").forEach(c=>{
-loadPosts(c.dataset.section);
-});
-
-}
-
-});
-
-
-// ==========================
-// EDIT POST
-// ==========================
-
-document.addEventListener("click",async(e)=>{
-
-if(e.target.classList.contains("editPost")){
-
-const id = e.target.dataset.id;
-
-const newTitle = prompt("Edit title");
-const newContent = prompt("Edit content");
-
-if(!newTitle || !newContent) return;
-
-await updateDoc(doc(db,"posts",id),{
-
-title:newTitle,
-content:newContent
-
-});
-
-document.querySelectorAll(".postsContainer").forEach(c=>{
-loadPosts(c.dataset.section);
-});
-
-}
-
-});
-
-
-// ==========================
-// ACTIVITY FEED
-// ==========================
-
-async function loadActivity(){
-
-const container = document.getElementById("activityFeed");
-if(!container) return;
-
-const snapshot = await getDocs(collection(db,"activity"));
-
-container.innerHTML="";
-
-snapshot.forEach(docSnap=>{
-
-const data = docSnap.data();
-
-const item=document.createElement("div");
-
-item.innerHTML=`
-<strong>${data.user}</strong> ${data.action}
-`;
-
-container.appendChild(item);
-
-});
 
 }
