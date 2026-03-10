@@ -185,6 +185,60 @@ border-radius:8px;
 box-shadow:0 2px 8px rgba(0,0,0,0.08);
 }
 
+/* TIME ZONE TOOL */
+
+.map{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:18px;
+max-width:1100px;
+margin:auto;
+margin-bottom:25px;
+}
+
+.zone-card{
+position:relative;
+padding:16px 18px;
+border-radius:14px;
+box-shadow:0 8px 20px rgba(0,0,0,0.15);
+color:white;
+}
+
+.zone-name{
+font-size:14px;
+font-weight:700;
+}
+
+.time{
+font-size:26px;
+font-weight:800;
+margin-top:6px;
+}
+
+.states{
+font-size:11px;
+opacity:.9;
+margin-top:8px;
+line-height:1.5;
+}
+
+.east{background:linear-gradient(135deg,#2563eb,#1e40af);}
+.central{background:linear-gradient(135deg,#16a34a,#065f46);}
+.mountain{background:linear-gradient(135deg,#f59e0b,#b45309);}
+.pacific{background:linear-gradient(135deg,#9333ea,#6b21a8);}
+.jordan{background:linear-gradient(135deg,#dc2626,#7f1d1d);}
+.dr{background:linear-gradient(135deg,#0ea5e9,#0369a1);}
+
+.tag{
+position:absolute;
+top:12px;
+right:12px;
+font-size:10px;
+padding:3px 8px;
+border-radius:999px;
+background:rgba(255,255,255,.2);
+}
+
 </style>
 
 </head>
@@ -245,8 +299,56 @@ box-shadow:0 2px 8px rgba(0,0,0,0.08);
 <script>
 function createTab(section,title){
 
+let widget=""
+
+if(section==="home"){
+widget=`
+<div class="map">
+
+<div class="zone-card east">
+<div class="tag">USA</div>
+<div class="zone-name">Eastern Time</div>
+<div class="time" id="est"></div>
+</div>
+
+<div class="zone-card central">
+<div class="tag">USA</div>
+<div class="zone-name">Central Time</div>
+<div class="time" id="cst"></div>
+</div>
+
+<div class="zone-card mountain">
+<div class="tag">USA</div>
+<div class="zone-name">Mountain Time</div>
+<div class="time" id="mst"></div>
+</div>
+
+<div class="zone-card pacific">
+<div class="tag">USA</div>
+<div class="zone-name">Pacific Time</div>
+<div class="time" id="pst"></div>
+</div>
+
+<div class="zone-card dr">
+<div class="tag">CARIBBEAN</div>
+<div class="zone-name">Dominican Republic</div>
+<div class="time" id="dr"></div>
+</div>
+
+<div class="zone-card jordan">
+<div class="tag">MENA</div>
+<div class="zone-name">Amman · Jordan</div>
+<div class="time" id="amman"></div>
+</div>
+
+</div>
+`
+}
+
 return `
 <div id="${section}" class="tabContent">
+
+${widget}
 
 <div class="tool">
 
@@ -368,6 +470,22 @@ if(!profileBtn.contains(e.target)){
 dropdown.classList.remove("show")
 }
 })
+
+/* TIME SCRIPT */
+
+function updateTimes(){
+const opt={hour:'2-digit',minute:'2-digit',second:'2-digit'}
+
+est.textContent=new Date().toLocaleTimeString('en-US',{...opt,timeZone:'America/New_York'})
+cst.textContent=new Date().toLocaleTimeString('en-US',{...opt,timeZone:'America/Chicago'})
+mst.textContent=new Date().toLocaleTimeString('en-US',{...opt,timeZone:'America/Denver'})
+pst.textContent=new Date().toLocaleTimeString('en-US',{...opt,timeZone:'America/Los_Angeles'})
+dr.textContent=new Date().toLocaleTimeString('en-US',{...opt,timeZone:'America/Santo_Domingo'})
+amman.textContent=new Date().toLocaleTimeString('en-US',{...opt,timeZone:'Asia/Amman'})
+}
+
+updateTimes()
+setInterval(updateTimes,1000)
 
 </script>
 
