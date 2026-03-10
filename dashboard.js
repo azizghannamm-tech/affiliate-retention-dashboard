@@ -45,6 +45,30 @@ const profileBtn = document.getElementById("profileBtn");
 const dropdown = document.getElementById("profileDropdown");
 const logoutBtn = document.getElementById("logoutBtn");
 
+/* LOGOUT BUTTON */
+
+if (logoutBtn) {
+
+logoutBtn.addEventListener("click", async () => {
+
+try {
+
+await signOut(auth);
+
+window.location.href = "login.html";
+
+} catch (err) {
+
+console.error("Logout failed:", err);
+
+alert("Failed to logout");
+
+}
+
+});
+
+}
+
 let currentUser;
 
 
