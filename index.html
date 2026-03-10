@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -112,6 +111,7 @@ background:#2c2c2c;
 display:flex;
 gap:10px;
 margin-bottom:20px;
+flex-wrap:wrap;
 }
 
 .tab{
@@ -213,20 +213,35 @@ font-weight:bold;
 margin-bottom:5px;
 }
 
-/* agent directory */
+/* AGENT DIRECTORY GRID (FIXED) */
+
+.agentDirectoryGrid{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+gap:15px;
+margin-top:15px;
+}
 
 .agentCard{
+background:white;
+border-radius:10px;
+padding:12px;
 display:flex;
 align-items:center;
 gap:10px;
-padding:10px;
-border-bottom:1px solid #eee;
+box-shadow:0 2px 8px rgba(0,0,0,0.08);
+transition:0.2s;
 }
 
 .agentCard img{
 width:40px;
 height:40px;
 border-radius:50%;
+object-fit:cover;
+}
+
+.agentCard:hover{
+transform:translateY(-2px);
 }
 
 /* delete modal */
@@ -292,7 +307,7 @@ cursor:pointer;
 
 <div class="profile" id="profileBtn">
 
-<img id="agentAvatar">
+<img id="agentAvatar" src="https://ui-avatars.com/api/?name=Agent&background=2e5aac&color=fff">
 
 <div class="profileInfo">
 <div id="agentName">Agent</div>
@@ -369,9 +384,11 @@ cursor:pointer;
 <div id="agents" class="tabContent">
 <div class="tool">
 <h3>Agent Directory</h3>
+
 <div id="agentDirectory">
-    <div class="agentDirectoryGrid" id="agentGrid"></div>
+<div class="agentDirectoryGrid" id="agentGrid"></div>
 </div>
+
 </div>
 </div>
 
