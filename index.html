@@ -3,7 +3,7 @@
 <head>
 
 <meta charset="UTF-8">
-<title>Agent Hub</title>
+<title>Agent Dashboard</title>
 
 <link rel="stylesheet" href="dashboard.css">
 
@@ -11,22 +11,29 @@
 
 <body>
 
-<header>
 
-<h2>Agent Knowledge Hub</h2>
+<!-- TOP BAR -->
 
-<div class="profileArea">
+<header class="topBar">
 
-<img id="agentAvatar" src="" width="40">
+<div class="logo">
+Agent Tools
+</div>
 
-<span id="agentName"></span>
+<div class="profileSection">
 
-<button id="profileBtn">Profile</button>
+<img id="agentAvatar" class="avatar">
 
-<div id="profileDropdown">
+<div class="profileInfo">
+<div id="agentName">Agent</div>
+<div id="agentEmail"></div>
+</div>
 
-<p id="agentEmail"></p>
-<p id="accessLevel"></p>
+<button id="profileBtn">☰</button>
+
+<div id="profileDropdown" class="dropdown">
+
+<a href="profile.html">Edit Profile</a>
 
 <button id="logoutBtn">Logout</button>
 
@@ -37,55 +44,13 @@
 </header>
 
 
-<!-- =========================
-TABS
-========================= -->
 
-<div class="tabs">
+<!-- MAIN CONTENT -->
 
-<button class="tabButton" data-tab="tools">Tools</button>
-
-<button class="tabButton" data-tab="knowledge">Knowledge</button>
-
-<button class="tabButton" data-tab="agents">Agents</button>
-
-</div>
+<div class="mainContainer">
 
 
-<!-- =========================
-TOOLS
-========================= -->
-
-<div id="tools" class="tabContent">
-
-<div class="tool">
-<h3>Agent Tools</h3>
-<p>Internal tools go here</p>
-</div>
-
-</div>
-
-
-<!-- =========================
-KNOWLEDGE
-========================= -->
-
-<div id="knowledge" class="tabContent">
-
-<div class="tool">
-
-<h3>Knowledge Base</h3>
-
-<div class="postsContainer" data-section="knowledge"></div>
-
-</div>
-
-</div>
-
-
-<!-- =========================
-AGENT DIRECTORY
-========================= -->
+<!-- AGENT DIRECTORY TAB -->
 
 <div id="agents" class="tabContent">
 
@@ -94,41 +59,24 @@ AGENT DIRECTORY
 <h3>Agent Directory</h3>
 
 <div id="agentDirectory">
+
 <div class="agentDirectoryGrid" id="agentGrid"></div>
-</div>
 
 </div>
 
 </div>
 
+</div>
 
+
+</div>
+
+
+
+<!-- FIREBASE + DASHBOARD SCRIPT -->
 
 <script type="module" src="dashboard.js"></script>
 
-
-
-<!-- =========================
-TAWK CHAT
-========================= -->
-
-<script type="text/javascript">
-
-var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-
-(function(){
-var s1=document.createElement("script"),
-s0=document.getElementsByTagName("script")[0];
-
-s1.async=true;
-s1.src='https://embed.tawk.to/69b0878d801efb1c38c6a920/1jjcp30f6';
-s1.charset='UTF-8';
-s1.setAttribute('crossorigin','*');
-
-s0.parentNode.insertBefore(s1,s0);
-
-})();
-
-</script>
 
 </body>
 </html>
