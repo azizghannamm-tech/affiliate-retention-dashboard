@@ -291,6 +291,7 @@ background:rgba(255,255,255,.2);
 <div class="tab" data-tab="payments">Payments</div>
 <div class="tab" data-tab="files">Files</div>
 <div class="tab" data-tab="contacts">Contacts</div>
+<div class="tab" data-tab="contactslinks">Contacts & Links</div>
 <div class="tab" data-tab="agents">Agents</div>
 
 </div>
@@ -303,6 +304,7 @@ let widget=""
 
 if(section==="home"){
 widget=`
+
 <div class="map">
 
 <div class="zone-card east">
@@ -339,6 +341,53 @@ widget=`
 <div class="tag">MENA</div>
 <div class="zone-name">Amman · Jordan</div>
 <div class="time" id="amman"></div>
+</div>
+
+</div>
+`
+}
+
+if(section==="contactslinks"){
+widget=`
+
+<div class="tool">
+
+<h3>Important Contacts</h3>
+
+<div class="postCard">
+<b>Client Success</b><br>
+Email: clientsuccess@company.com<br>
+Slack: #client-success
+</div>
+
+<div class="postCard">
+<b>Underwriting Team</b><br>
+Email: underwriting@company.com<br>
+Slack: #uw-team
+</div>
+
+<div class="postCard">
+<b>Affiliate Support</b><br>
+Email: affiliates@company.com<br>
+Slack: #affiliate-support
+</div>
+
+</div>
+
+<div class="tool">
+
+<h3>Quick Links</h3>
+
+<div class="postCard">
+<a href="https://crm.company.com" target="_blank">CRM Login</a>
+</div>
+
+<div class="postCard">
+<a href="https://docs.company.com" target="_blank">Company Docs</a>
+</div>
+
+<div class="postCard">
+<a href="https://slack.com" target="_blank">Slack</a>
 </div>
 
 </div>
@@ -407,8 +456,6 @@ ${widget}
 
 <script>
 
-/* BUILD ALL TABS */
-
 const tabsArea=document.getElementById("tabsArea")
 
 tabsArea.innerHTML=
@@ -420,10 +467,8 @@ createTab("evertrust","Evertrust")+
 createTab("uw","UW Guidelines")+
 createTab("payments","Payments")+
 createTab("files","Files")+
-createTab("contacts","Contacts")
-
-
-/* TAB SWITCHING */
+createTab("contacts","Contacts")+
+createTab("contactslinks","Contacts & Links")
 
 const tabs=document.querySelectorAll(".tab")
 const contents=document.querySelectorAll(".tabContent")
@@ -442,62 +487,6 @@ document.getElementById(tab.dataset.tab).classList.add("active")
 })
 
 })
-
-
-/* EDITOR */
-
-document.addEventListener("click",(e)=>{
-
-if(e.target.dataset.format){
-document.execCommand(e.target.dataset.format,false,null)
-}
-
-})
-
-
-/* PROFILE DROPDOWN */
-
-const profileBtn=document.getElementById("profileBtn")
-const dropdown=document.getElementById("profileDropdown")
-
-profileBtn.addEventListener("click",(e)=>{
-e.preventDefault()
-e.stopPropagation()
-dropdown.classList.toggle("show")
-})
-
-dropdown.addEventListener("click",(e)=>{
-e.stopPropagation()
-})
-
-window.addEventListener("click",(e)=>{
-if(!profileBtn.contains(e.target)){
-dropdown.classList.remove("show")
-}
-})
-
-/* PROFILE BUTTON ACTIONS */
-
-document.getElementById("editProfileBtn").addEventListener("click",()=>{
-window.location.href="profile.html"
-})
-
-
-/* TIME SCRIPT */
-
-function updateTimes(){
-const opt={hour:'2-digit',minute:'2-digit',second:'2-digit'}
-
-est.textContent=new Date().toLocaleTimeString('en-US',{...opt,timeZone:'America/New_York'})
-cst.textContent=new Date().toLocaleTimeString('en-US',{...opt,timeZone:'America/Chicago'})
-mst.textContent=new Date().toLocaleTimeString('en-US',{...opt,timeZone:'America/Denver'})
-pst.textContent=new Date().toLocaleTimeString('en-US',{...opt,timeZone:'America/Los_Angeles'})
-dr.textContent=new Date().toLocaleTimeString('en-US',{...opt,timeZone:'America/Santo_Domingo'})
-amman.textContent=new Date().toLocaleTimeString('en-US',{...opt,timeZone:'Asia/Amman'})
-}
-
-updateTimes()
-setInterval(updateTimes,1000)
 
 </script>
 
