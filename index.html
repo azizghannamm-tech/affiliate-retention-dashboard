@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 
 <meta charset="UTF-8">
@@ -16,15 +17,22 @@ margin:0;
 header{
 background:#2e5aac;
 color:white;
-padding:15px;
+padding:15px 25px;
 display:flex;
 justify-content:space-between;
 align-items:center;
 }
 
+.logo{
+font-size:18px;
+font-weight:bold;
+}
+
 .container{
 padding:40px;
 }
+
+/* TABS */
 
 .tabs{
 display:flex;
@@ -53,63 +61,61 @@ display:none;
 display:block;
 }
 
+/* CARDS */
+
 .tool{
 background:white;
 padding:20px;
+border-radius:10px;
+box-shadow:0 3px 10px rgba(0,0,0,0.1);
 margin-bottom:20px;
-border-radius:8px;
-box-shadow:0 2px 8px rgba(0,0,0,0.08);
 }
+
+/* GRID */
 
 .linkGrid{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-gap:16px;
+gap:15px;
 margin-top:15px;
 }
 
 .linkCard{
 background:white;
-padding:18px;
+padding:16px;
 border-radius:10px;
-box-shadow:0 2px 10px rgba(0,0,0,0.08);
+box-shadow:0 4px 12px rgba(0,0,0,0.1);
 transition:.2s;
 }
 
 .linkCard:hover{
 transform:translateY(-3px);
-box-shadow:0 6px 18px rgba(0,0,0,0.12);
 }
 
 .linkCard a{
 text-decoration:none;
 color:#2e5aac;
 font-weight:bold;
-font-size:15px;
 }
 
 /* CLOCKS */
 
 .map{
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-gap:15px;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:18px;
+margin-bottom:30px;
 }
 
-.zone{
-padding:16px;
+.zone-card{
+padding:18px;
 border-radius:12px;
 color:white;
-}
-
-.zone h4{
-margin:0;
-font-size:14px;
+font-weight:bold;
 }
 
 .time{
-font-size:26px;
-font-weight:bold;
+font-size:28px;
 margin-top:6px;
 }
 
@@ -117,19 +123,18 @@ margin-top:6px;
 .cst{background:#16a34a;}
 .mst{background:#f59e0b;}
 .pst{background:#9333ea;}
-.jordan{background:#dc2626;}
 .dr{background:#0ea5e9;}
+.jordan{background:#dc2626;}
 
 </style>
 
 </head>
 
-
 <body>
 
 <header>
 
-<b>Knowledge Hub</b>
+<div class="logo">Knowledge Hub</div>
 
 </header>
 
@@ -144,41 +149,43 @@ margin-top:6px;
 </div>
 
 
+<!-- HOME TAB -->
+
 <div id="home" class="tabContent active">
 
 <div class="tool">
 
-<h3>Global Time</h3>
+<h3>Time Zones</h3>
 
 <div class="map">
 
-<div class="zone est">
-<h4>Eastern Time</h4>
+<div class="zone-card est">
+Eastern Time
 <div class="time" id="est"></div>
 </div>
 
-<div class="zone cst">
-<h4>Central Time</h4>
+<div class="zone-card cst">
+Central Time
 <div class="time" id="cst"></div>
 </div>
 
-<div class="zone mst">
-<h4>Mountain Time</h4>
+<div class="zone-card mst">
+Mountain Time
 <div class="time" id="mst"></div>
 </div>
 
-<div class="zone pst">
-<h4>Pacific Time</h4>
+<div class="zone-card pst">
+Pacific Time
 <div class="time" id="pst"></div>
 </div>
 
-<div class="zone dr">
-<h4>Dominican Republic</h4>
+<div class="zone-card dr">
+Dominican Republic
 <div class="time" id="dr"></div>
 </div>
 
-<div class="zone jordan">
-<h4>Amman • Jordan</h4>
+<div class="zone-card jordan">
+Amman Jordan
 <div class="time" id="amman"></div>
 </div>
 
@@ -188,6 +195,8 @@ margin-top:6px;
 
 </div>
 
+
+<!-- CONTACTS & LINKS TAB -->
 
 <div id="contactslinks" class="tabContent">
 
@@ -229,39 +238,23 @@ merchant@cdr-now.com
 <div class="linkGrid">
 
 <div class="linkCard">
-<a href="https://app.cdr-now.com" target="_blank">
-Agent Portal
-</a>
+<a href="#" target="_blank">Agent Portal</a>
 </div>
 
 <div class="linkCard">
-<a href="https://merchant.cdr-now.com" target="_blank">
-Merchant Portal
-</a>
+<a href="#" target="_blank">CRM</a>
 </div>
 
 <div class="linkCard">
-<a href="https://evertrustpay.com" target="_blank">
-Evertrust
-</a>
+<a href="#" target="_blank">Evertrust</a>
 </div>
 
 <div class="linkCard">
-<a href="https://app.cdr-now.com/login" target="_blank">
-Client Portal
-</a>
+<a href="#" target="_blank">Merchant Portal</a>
 </div>
 
 <div class="linkCard">
-<a href="https://slack.com" target="_blank">
-Slack
-</a>
-</div>
-
-<div class="linkCard">
-<a href="https://crm.cdr-now.com" target="_blank">
-CRM Login
-</a>
+<a href="#" target="_blank">Client Portal</a>
 </div>
 
 </div>
@@ -269,39 +262,14 @@ CRM Login
 </div>
 
 </div>
+
 
 </div>
 
 
 <script>
 
-/* CLOCK SYSTEM */
-
-function updateClocks(){
-
-function getTime(zone){
-return new Date().toLocaleTimeString("en-US",{
-timeZone:zone,
-hour:"2-digit",
-minute:"2-digit",
-second:"2-digit"
-})
-}
-
-document.getElementById("est").innerText=getTime("America/New_York")
-document.getElementById("cst").innerText=getTime("America/Chicago")
-document.getElementById("mst").innerText=getTime("America/Denver")
-document.getElementById("pst").innerText=getTime("America/Los_Angeles")
-document.getElementById("dr").innerText=getTime("America/Santo_Domingo")
-document.getElementById("amman").innerText=getTime("Asia/Amman")
-
-}
-
-setInterval(updateClocks,1000)
-updateClocks()
-
-
-/* TAB SYSTEM */
+/* TAB SWITCHING */
 
 const tabs=document.querySelectorAll(".tab")
 const contents=document.querySelectorAll(".tabContent")
@@ -314,15 +282,46 @@ tabs.forEach(t=>t.classList.remove("active"))
 contents.forEach(c=>c.classList.remove("active"))
 
 tab.classList.add("active")
-
 document.getElementById(tab.dataset.tab).classList.add("active")
 
 })
 
 })
 
-</script>
 
+/* CLOCK SYSTEM */
+
+function updateClock(id,zone){
+
+const now=new Date()
+
+const time=now.toLocaleTimeString("en-US",{
+timeZone:zone,
+hour:"2-digit",
+minute:"2-digit",
+second:"2-digit"
+})
+
+document.getElementById(id).textContent=time
+
+}
+
+function updateAllClocks(){
+
+updateClock("est","America/New_York")
+updateClock("cst","America/Chicago")
+updateClock("mst","America/Denver")
+updateClock("pst","America/Los_Angeles")
+updateClock("dr","America/Santo_Domingo")
+updateClock("amman","Asia/Amman")
+
+}
+
+updateAllClocks()
+
+setInterval(updateAllClocks,1000)
+
+</script>
 
 </body>
 </html>
