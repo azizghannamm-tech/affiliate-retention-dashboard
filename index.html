@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="dashboard.css">
 
 <style>
+
 body{
 font-family:Arial;
 background:#f4f7fb;
@@ -185,6 +186,35 @@ border-radius:8px;
 box-shadow:0 2px 8px rgba(0,0,0,0.08);
 }
 
+/* CONTACTS & LINKS GRID */
+
+.linkGrid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:16px;
+margin-top:15px;
+}
+
+.linkCard{
+background:white;
+padding:18px;
+border-radius:10px;
+box-shadow:0 2px 10px rgba(0,0,0,0.08);
+transition:0.2s;
+}
+
+.linkCard:hover{
+transform:translateY(-3px);
+box-shadow:0 6px 18px rgba(0,0,0,0.12);
+}
+
+.linkCard a{
+text-decoration:none;
+color:#2e5aac;
+font-weight:bold;
+font-size:15px;
+}
+
 /* TIME ZONE TOOL */
 
 .map{
@@ -213,13 +243,6 @@ font-weight:700;
 font-size:26px;
 font-weight:800;
 margin-top:6px;
-}
-
-.states{
-font-size:11px;
-opacity:.9;
-margin-top:8px;
-line-height:1.5;
 }
 
 .east{background:linear-gradient(135deg,#2563eb,#1e40af);}
@@ -298,6 +321,7 @@ background:rgba(255,255,255,.2);
 
 
 <script>
+
 function createTab(section,title){
 
 let widget=""
@@ -354,22 +378,23 @@ widget=`
 
 <h3>Important Contacts</h3>
 
-<div class="postCard">
+<div class="linkGrid">
+
+<div class="linkCard">
 <b>Client Success</b><br>
-Email: clientsuccess@company.com<br>
-Slack: #client-success
+clientsuccess@company.com
 </div>
 
-<div class="postCard">
+<div class="linkCard">
 <b>Underwriting Team</b><br>
-Email: underwriting@company.com<br>
-Slack: #uw-team
+underwriting@company.com
 </div>
 
-<div class="postCard">
+<div class="linkCard">
 <b>Affiliate Support</b><br>
-Email: affiliates@company.com<br>
-Slack: #affiliate-support
+affiliates@company.com
+</div>
+
 </div>
 
 </div>
@@ -378,16 +403,20 @@ Slack: #affiliate-support
 
 <h3>Quick Links</h3>
 
-<div class="postCard">
+<div class="linkGrid">
+
+<div class="linkCard">
 <a href="https://crm.company.com" target="_blank">CRM Login</a>
 </div>
 
-<div class="postCard">
+<div class="linkCard">
 <a href="https://docs.company.com" target="_blank">Company Docs</a>
 </div>
 
-<div class="postCard">
+<div class="linkCard">
 <a href="https://slack.com" target="_blank">Slack</a>
+</div>
+
 </div>
 
 </div>
@@ -428,6 +457,7 @@ ${widget}
 </div>
 `
 }
+
 </script>
 
 
