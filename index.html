@@ -5,8 +5,6 @@
 <meta charset="UTF-8">
 <title>Knowledge Hub</title>
 
-<link rel="stylesheet" href="dashboard.css">
-
 <style>
 
 body{
@@ -27,70 +25,6 @@ align-items:center;
 .container{
 padding:40px;
 }
-
-.logo{
-font-size:18px;
-}
-
-.profileArea{
-display:flex;
-align-items:center;
-gap:20px;
-position:relative;
-}
-
-.profile{
-display:flex;
-align-items:center;
-gap:10px;
-cursor:pointer;
-}
-
-.profile img{
-width:38px;
-height:38px;
-border-radius:50%;
-object-fit:cover;
-}
-
-.profileInfo{
-font-size:13px;
-}
-
-.role{
-font-size:11px;
-color:#ddd;
-}
-
-.dropdown{
-position:absolute;
-right:0;
-top:60px;
-background:white;
-border-radius:8px;
-box-shadow:0 6px 20px rgba(0,0,0,0.15);
-padding:15px;
-display:none;
-min-width:200px;
-color:black;
-}
-
-.dropdown.show{
-display:block;
-}
-
-.dropdown button{
-width:100%;
-margin-top:10px;
-padding:8px;
-border:none;
-background:#1e4fa1;
-color:white;
-border-radius:6px;
-cursor:pointer;
-}
-
-/* tabs */
 
 .tabs{
 display:flex;
@@ -119,65 +53,6 @@ display:none;
 display:block;
 }
 
-/* posts */
-
-.postCard{
-background:#fff;
-border-radius:10px;
-padding:16px;
-margin-top:15px;
-box-shadow:0 2px 8px rgba(0,0,0,.05);
-}
-
-.postMeta{
-font-size:13px;
-color:#666;
-margin-bottom:6px;
-}
-
-.postActions{
-display:flex;
-gap:8px;
-margin-top:12px;
-}
-
-.postActions button{
-border:none;
-background:#f2f4f8;
-padding:6px 10px;
-border-radius:6px;
-cursor:pointer;
-}
-
-.postContent{
-border:1px solid #ccc;
-padding:10px;
-border-radius:6px;
-min-height:120px;
-margin-top:10px;
-}
-
-.editorToolbar{
-display:flex;
-gap:6px;
-margin-top:10px;
-}
-
-.editorToolbar button{
-border:1px solid #ccc;
-background:white;
-padding:4px 8px;
-border-radius:6px;
-cursor:pointer;
-}
-
-.pinned{
-font-size:12px;
-color:#d97706;
-font-weight:bold;
-margin-bottom:5px;
-}
-
 .tool{
 background:white;
 padding:20px;
@@ -185,8 +60,6 @@ margin-bottom:20px;
 border-radius:8px;
 box-shadow:0 2px 8px rgba(0,0,0,0.08);
 }
-
-/* CONTACTS & LINKS GRID */
 
 .linkGrid{
 display:grid;
@@ -200,7 +73,7 @@ background:white;
 padding:18px;
 border-radius:10px;
 box-shadow:0 2px 10px rgba(0,0,0,0.08);
-transition:0.2s;
+transition:.2s;
 }
 
 .linkCard:hover{
@@ -215,88 +88,48 @@ font-weight:bold;
 font-size:15px;
 }
 
-/* TIME ZONE TOOL */
+/* CLOCKS */
 
 .map{
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-gap:18px;
-max-width:1100px;
-margin:auto;
-margin-bottom:25px;
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:15px;
 }
 
-.zone-card{
-position:relative;
-padding:16px 18px;
-border-radius:14px;
-box-shadow:0 8px 20px rgba(0,0,0,0.15);
+.zone{
+padding:16px;
+border-radius:12px;
 color:white;
 }
 
-.zone-name{
+.zone h4{
+margin:0;
 font-size:14px;
-font-weight:700;
 }
 
 .time{
 font-size:26px;
-font-weight:800;
+font-weight:bold;
 margin-top:6px;
 }
 
-.east{background:linear-gradient(135deg,#2563eb,#1e40af);}
-.central{background:linear-gradient(135deg,#16a34a,#065f46);}
-.mountain{background:linear-gradient(135deg,#f59e0b,#b45309);}
-.pacific{background:linear-gradient(135deg,#9333ea,#6b21a8);}
-.jordan{background:linear-gradient(135deg,#dc2626,#7f1d1d);}
-.dr{background:linear-gradient(135deg,#0ea5e9,#0369a1);}
-
-.tag{
-position:absolute;
-top:12px;
-right:12px;
-font-size:10px;
-padding:3px 8px;
-border-radius:999px;
-background:rgba(255,255,255,.2);
-}
+.est{background:#2563eb;}
+.cst{background:#16a34a;}
+.mst{background:#f59e0b;}
+.pst{background:#9333ea;}
+.jordan{background:#dc2626;}
+.dr{background:#0ea5e9;}
 
 </style>
 
 </head>
 
+
 <body>
 
 <header>
 
-<div class="logo"><b>Knowledge Hub</b></div>
-
-<div class="profileArea">
-
-<div class="profile" id="profileBtn">
-
-<img id="agentAvatar">
-
-<div class="profileInfo">
-<div id="agentName">Agent</div>
-<div class="role" id="accessLevel">Agent</div>
-</div>
-
-</div>
-
-<div class="dropdown" id="profileDropdown">
-
-<div id="agentEmail"></div>
-
-<hr>
-
-<button id="editProfileBtn">Edit Profile</button>
-<button id="logoutBtn">Logout</button>
-
-</div>
-
-</div>
+<b>Knowledge Hub</b>
 
 </header>
 
@@ -306,98 +139,88 @@ background:rgba(255,255,255,.2);
 <div class="tabs">
 
 <div class="tab active" data-tab="home">Home</div>
-<div class="tab" data-tab="retention">Retention</div>
-<div class="tab" data-tab="updates">Updates</div>
-<div class="tab" data-tab="tools">Tools</div>
-<div class="tab" data-tab="evertrust">Evertrust</div>
-<div class="tab" data-tab="uw">UW Guidelines</div>
-<div class="tab" data-tab="payments">Payments</div>
-<div class="tab" data-tab="files">Files</div>
-<div class="tab" data-tab="contacts">Contacts</div>
 <div class="tab" data-tab="contactslinks">Contacts & Links</div>
-<div class="tab" data-tab="agents">Agents</div>
 
 </div>
 
 
-<script>
+<div id="home" class="tabContent active">
 
-function createTab(section,title){
+<div class="tool">
 
-let widget=""
-
-if(section==="home"){
-widget=`
+<h3>Global Time</h3>
 
 <div class="map">
 
-<div class="zone-card east">
-<div class="tag">USA</div>
-<div class="zone-name">Eastern Time</div>
+<div class="zone est">
+<h4>Eastern Time</h4>
 <div class="time" id="est"></div>
 </div>
 
-<div class="zone-card central">
-<div class="tag">USA</div>
-<div class="zone-name">Central Time</div>
+<div class="zone cst">
+<h4>Central Time</h4>
 <div class="time" id="cst"></div>
 </div>
 
-<div class="zone-card mountain">
-<div class="tag">USA</div>
-<div class="zone-name">Mountain Time</div>
+<div class="zone mst">
+<h4>Mountain Time</h4>
 <div class="time" id="mst"></div>
 </div>
 
-<div class="zone-card pacific">
-<div class="tag">USA</div>
-<div class="zone-name">Pacific Time</div>
+<div class="zone pst">
+<h4>Pacific Time</h4>
 <div class="time" id="pst"></div>
 </div>
 
-<div class="zone-card dr">
-<div class="tag">CARIBBEAN</div>
-<div class="zone-name">Dominican Republic</div>
+<div class="zone dr">
+<h4>Dominican Republic</h4>
 <div class="time" id="dr"></div>
 </div>
 
-<div class="zone-card jordan">
-<div class="tag">MENA</div>
-<div class="zone-name">Amman · Jordan</div>
+<div class="zone jordan">
+<h4>Amman • Jordan</h4>
 <div class="time" id="amman"></div>
 </div>
 
 </div>
-`
-}
 
-if(section==="contactslinks"){
-widget=`
+</div>
+
+</div>
+
+
+<div id="contactslinks" class="tabContent">
 
 <div class="tool">
 
-<h3>Important Contacts</h3>
+<h3>Contacts</h3>
 
 <div class="linkGrid">
 
 <div class="linkCard">
 <b>Client Success</b><br>
-clientsuccess@company.com
+clientsuccess@cdr-now.com
 </div>
 
 <div class="linkCard">
-<b>Underwriting Team</b><br>
-underwriting@company.com
+<b>Underwriting</b><br>
+underwriting@cdr-now.com
 </div>
 
 <div class="linkCard">
-<b>Affiliate Support</b><br>
-affiliates@company.com
+<b>Affiliate Relations</b><br>
+affiliates@cdr-now.com
+</div>
+
+<div class="linkCard">
+<b>Merchant Support</b><br>
+merchant@cdr-now.com
 </div>
 
 </div>
 
 </div>
+
 
 <div class="tool">
 
@@ -406,72 +229,39 @@ affiliates@company.com
 <div class="linkGrid">
 
 <div class="linkCard">
-<a href="https://crm.company.com" target="_blank">CRM Login</a>
+<a href="https://app.cdr-now.com" target="_blank">
+Agent Portal
+</a>
 </div>
 
 <div class="linkCard">
-<a href="https://docs.company.com" target="_blank">Company Docs</a>
+<a href="https://merchant.cdr-now.com" target="_blank">
+Merchant Portal
+</a>
 </div>
 
 <div class="linkCard">
-<a href="https://slack.com" target="_blank">Slack</a>
+<a href="https://evertrustpay.com" target="_blank">
+Evertrust
+</a>
 </div>
 
+<div class="linkCard">
+<a href="https://app.cdr-now.com/login" target="_blank">
+Client Portal
+</a>
 </div>
 
-</div>
-`
-}
-
-return `
-<div id="${section}" class="tabContent">
-
-${widget}
-
-<div class="tool">
-
-<h3>${title}</h3>
-
-<input class="postTitle" placeholder="Post title">
-<input class="postTags" placeholder="Tags">
-
-<label>
-<input type="checkbox" class="postPinned"> Pin post
-</label>
-
-<div class="editorToolbar">
-<button data-format="bold"><b>B</b></button>
-<button data-format="italic"><i>I</i></button>
-<button data-format="underline"><u>U</u></button>
+<div class="linkCard">
+<a href="https://slack.com" target="_blank">
+Slack
+</a>
 </div>
 
-<div class="postContent" contenteditable="true"></div>
-
-<button class="createPostBtn">Publish Post</button>
-
-<input class="postSearch" placeholder="Search posts" style="margin-top:15px;width:100%;padding:8px;">
-
-<div class="postsContainer" data-section="${section}"></div>
-
-</div>
-</div>
-`
-}
-
-</script>
-
-
-<div id="tabsArea"></div>
-
-
-<div id="agents" class="tabContent">
-
-<div class="tool">
-
-<h3>Agent Directory</h3>
-
-<div id="agentDirectory">
-<div class="agentDirectoryGrid" id="agentGrid"></div>
+<div class="linkCard">
+<a href="https://crm.cdr-now.com" target="_blank">
+CRM Login
+</a>
 </div>
 
 </div>
@@ -480,25 +270,38 @@ ${widget}
 
 </div>
 
-
-<script type="module" src="dashboard.js"></script>
+</div>
 
 
 <script>
 
-const tabsArea=document.getElementById("tabsArea")
+/* CLOCK SYSTEM */
 
-tabsArea.innerHTML=
-createTab("home","Home")+
-createTab("retention","Retention")+
-createTab("updates","Updates")+
-createTab("tools","Tools")+
-createTab("evertrust","Evertrust")+
-createTab("uw","UW Guidelines")+
-createTab("payments","Payments")+
-createTab("files","Files")+
-createTab("contacts","Contacts")+
-createTab("contactslinks","Contacts & Links")
+function updateClocks(){
+
+function getTime(zone){
+return new Date().toLocaleTimeString("en-US",{
+timeZone:zone,
+hour:"2-digit",
+minute:"2-digit",
+second:"2-digit"
+})
+}
+
+document.getElementById("est").innerText=getTime("America/New_York")
+document.getElementById("cst").innerText=getTime("America/Chicago")
+document.getElementById("mst").innerText=getTime("America/Denver")
+document.getElementById("pst").innerText=getTime("America/Los_Angeles")
+document.getElementById("dr").innerText=getTime("America/Santo_Domingo")
+document.getElementById("amman").innerText=getTime("Asia/Amman")
+
+}
+
+setInterval(updateClocks,1000)
+updateClocks()
+
+
+/* TAB SYSTEM */
 
 const tabs=document.querySelectorAll(".tab")
 const contents=document.querySelectorAll(".tabContent")
@@ -519,6 +322,7 @@ document.getElementById(tab.dataset.tab).classList.add("active")
 })
 
 </script>
+
 
 </body>
 </html>
