@@ -8,235 +8,33 @@
 <link rel="stylesheet" href="dashboard.css">
 
 <style>
-body{
-font-family:Arial;
-background:#f4f7fb;
-margin:0;
-}
 
-header{
-background:#2e5aac;
-color:white;
-padding:15px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-}
+/* CONTACTS & LINKS GRID */
 
-.container{
-padding:40px;
-}
-
-.logo{
-font-size:18px;
-}
-
-.profileArea{
-display:flex;
-align-items:center;
-gap:20px;
-position:relative;
-}
-
-.profile{
-display:flex;
-align-items:center;
-gap:10px;
-cursor:pointer;
-}
-
-.profile img{
-width:38px;
-height:38px;
-border-radius:50%;
-object-fit:cover;
-}
-
-.profileInfo{
-font-size:13px;
-}
-
-.role{
-font-size:11px;
-color:#ddd;
-}
-
-.dropdown{
-position:absolute;
-right:0;
-top:60px;
-background:white;
-border-radius:8px;
-box-shadow:0 6px 20px rgba(0,0,0,0.15);
-padding:15px;
-display:none;
-min-width:200px;
-color:black;
-}
-
-.dropdown.show{
-display:block;
-}
-
-.dropdown button{
-width:100%;
-margin-top:10px;
-padding:8px;
-border:none;
-background:#1e4fa1;
-color:white;
-border-radius:6px;
-cursor:pointer;
-}
-
-/* tabs */
-
-.tabs{
-display:flex;
-gap:10px;
-margin-bottom:20px;
-flex-wrap:wrap;
-}
-
-.tab{
-padding:8px 14px;
-background:#e4e9f3;
-border-radius:6px;
-cursor:pointer;
-}
-
-.tab.active{
-background:#2e5aac;
-color:white;
-}
-
-.tabContent{
-display:none;
-}
-
-.tabContent.active{
-display:block;
-}
-
-/* posts */
-
-.postCard{
-background:#fff;
-border-radius:10px;
-padding:16px;
-margin-top:15px;
-box-shadow:0 2px 8px rgba(0,0,0,.05);
-}
-
-.postMeta{
-font-size:13px;
-color:#666;
-margin-bottom:6px;
-}
-
-.postActions{
-display:flex;
-gap:8px;
-margin-top:12px;
-}
-
-.postActions button{
-border:none;
-background:#f2f4f8;
-padding:6px 10px;
-border-radius:6px;
-cursor:pointer;
-}
-
-.postContent{
-border:1px solid #ccc;
-padding:10px;
-border-radius:6px;
-min-height:120px;
-margin-top:10px;
-}
-
-.editorToolbar{
-display:flex;
-gap:6px;
-margin-top:10px;
-}
-
-.editorToolbar button{
-border:1px solid #ccc;
-background:white;
-padding:4px 8px;
-border-radius:6px;
-cursor:pointer;
-}
-
-.pinned{
-font-size:12px;
-color:#d97706;
-font-weight:bold;
-margin-bottom:5px;
-}
-
-.tool{
-background:white;
-padding:20px;
-margin-bottom:20px;
-border-radius:8px;
-box-shadow:0 2px 8px rgba(0,0,0,0.08);
-}
-
-/* TIME ZONE TOOL */
-
-.map{
+.linkGrid{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-gap:18px;
-max-width:1100px;
-margin:auto;
-margin-bottom:25px;
+gap:16px;
+margin-top:15px;
 }
 
-.zone-card{
-position:relative;
-padding:16px 18px;
-border-radius:14px;
-box-shadow:0 8px 20px rgba(0,0,0,0.15);
-color:white;
+.linkCard{
+background:white;
+padding:18px;
+border-radius:10px;
+box-shadow:0 2px 10px rgba(0,0,0,0.08);
+transition:.2s;
 }
 
-.zone-name{
-font-size:14px;
-font-weight:700;
+.linkCard:hover{
+transform:translateY(-3px);
+box-shadow:0 6px 18px rgba(0,0,0,0.12);
 }
 
-.time{
-font-size:26px;
-font-weight:800;
-margin-top:6px;
-}
-
-.states{
-font-size:11px;
-opacity:.9;
-margin-top:8px;
-line-height:1.5;
-}
-
-.east{background:linear-gradient(135deg,#2563eb,#1e40af);}
-.central{background:linear-gradient(135deg,#16a34a,#065f46);}
-.mountain{background:linear-gradient(135deg,#f59e0b,#b45309);}
-.pacific{background:linear-gradient(135deg,#9333ea,#6b21a8);}
-.jordan{background:linear-gradient(135deg,#dc2626,#7f1d1d);}
-.dr{background:linear-gradient(135deg,#0ea5e9,#0369a1);}
-
-.tag{
-position:absolute;
-top:12px;
-right:12px;
-font-size:10px;
-padding:3px 8px;
-border-radius:999px;
-background:rgba(255,255,255,.2);
+.linkCard a{
+text-decoration:none;
+color:#2e5aac;
+font-weight:bold;
 }
 
 </style>
@@ -292,18 +90,21 @@ background:rgba(255,255,255,.2);
 <div class="tab" data-tab="payments">Payments</div>
 <div class="tab" data-tab="files">Files</div>
 <div class="tab" data-tab="contacts">Contacts</div>
+<div class="tab" data-tab="contactslinks">Contacts & Links</div>
 <div class="tab" data-tab="agents">Agents</div>
 
 </div>
 
 
 <script>
+
 function createTab(section,title){
 
 let widget=""
 
 if(section==="home"){
 widget=`
+
 <div class="map">
 
 <div class="zone-card east">
@@ -346,7 +147,46 @@ widget=`
 `
 }
 
+if(section==="contactslinks"){
+widget=`
+
+<div class="tool">
+
+<h3>Contacts</h3>
+
+<div class="linkGrid">
+
+<div class="linkCard"><b>Client Success</b><br>clientsuccess@cdr-now.com</div>
+<div class="linkCard"><b>Underwriting</b><br>underwriting@cdr-now.com</div>
+<div class="linkCard"><b>Affiliate Relations</b><br>affiliates@cdr-now.com</div>
+<div class="linkCard"><b>Merchant Support</b><br>merchant@cdr-now.com</div>
+
+</div>
+
+</div>
+
+<div class="tool">
+
+<h3>Quick Links</h3>
+
+<div class="linkGrid">
+
+<div class="linkCard"><a href="https://app.cdr-now.com" target="_blank">Agent Portal</a></div>
+<div class="linkCard"><a href="https://merchant.cdr-now.com" target="_blank">Merchant Portal</a></div>
+<div class="linkCard"><a href="https://evertrustpay.com" target="_blank">Evertrust</a></div>
+<div class="linkCard"><a href="https://app.cdr-now.com/login" target="_blank">Client Portal</a></div>
+<div class="linkCard"><a href="https://crm.cdr-now.com" target="_blank">CRM Login</a></div>
+<div class="linkCard"><a href="https://slack.com" target="_blank">Slack</a></div>
+
+</div>
+
+</div>
+
+`
+}
+
 return `
+
 <div id="${section}" class="tabContent">
 
 ${widget}
@@ -380,6 +220,7 @@ ${widget}
 </div>
 `
 }
+
 </script>
 
 
@@ -421,7 +262,8 @@ createTab("evertrust","Evertrust")+
 createTab("uw","UW Guidelines")+
 createTab("payments","Payments")+
 createTab("files","Files")+
-createTab("contacts","Contacts")
+createTab("contacts","Contacts")+
+createTab("contactslinks","Contacts & Links")
 
 
 /* TAB SWITCHING */
@@ -445,56 +287,26 @@ document.getElementById(tab.dataset.tab).classList.add("active")
 })
 
 
-/* EDITOR */
-
-document.addEventListener("click",(e)=>{
-
-if(e.target.dataset.format){
-document.execCommand(e.target.dataset.format,false,null)
-}
-
-})
-
-
-/* PROFILE DROPDOWN */
-
-const profileBtn=document.getElementById("profileBtn")
-const dropdown=document.getElementById("profileDropdown")
-
-profileBtn.addEventListener("click",(e)=>{
-e.preventDefault()
-e.stopPropagation()
-dropdown.classList.toggle("show")
-})
-
-dropdown.addEventListener("click",(e)=>{
-e.stopPropagation()
-})
-
-window.addEventListener("click",(e)=>{
-if(!profileBtn.contains(e.target)){
-dropdown.classList.remove("show")
-}
-})
-
-/* PROFILE BUTTON ACTIONS */
-
-document.getElementById("editProfileBtn").addEventListener("click",()=>{
-window.location.href="profile.html"
-})
-
-
-/* TIME SCRIPT */
+/* CLOCKS */
 
 function updateTimes(){
+
 const opt={hour:'2-digit',minute:'2-digit',second:'2-digit'}
 
-est.textContent=new Date().toLocaleTimeString('en-US',{...opt,timeZone:'America/New_York'})
-cst.textContent=new Date().toLocaleTimeString('en-US',{...opt,timeZone:'America/Chicago'})
-mst.textContent=new Date().toLocaleTimeString('en-US',{...opt,timeZone:'America/Denver'})
-pst.textContent=new Date().toLocaleTimeString('en-US',{...opt,timeZone:'America/Los_Angeles'})
-dr.textContent=new Date().toLocaleTimeString('en-US',{...opt,timeZone:'America/Santo_Domingo'})
-amman.textContent=new Date().toLocaleTimeString('en-US',{...opt,timeZone:'Asia/Amman'})
+const est=document.getElementById("est")
+const cst=document.getElementById("cst")
+const mst=document.getElementById("mst")
+const pst=document.getElementById("pst")
+const dr=document.getElementById("dr")
+const amman=document.getElementById("amman")
+
+if(est) est.textContent=new Date().toLocaleTimeString('en-US',{...opt,timeZone:'America/New_York'})
+if(cst) cst.textContent=new Date().toLocaleTimeString('en-US',{...opt,timeZone:'America/Chicago'})
+if(mst) mst.textContent=new Date().toLocaleTimeString('en-US',{...opt,timeZone:'America/Denver'})
+if(pst) pst.textContent=new Date().toLocaleTimeString('en-US',{...opt,timeZone:'America/Los_Angeles'})
+if(dr) dr.textContent=new Date().toLocaleTimeString('en-US',{...opt,timeZone:'America/Santo_Domingo'})
+if(amman) amman.textContent=new Date().toLocaleTimeString('en-US',{...opt,timeZone:'Asia/Amman'})
+
 }
 
 updateTimes()
