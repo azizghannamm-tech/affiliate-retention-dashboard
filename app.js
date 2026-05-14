@@ -26,7 +26,9 @@ const currentPage =
 window.location.pathname.split("/").pop();
 
 
-/* AUTH CHECK */
+/* =========================
+AUTH CHECK
+========================= */
 
 onAuthStateChanged(auth, async (user)=>{
 
@@ -56,29 +58,40 @@ return;
 }
 
 
-/* LOAD PROFILE BAR */
+/* LOAD USER INFO */
 
-const nameEl = document.getElementById("agentName");
-const emailEl = document.getElementById("agentEmail");
-const roleEl = document.getElementById("accessLevel");
-const avatarEl = document.getElementById("agentAvatar");
+const nameEl =
+document.getElementById("agentName");
+
+const emailEl =
+document.getElementById("agentEmail");
+
+const roleEl =
+document.getElementById("accessLevel");
+
+const avatarEl =
+document.getElementById("agentAvatar");
 
 
 try{
 
-const profileRef = doc(db,"profiles",user.uid);
+const userRef =
+doc(db,"users",user.uid);
 
-const profileSnap = await getDoc(profileRef);
+const userSnap =
+await getDoc(userRef);
 
-let profileData = {};
+let userData = {};
 
-if(profileSnap.exists()){
+if(userSnap.exists()){
 
-profileData = profileSnap.data();
+userData = userSnap.data();
 
 }else{
 
-await setDoc(profileRef,{
+/* CREATE USER DOC */
+
+userData = {
 
 name:user.displayName || "Agent",
 email:user.email,
@@ -87,52 +100,64 @@ bio:"",
 photo:"",
 created:new Date()
 
-});
+};
+
+await setDoc(userRef,userData);
 
 }
+
+
+/* LOAD UI */
 
 if(nameEl){
 
 nameEl.innerText =
-profileData.name ||
-user.displayName ||
-"Agent";
+userData.name || "Agent";
 
 }
 
 if(emailEl){
 
-emailEl.innerText = user.email;
+emailEl.innerText =
+user.email;
 
 }
 
 if(roleEl){
 
 roleEl.innerText =
-profileData.role ||
-"agent";
+userData.role === "admin"
+? "Administrator"
+: "Agent";
 
 }
 
 if(avatarEl){
 
 avatarEl.src =
-profileData.photo ||
+
+userData.photo ||
+
 user.photoURL ||
-"https://ui-avatars.com/api/?name=Agent&background=2e5aac&color=fff";
+
+`https://ui-avatars.com/api/?name=${
+encodeURIComponent(userData.name || "Agent")
+}&background=2e5aac&color=fff`;
 
 }
 
 }catch(err){
 
-console.log(err);
+console.error("User load error:", err);
 
 }
 
 });
 
 
-/* LOGIN */
+/* =========================
+LOGIN
+========================= */
 
 const loginBtn =
 document.getElementById("loginBtn");
@@ -158,11 +183,17 @@ email,
 password
 );
 
-window.location.href = "index.html";
+window.location.href =
+"index.html";
 
 }catch(err){
 
-error.innerText = err.message;
+if(error){
+
+error.innerText =
+err.message;
+
+}
 
 }
 
@@ -171,7 +202,9 @@ error.innerText = err.message;
 }
 
 
-/* SIGNUP */
+/* =========================
+SIGNUP
+========================= */
 
 const signupBtn =
 document.getElementById("signupBtn");
@@ -192,6 +225,7 @@ document.getElementById("error");
 try{
 
 const userCredential =
+
 await createUserWithEmailAndPassword(
 auth,
 email,
@@ -200,24 +234,32 @@ password
 
 await setDoc(
 
-doc(db,"profiles",userCredential.user.uid),
+doc(db,"users",userCredential.user.uid),
 
 {
+
 name:"Agent",
 email:email,
 role:"agent",
 bio:"",
 photo:"",
 created:new Date()
+
 }
 
 );
 
-window.location.href = "index.html";
+window.location.href =
+"index.html";
 
 }catch(err){
 
-error.innerText = err.message;
+if(error){
+
+error.innerText =
+err.message;
+
+}
 
 }
 
@@ -226,7 +268,9 @@ error.innerText = err.message;
 }
 
 
-/* GOOGLE LOGIN */
+/* =========================
+GOOGLE LOGIN
+========================= */
 
 const googleBtn =
 document.getElementById("googleBtn");
@@ -241,37 +285,55 @@ const provider =
 new GoogleAuthProvider();
 
 const result =
-await signInWithPopup(auth,provider);
 
-const user = result.user;
+await signInWithPopup(
+auth,
+provider
+);
 
-const ref =
-doc(db,"profiles",user.uid);
+const user =
+result.user;
 
-const snap =
-await getDoc(ref);
+const userRef =
+doc(db,"users",user.uid);
 
-if(!snap.exists()){
+const userSnap =
+await getDoc(userRef);
 
-await setDoc(ref,{
+if(!userSnap.exists()){
+
+await setDoc(userRef,{
 
 name:user.displayName || "Agent",
+
 email:user.email,
+
 role:"agent",
+
 bio:"",
+
 photo:user.photoURL || "",
+
 created:new Date()
 
 });
 
 }
 
-window.location.href = "index.html";
+window.location.href =
+"index.html";
 
 }catch(err){
 
-document.getElementById("error").innerText =
+const error =
+document.getElementById("error");
+
+if(error){
+
+error.innerText =
 err.message;
+
+}
 
 }
 
@@ -280,7 +342,9 @@ err.message;
 }
 
 
-/* LOGOUT */
+/* =========================
+LOGOUT
+========================= */
 
 const logoutBtn =
 document.getElementById("logoutBtn");
@@ -291,7 +355,8 @@ logoutBtn.onclick = async ()=>{
 
 await signOut(auth);
 
-window.location.href = "login.html";
+window.location.href =
+"login.html";
 
 };
 
