@@ -1,11 +1,16 @@
-```html
+<!-- index.html -->
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0"
+>
 
 <title>Knowledge Hub</title>
 
@@ -15,7 +20,6 @@
 
 <body>
 
-<!-- TOP BAR -->
 
 <header class="topBar">
 
@@ -29,7 +33,9 @@ Knowledge Hub
 
 <div class="profileInfo">
 
-<div id="agentName">Agent</div>
+<div id="agentName">
+Agent
+</div>
 
 <div id="agentEmail"></div>
 
@@ -37,7 +43,9 @@ Knowledge Hub
 
 </div>
 
-<button id="profileBtn">☰</button>
+<button id="profileBtn">
+☰
+</button>
 
 <div class="dropdown" id="profileDropdown">
 
@@ -55,8 +63,6 @@ Logout
 
 </header>
 
-
-<!-- TABS -->
 
 <div class="tabs">
 
@@ -77,27 +83,22 @@ Tools
 </button>
 
 <button class="tabBtn" onclick="showTab('directory')">
-Agent Directory
+Directory
 </button>
 
 </div>
 
 
-<!-- MAIN CONTENT -->
-
 <div class="mainContainer" id="mainContent"></div>
 
-
-<!-- DOMPURIFY -->
 
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.5/dist/purify.min.js"></script>
 
 
-<!-- TAB SYSTEM -->
-
 <script>
 
-const mainContent = document.getElementById("mainContent");
+const mainContent =
+document.getElementById("mainContent");
 
 
 function createTab(section,title){
@@ -105,7 +106,7 @@ function createTab(section,title){
 let widget = "";
 
 
-/* HOME WIDGET */
+/* HOME */
 
 if(section === "home"){
 
@@ -125,73 +126,12 @@ Global Time Zones
 <div class="time" id="est"></div>
 </div>
 
-<div class="zone-card central">
-<div class="tag">USA</div>
-<div class="zone-name">Central Time</div>
-<div class="time" id="cst"></div>
-</div>
-
-<div class="zone-card mountain">
-<div class="tag">USA</div>
-<div class="zone-name">Mountain Time</div>
-<div class="time" id="mst"></div>
-</div>
-
-<div class="zone-card pacific">
-<div class="tag">USA</div>
-<div class="zone-name">Pacific Time</div>
-<div class="time" id="pst"></div>
-</div>
-
-<div class="zone-card dr">
-<div class="tag">CARIBBEAN</div>
-<div class="zone-name">Dominican Republic</div>
-<div class="time" id="dr"></div>
-</div>
-
 <div class="zone-card jordan">
 <div class="tag">MENA</div>
-<div class="zone-name">Amman · Jordan</div>
+<div class="zone-name">Amman</div>
 <div class="time" id="amman"></div>
 </div>
 
-</div>
-
-</div>
-
-`;
-
-}
-
-
-/* TOOLS WIDGET */
-
-if(section === "tools"){
-
-widget += `
-
-<div class="tool">
-
-<h3>Text Box Builder</h3>
-
-<button onclick="addBox('${section}')">
-Add Text Box
-</button>
-
-<button onclick="saveBoxes('${section}')">
-Save Layout
-</button>
-
-<div
-class="canvas"
-id="canvas-${section}"
-style="
-position:relative;
-height:400px;
-margin-top:15px;
-border:2px dashed #ccc;
-border-radius:10px;
-">
 </div>
 
 </div>
@@ -220,7 +160,7 @@ widget += `
 }
 
 
-/* POSTS SYSTEM */
+/* POSTS */
 
 return `
 
@@ -234,24 +174,17 @@ ${section !== "directory" ? `
 
 <h3>${title}</h3>
 
-<input
-class="postTitle"
-placeholder="Post title"
->
+<input class="postTitle" placeholder="Post title">
 
-<input
-class="postTags"
-placeholder="Tags"
->
+<input class="postTags" placeholder="Tags">
 
 <label>
 
 <input type="checkbox" class="postPinned">
 
-Pin post
+Pin Post
 
 </label>
-
 
 <div class="editorToolbar">
 
@@ -269,28 +202,19 @@ Pin post
 
 </div>
 
-
 <div
 class="postContent"
 contenteditable="true"
 ></div>
 
-
 <button class="createPostBtn">
 Publish Post
 </button>
 
-
 <input
 class="postSearch"
 placeholder="Search posts"
-style="
-margin-top:15px;
-width:100%;
-padding:8px;
-"
 >
-
 
 <div
 class="postsContainer"
@@ -308,7 +232,7 @@ data-section="${section}"
 }
 
 
-/* RENDER TABS */
+/* RENDER */
 
 mainContent.innerHTML =
 
@@ -323,31 +247,35 @@ createTab("tools","Tools Center") +
 createTab("directory","Directory");
 
 
-/* SHOW TAB */
+/* SHOW TABS */
 
 function showTab(id){
 
-document.querySelectorAll(".tabContent").forEach(tab=>{
+document
+.querySelectorAll(".tabContent")
+.forEach(tab=>{
 
 tab.style.display = "none";
 
 });
 
-document.getElementById(id).style.display = "block";
+document.getElementById(id)
+.style.display = "block";
 
 }
-
-
-/* DEFAULT TAB */
 
 showTab("home");
 
 
-/* PROFILE DROPDOWN */
+/* DROPDOWN */
 
-const profileBtn = document.getElementById("profileBtn");
+const profileBtn =
+document.getElementById("profileBtn");
 
-const dropdown = document.getElementById("profileDropdown");
+const dropdown =
+document.getElementById("profileDropdown");
+
+if(profileBtn && dropdown){
 
 profileBtn.onclick = ()=>{
 
@@ -355,8 +283,10 @@ dropdown.classList.toggle("show");
 
 };
 
+}
 
-/* RICH TEXT EDITOR */
+
+/* TEXT EDITOR */
 
 document.addEventListener("click",(e)=>{
 
@@ -373,39 +303,39 @@ null
 });
 
 
-/* GLOBAL TIMES */
+/* CLOCK */
 
 function updateTimes(){
 
-document.getElementById("est").innerText =
-new Date().toLocaleTimeString("en-US",{
+const est =
+document.getElementById("est");
+
+const amman =
+document.getElementById("amman");
+
+if(est){
+
+est.innerText =
+new Date().toLocaleTimeString(
+"en-US",
+{
 timeZone:"America/New_York"
-});
+}
+);
 
-document.getElementById("cst").innerText =
-new Date().toLocaleTimeString("en-US",{
-timeZone:"America/Chicago"
-});
+}
 
-document.getElementById("mst").innerText =
-new Date().toLocaleTimeString("en-US",{
-timeZone:"America/Denver"
-});
+if(amman){
 
-document.getElementById("pst").innerText =
-new Date().toLocaleTimeString("en-US",{
-timeZone:"America/Los_Angeles"
-});
-
-document.getElementById("dr").innerText =
-new Date().toLocaleTimeString("en-US",{
-timeZone:"America/Santo_Domingo"
-});
-
-document.getElementById("amman").innerText =
-new Date().toLocaleTimeString("en-US",{
+amman.innerText =
+new Date().toLocaleTimeString(
+"en-US",
+{
 timeZone:"Asia/Amman"
-});
+}
+);
+
+}
 
 }
 
@@ -416,13 +346,10 @@ setInterval(updateTimes,1000);
 </script>
 
 
-<!-- DASHBOARD LOGIC -->
+<script type="module" src="app.js"></script>
 
 <script type="module" src="dashboard.js"></script>
-
-<script type="module" src="app.js"></script>
 
 </body>
 
 </html>
-```
