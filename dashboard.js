@@ -16,17 +16,19 @@ getDocs,
 addDoc,
 deleteDoc,
 doc,
+getDoc,
 serverTimestamp
 
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
 let currentUser;
+let currentUserRole = "agent";
 
 
 /* AUTH */
 
-onAuthStateChanged(auth,(user)=>{
+onAuthStateChanged(auth, async (user)=>{
 
 if(!user){
 
@@ -38,9 +40,61 @@ return;
 
 currentUser = user;
 
+
+/* LOAD USER ROLE */
+
+try{
+
+const userRef = doc(db,"users",user.uid);
+
+const userSnap = await getDoc(userRef);
+
+if(userSnap.exists()){
+
+const userData = userSnap.data();
+
+currentUserRole = userData.role || "agent";
+
+window.isAdmin = currentUserRole === "admin";
+
+}else{
+
+window.isAdmin = false;
+
+}
+
+}catch(err){
+
+console.error("Role load error:", err);
+
+window.isAdmin = false;
+
+}
+
+
+/* LOAD FEATURES */
+
 loadAgentDirectory();
 
 setupPostSystem();
+
+
+/* LOGOUT */
+
+const logoutBtn =
+document.getElementById("logoutBtn");
+
+if(logoutBtn){
+
+logoutBtn.onclick = async ()=>{
+
+await signOut(auth);
+
+window.location.href = "login.html";
+
+};
+
+}
 
 });
 
@@ -57,7 +111,7 @@ if(!grid) return;
 grid.innerHTML = "Loading...";
 
 const snapshot =
-await getDocs(collection(db,"profiles"));
+await getDocs(collection(db,"users"));
 
 grid.innerHTML = "";
 
@@ -74,7 +128,7 @@ card.innerHTML = `
 
 <img src="${
 data.photo ||
-'https://ui-avatars.com/api/?name=Agent'
+'https://ui-avatars.com/api/?name=' + encodeURIComponent(data.name || "Agent")
 }">
 
 <div class="agentName">
@@ -114,6 +168,11 @@ loadPosts(section);
 const parent =
 container.closest(".tool");
 
+if(!parent) return;
+
+
+/* POST ELEMENTS */
+
 const title =
 parent.querySelector(".postTitle");
 
@@ -133,9 +192,43 @@ const search =
 parent.querySelector(".postSearch");
 
 
-/* CREATE */
+/* HIDE ADMIN FEATURES */
+
+if(!window.isAdmin){
+
+if(title) title.style.display = "none";
+
+if(tags) tags.style.display = "none";
+
+if(content) content.style.display = "none";
+
+if(pinned)
+pinned.parentElement.style.display = "none";
+
+if(button) button.style.display = "none";
+
+const toolbar =
+parent.querySelector(".editorToolbar");
+
+if(toolbar)
+toolbar.style.display = "none";
+
+}
+
+
+/* CREATE POST */
+
+if(button){
 
 button.onclick = async ()=>{
+
+if(!window.isAdmin){
+
+alert("Admins only");
+
+return;
+
+}
 
 if(!title.value || !content.innerHTML){
 
@@ -166,15 +259,21 @@ created:serverTimestamp()
 });
 
 title.value = "";
+
 tags.value = "";
+
 content.innerHTML = "";
 
 loadPosts(section);
 
 };
 
+}
+
 
 /* SEARCH */
+
+if(search){
 
 search.oninput = ()=>{
 
@@ -195,6 +294,8 @@ card.innerText
 });
 
 };
+
+}
 
 });
 
@@ -247,6 +348,9 @@ ${data.author || ""}
 ${data.content}
 </div>
 
+${
+window.isAdmin
+? `
 <div class="postActions">
 
 <button
@@ -259,6 +363,9 @@ Delete
 </button>
 
 </div>
+`
+: ""
+}
 
 `;
 
@@ -269,11 +376,19 @@ container.appendChild(card);
 }
 
 
-/* DELETE */
+/* DELETE POSTS */
 
 document.addEventListener("click",async(e)=>{
 
 if(e.target.classList.contains("deletePost")){
+
+if(!window.isAdmin){
+
+alert("Admins only");
+
+return;
+
+}
 
 if(!confirm("Delete post?")) return;
 
