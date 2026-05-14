@@ -1,5 +1,4 @@
-<!-- index.html -->
-
+```html
 <!DOCTYPE html>
 <html lang="en">
 
@@ -7,14 +6,13 @@
 
 <meta charset="UTF-8">
 
-<meta
-name="viewport"
-content="width=device-width, initial-scale=1.0"
->
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
 
 <title>Knowledge Hub</title>
 
-<link rel="stylesheet" href="dashboard.css">
+<link rel="stylesheet"
+href="dashboard.css">
 
 </head>
 
@@ -29,7 +27,8 @@ Knowledge Hub
 
 <div class="profileSection">
 
-<img id="agentAvatar" class="avatar">
+<img id="agentAvatar"
+class="avatar">
 
 <div class="profileInfo">
 
@@ -43,313 +42,101 @@ Agent
 
 </div>
 
-<button id="profileBtn">
-☰
-</button>
-
-<div class="dropdown" id="profileDropdown">
-
-<a href="profile.html">
-My Profile
-</a>
-
 <button id="logoutBtn">
 Logout
 </button>
 
 </div>
 
-</div>
-
 </header>
 
 
-<div class="tabs">
+<div class="mainContainer">
 
-<button class="tabBtn" onclick="showTab('home')">
-Home
-</button>
-
-<button class="tabBtn" onclick="showTab('announcements')">
-Announcements
-</button>
-
-<button class="tabBtn" onclick="showTab('resources')">
-Resources
-</button>
-
-<button class="tabBtn" onclick="showTab('tools')">
-Tools
-</button>
-
-<button class="tabBtn" onclick="showTab('directory')">
-Directory
-</button>
-
-</div>
-
-
-<div class="mainContainer" id="mainContent"></div>
-
-
-<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.5/dist/purify.min.js"></script>
-
-
-<script>
-
-const mainContent =
-document.getElementById("mainContent");
-
-
-function createTab(section,title){
-
-let widget = "";
-
-
-/* HOME */
-
-if(section === "home"){
-
-widget = `
-
-<div class="timeWidget">
-
-<div class="title">
-Global Time Zones
-</div>
-
-<div class="map">
-
-<div class="zone-card east">
-<div class="tag">USA</div>
-<div class="zone-name">Eastern Time</div>
-<div class="time" id="est"></div>
-</div>
-
-<div class="zone-card jordan">
-<div class="tag">MENA</div>
-<div class="zone-name">Amman</div>
-<div class="time" id="amman"></div>
-</div>
-
-</div>
-
-</div>
-
-`;
-
-}
-
-
-/* DIRECTORY */
-
-if(section === "directory"){
-
-widget += `
 
 <div class="tool">
 
-<h3>Agent Directory</h3>
+<h2>Announcements</h2>
+
+<div class="adminOnly">
+
+<input
+id="announcements-title"
+placeholder="Title"
+>
+
+<textarea
+id="announcements-content"
+placeholder="Content"
+></textarea>
+
+<button
+onclick="createPost('announcements')"
+>
+
+Create Post
+
+</button>
+
+</div>
+
+<div
+id="announcements-posts"
+class="posts"
+></div>
+
+</div>
+
+
+<div class="tool">
+
+<h2>Resources</h2>
+
+<div class="adminOnly">
+
+<input
+id="resources-title"
+placeholder="Title"
+>
+
+<textarea
+id="resources-content"
+placeholder="Content"
+></textarea>
+
+<button
+onclick="createPost('resources')"
+>
+
+Create Post
+
+</button>
+
+</div>
+
+<div
+id="resources-posts"
+class="posts"
+></div>
+
+</div>
+
+
+<div class="tool">
+
+<h2>Directory</h2>
 
 <div id="agentGrid"></div>
 
 </div>
 
-`;
-
-}
-
-
-/* POSTS */
-
-return `
-
-<div id="${section}" class="tabContent">
-
-${widget}
-
-${section !== "directory" ? `
-
-<div class="tool">
-
-<h3>${title}</h3>
-
-<input class="postTitle" placeholder="Post title">
-
-<input class="postTags" placeholder="Tags">
-
-<label>
-
-<input type="checkbox" class="postPinned">
-
-Pin Post
-
-</label>
-
-<div class="editorToolbar">
-
-<button data-format="bold">
-<b>B</b>
-</button>
-
-<button data-format="italic">
-<i>I</i>
-</button>
-
-<button data-format="underline">
-<u>U</u>
-</button>
 
 </div>
 
-<div
-class="postContent"
-contenteditable="true"
-></div>
 
-<button class="createPostBtn">
-Publish Post
-</button>
-
-<input
-class="postSearch"
-placeholder="Search posts"
->
-
-<div
-class="postsContainer"
-data-section="${section}"
-></div>
-
-</div>
-
-` : ""}
-
-</div>
-
-`;
-
-}
-
-
-/* RENDER */
-
-mainContent.innerHTML =
-
-createTab("home","Home Feed") +
-
-createTab("announcements","Announcements") +
-
-createTab("resources","Resources") +
-
-createTab("tools","Tools Center") +
-
-createTab("directory","Directory");
-
-
-/* SHOW TABS */
-
-function showTab(id){
-
-document
-.querySelectorAll(".tabContent")
-.forEach(tab=>{
-
-tab.style.display = "none";
-
-});
-
-document.getElementById(id)
-.style.display = "block";
-
-}
-
-showTab("home");
-
-
-/* DROPDOWN */
-
-const profileBtn =
-document.getElementById("profileBtn");
-
-const dropdown =
-document.getElementById("profileDropdown");
-
-if(profileBtn && dropdown){
-
-profileBtn.onclick = ()=>{
-
-dropdown.classList.toggle("show");
-
-};
-
-}
-
-
-/* TEXT EDITOR */
-
-document.addEventListener("click",(e)=>{
-
-if(e.target.dataset.format){
-
-document.execCommand(
-e.target.dataset.format,
-false,
-null
-);
-
-}
-
-});
-
-
-/* CLOCK */
-
-function updateTimes(){
-
-const est =
-document.getElementById("est");
-
-const amman =
-document.getElementById("amman");
-
-if(est){
-
-est.innerText =
-new Date().toLocaleTimeString(
-"en-US",
-{
-timeZone:"America/New_York"
-}
-);
-
-}
-
-if(amman){
-
-amman.innerText =
-new Date().toLocaleTimeString(
-"en-US",
-{
-timeZone:"Asia/Amman"
-}
-);
-
-}
-
-}
-
-updateTimes();
-
-setInterval(updateTimes,1000);
-
-</script>
-
-
-<script type="module" src="app.js"></script>
-
-<script type="module" src="dashboard.js"></script>
+<script type="module"
+src="app.js"></script>
 
 </body>
-
 </html>
+```
