@@ -1,20 +1,17 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import {
+auth,
+db
+} from "./firebase.js";
 
-/* FIREBASE CONFIG */
+import {
+onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-const firebaseConfig = {
-apiKey: "AIzaSyB8dDTnpPQVRAs7dkfc8QU3L5qUJtm-2jg",
-authDomain: "affiliate-relations-17687.firebaseapp.com",
-projectId: "affiliate-relations-17687"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-/* ELEMENTS */
+import {
+doc,
+getDoc,
+setDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const nameInput = document.getElementById("profileName");
 const bioInput = document.getElementById("profileBio");
@@ -25,14 +22,10 @@ const saveBtn = document.getElementById("saveProfile");
 let currentUser;
 let avatarBase64 = "";
 
-/* GET PROFILE ID FROM URL */
-
 const params = new URLSearchParams(window.location.search);
 const profileId = params.get("uid");
 
-/* LOAD USER */
-
-onAuthStateChanged(auth, async (user) => {
+onAuthStateChanged(auth, async (user)=>{
 
 if(!user){
 window.location.href="login.html";
@@ -43,7 +36,7 @@ currentUser = user;
 
 const uid = profileId || user.uid;
 
-const ref = doc(db,"profiles",uid);
+const ref = doc(db,"users",uid);
 const snap = await getDoc(ref);
 
 if(snap.exists()){
@@ -60,20 +53,16 @@ avatarBase64 = data.photo;
 
 }
 
-/* Disable editing if viewing another profile */
-
 if(profileId && profileId !== user.uid){
 
 nameInput.disabled = true;
 bioInput.disabled = true;
-avatarUpload.style.display="none";
-saveBtn.style.display="none";
+avatarUpload.style.display = "none";
+saveBtn.style.display = "none";
 
 }
 
 });
-
-/* AVATAR UPLOAD */
 
 avatarUpload.addEventListener("change",function(){
 
@@ -83,23 +72,23 @@ if(!file) return;
 const reader = new FileReader();
 
 reader.onload = function(e){
+
 avatarBase64 = e.target.result;
 profileAvatar.src = avatarBase64;
+
 };
 
 reader.readAsDataURL(file);
 
 });
 
-/* SAVE PROFILE */
-
 saveBtn.onclick = async ()=>{
 
-await setDoc(doc(db,"profiles",currentUser.uid),{
+await setDoc(doc(db,"users",currentUser.uid),{
 
-name: nameInput.value,
-bio: bioInput.value,
-photo: avatarBase64
+name:nameInput.value,
+bio:bioInput.value,
+photo:avatarBase64
 
 },{merge:true});
 
