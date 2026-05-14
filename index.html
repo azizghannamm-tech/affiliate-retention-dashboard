@@ -1,600 +1,141 @@
-<!DOCTYPE html>
-<html lang="en">
+box-shadow:0 2px 8px rgba(0,0,0,0.08);
+}
 
-<head>
+/* TIME ZONE TOOL */
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+.map{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:18px;
+max-width:1100px;
+margin:auto;
+margin-bottom:25px;
+}
 
-<title>Knowledge Hub</title>
+.zone-card{
+position:relative;
+padding:16px 18px;
+border-radius:14px;
+box-shadow:0 8px 20px rgba(0,0,0,0.15);
+color:white;
+}
 
-<link rel="stylesheet" href="dashboard.css">
+.zone-name{
+font-size:14px;
+font-weight:700;
+}
+
+.time{
+font-size:26px;
+font-weight:800;
+margin-top:6px;
+}
+
+.states{
+font-size:11px;
+opacity:.9;
+margin-top:8px;
+line-height:1.5;
+}
+
+.east{background:linear-gradient(135deg,#2563eb,#1e40af);}
+.central{background:linear-gradient(135deg,#16a34a,#065f46);}
+.mountain{background:linear-gradient(135deg,#f59e0b,#b45309);}
+.pacific{background:linear-gradient(135deg,#9333ea,#6b21a8);}
+.jordan{background:linear-gradient(135deg,#dc2626,#7f1d1d);}
+.dr{background:linear-gradient(135deg,#0ea5e9,#0369a1);}
+
+.tag{
+position:absolute;
+top:12px;
+right:12px;
+font-size:10px;
+padding:3px 8px;
+border-radius:999px;
+background:rgba(255,255,255,.2);
+}
+
+</style>
 
 </head>
-
-<body>
-
-<!-- TOP ALERT -->
-
-<div class="topAlert">
-
-<span>UW Guidelines Updated</span>
-
-<button>
-Click Here
-</button>
-
-</div>
-
-<!-- HERO -->
-
-<header class="hero">
-
-<div class="heroOverlay">
-
-<!-- NAVBAR -->
-
-<nav class="navbar">
-
-<div class="logoArea">
-
-<div class="logoBox">C</div>
-
-<div class="logoText">
-Knowledge Centre
-</div>
-
-</div>
-
-<div class="navLinks">
-
-<button class="navBtn activeTab"
-onclick="showTab('home')">
-Home
-</button>
-
-<button class="navBtn"
-onclick="showTab('contacts')">
-Contacts and Links
-</button>
-
-<button class="navBtn"
-onclick="showTab('updates')">
-Updates
-</button>
-
-<button class="navBtn"
-onclick="showTab('guidelines')">
-UW and Guidelines
-</button>
-
-<button class="navBtn"
-onclick="showTab('payments')">
-Payment Changes
-</button>
-
-<button class="navBtn"
-onclick="showTab('retention')">
-Retention and Cancellation
-</button>
-
-<button class="navBtn"
-onclick="showTab('evertrust')">
-Evertrust Files
-</button>
-
-<button class="navBtn"
-onclick="showTab('tools')">
-Extra Tools
-</button>
-
-</div>
-
-<div class="profileSection">
-
-<img id="agentAvatar"
-class="avatar">
-
-<div class="profileInfo">
-
-<div id="agentName">
-Agent
-</div>
-
-<div id="agentEmail">
-Loading...
-</div>
-
-<div id="accessLevel">
-AGENT
-</div>
-
-</div>
-
-<button id="profileBtn">
-☰
-</button>
-
-<div class="dropdown"
-id="profileDropdown">
-
-<a href="profile.html">
-Profile
-</a>
-
-<button id="logoutBtn">
-Logout
-</button>
-
-</div>
-
-</div>
-
-</nav>
-
-<!-- HERO TEXT -->
-
-<div class="heroCenter">
-
-<h1>
-How can we help you?
-</h1>
-
-</div>
-
-</div>
-
-</header>
-
-<!-- SUB HERO -->
-
-<div class="subHero">
-
-Everything that you need to know for Affiliate Relations
-
-</div>
-
-<!-- MAIN -->
-
-<div class="mainContent">
-
-<!-- HOME -->
-
-<div id="home"
-class="tabContent active">
-
-<h2 class="sectionTitle">
-🌍 Global Operations Time Zones
-</h2>
-
-<div class="timeGrid">
-
-<div class="timeCard east">
-
-<div class="timeTop">
-
-<span>
-EASTERN TIME
-</span>
-
-<div class="pill">
-USA
-</div>
-
-</div>
-
-<div class="timeValue"
-id="est">
-00:00
-</div>
-
-<div class="timeBottom">
-CT, DE, FL, GA, IN, KY...
-</div>
-
-</div>
-
-<div class="timeCard central">
-
-<div class="timeTop">
-
-<span>
-CENTRAL TIME
-</span>
-
-<div class="pill">
-USA
-</div>
-
-</div>
-
-<div class="timeValue"
-id="cst">
-00:00
-</div>
-
-<div class="timeBottom">
-AL, AR, IL, IA, KS...
-</div>
-
-</div>
-
-<div class="timeCard mountain">
-
-<div class="timeTop">
-
-<span>
-MOUNTAIN TIME
-</span>
-
-<div class="pill">
-USA
-</div>
-
-</div>
-
-<div class="timeValue"
-id="mst">
-00:00
-</div>
-
-<div class="timeBottom">
-AZ, CO, ID, MT...
-</div>
-
-</div>
-
-<div class="timeCard pacific">
-
-<div class="timeTop">
-
-<span>
-PACIFIC TIME
-</span>
-
-<div class="pill">
-USA
-</div>
-
-</div>
-
-<div class="timeValue"
-id="pst">
-00:00
-</div>
-
-<div class="timeBottom">
-CA, NV, OR, WA...
-</div>
-
-</div>
-
-<div class="timeCard dr">
-
-<div class="timeTop">
-
-<span>
-DOMINICAN REPUBLIC
-</span>
-
-<div class="pill">
-CARIBBEAN
-</div>
-
-</div>
-
-<div class="timeValue"
-id="dr">
-00:00
-</div>
-
-<div class="timeBottom">
-AST - No DST
-</div>
-
-</div>
-
-<div class="timeCard jordan">
-
-<div class="timeTop">
-
-<span>
-AMMAN - JORDAN
-</span>
-
-<div class="pill">
-MENA
-</div>
-
-</div>
-
-<div class="timeValue"
-id="amman">
-00:00
-</div>
-
-<div class="timeBottom">
-GMT +2 / +3 (DST)
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<!-- CONTACTS -->
-
-<div id="contacts"
-class="tabContent">
-
-<div class="contentCard">
-
-<h2>
-Contacts and Links
-</h2>
-
-<p>
-Add affiliate contacts, escalation links, CRMs, phone lists and spreadsheets here.
-</p>
-
-</div>
-
-</div>
-
-<!-- UPDATES -->
-
-<div id="updates"
-class="tabContent">
-
-<div class="contentCard">
-
-<h2>
-Updates
-</h2>
-
-<div class="postBox">
-
-<h3>
-Affiliate Distribution Update
-</h3>
-
-<div class="postMeta">
-Logan Diaz • Mar 3rd 2026
-</div>
-
-<p>
-Find updated affiliates distribution on contacts tab.
-</p>
-
-</div>
-
-</div>
-
-</div>
-
-<!-- GUIDELINES -->
-
-<div id="guidelines"
-class="tabContent">
-
-<div class="contentCard">
-
-<h2>
-UW and Guidelines
-</h2>
-
-<p>
-Internal underwriting policies and compliance guides.
-</p>
-
-</div>
-
-</div>
-
-<!-- PAYMENTS -->
-
-<div id="payments"
-class="tabContent">
-
-<div class="contentCard">
-
-<h2>
-Payment Changes
-</h2>
-
-<p>
-Payment processing updates and affiliate payout changes.
-</p>
-
-</div>
-
-</div>
-
-<!-- RETENTION -->
-
-<div id="retention"
-class="tabContent">
-
-<div class="contentCard">
-
-<h2>
-Retention and Cancellation
-</h2>
-
-<p>
-Retention strategies, rebuttals and cancellation handling resources.
-</p>
-
-</div>
-
-</div>
-
-<!-- EVERTRUST -->
-
-<div id="evertrust"
-class="tabContent">
-
-<div class="contentCard">
-
-<h2>
-Evertrust Files
-</h2>
-
-<p>
-Evertrust forms and documentation.
-</p>
-
-</div>
-
-</div>
-
-<!-- TOOLS -->
-
-<div id="tools"
-class="tabContent">
-
-<div class="contentCard">
-
-<h2>
-Extra Tools
-</h2>
-
-<p>
-Internal calculators and utilities will appear here.
-</p>
-
-</div>
-
-</div>
-
-</div>
-
-<!-- SCRIPTS -->
-
+@@ -245,9 +299,57 @@
 <script>
+function createTab(section,title){
 
-/* TABS */
+let widget=""
 
-function showTab(id){
+if(section==="home"){
+widget=`
+<div class="map">
 
-document
-.querySelectorAll(".tabContent")
-.forEach(tab=>{
+<div class="zone-card east">
+<div class="tag">USA</div>
+<div class="zone-name">Eastern Time</div>
+<div class="time" id="est"></div>
+</div>
 
-tab.classList.remove("active");
+<div class="zone-card central">
+<div class="tag">USA</div>
+<div class="zone-name">Central Time</div>
+<div class="time" id="cst"></div>
+</div>
 
-});
+<div class="zone-card mountain">
+<div class="tag">USA</div>
+<div class="zone-name">Mountain Time</div>
+<div class="time" id="mst"></div>
+</div>
 
-document
-.getElementById(id)
-.classList.add("active");
+<div class="zone-card pacific">
+<div class="tag">USA</div>
+<div class="zone-name">Pacific Time</div>
+<div class="time" id="pst"></div>
+</div>
 
+<div class="zone-card dr">
+<div class="tag">CARIBBEAN</div>
+<div class="zone-name">Dominican Republic</div>
+<div class="time" id="dr"></div>
+</div>
 
-document
-.querySelectorAll(".navBtn")
-.forEach(btn=>{
+<div class="zone-card jordan">
+<div class="tag">MENA</div>
+<div class="zone-name">Amman · Jordan</div>
+<div class="time" id="amman"></div>
+</div>
 
-btn.classList.remove("activeTab");
-
-});
-
-event.target.classList.add("activeTab");
-
+</div>
+`
 }
 
-/* DROPDOWN */
+return `
+<div id="${section}" class="tabContent">
 
-const profileBtn =
-document.getElementById("profileBtn");
+${widget}
 
-const dropdown =
-document.getElementById("profileDropdown");
+<div class="tool">
 
-profileBtn.onclick = ()=>{
+<h3>${title}</h3>
+@@ -369,6 +471,22 @@ <h3>Agent Directory</h3>
+}
+})
 
-dropdown.classList.toggle("show");
-
-};
-
-/* CLOCKS */
+/* TIME SCRIPT */
 
 function updateTimes(){
+const opt={hour:'2-digit',minute:'2-digit',second:'2-digit'}
 
-const options = {
-hour:'2-digit',
-minute:'2-digit',
-second:'2-digit'
-};
-
-document.getElementById("est").innerText =
-new Date().toLocaleTimeString(
-'en-US',
-{
-...options,
-timeZone:'America/New_York'
-}
-);
-
-document.getElementById("cst").innerText =
-new Date().toLocaleTimeString(
-'en-US',
-{
-...options,
-timeZone:'America/Chicago'
-}
-);
-
-document.getElementById("mst").innerText =
-new Date().toLocaleTimeString(
-'en-US',
-{
-...options,
-timeZone:'America/Denver'
-}
-);
-
-document.getElementById("pst").innerText =
-new Date().toLocaleTimeString(
-'en-US',
-{
-...options,
-timeZone:'America/Los_Angeles'
-}
-);
-
-document.getElementById("dr").innerText =
-new Date().toLocaleTimeString(
-'en-US',
-{
-...options,
-timeZone:'America/Santo_Domingo'
-}
-);
-
-document.getElementById("amman").innerText =
-new Date().toLocaleTimeString(
-'en-US',
-{
-...options,
-timeZone:'Asia/Amman'
-}
-);
-
+est.textContent=new Date().toLocaleTimeString('en-US',{...opt,timeZone:'America/New_York'})
+cst.textContent=new Date().toLocaleTimeString('en-US',{...opt,timeZone:'America/Chicago'})
+mst.textContent=new Date().toLocaleTimeString('en-US',{...opt,timeZone:'America/Denver'})
+pst.textContent=new Date().toLocaleTimeString('en-US',{...opt,timeZone:'America/Los_Angeles'})
+dr.textContent=new Date().toLocaleTimeString('en-US',{...opt,timeZone:'America/Santo_Domingo'})
+amman.textContent=new Date().toLocaleTimeString('en-US',{...opt,timeZone:'Asia/Amman'})
 }
 
-updateTimes();
-
-setInterval(updateTimes,1000);
+updateTimes()
+setInterval(updateTimes,1000)
 
 </script>
 
-<!-- FIREBASE -->
-
-<script type="module" src="app.js"></script>
-
-<script type="module" src="dashboard.js"></script>
-
 </body>
-
-</html>
