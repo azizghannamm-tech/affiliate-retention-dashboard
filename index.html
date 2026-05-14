@@ -3,62 +3,431 @@
 <head>
 
 <meta charset="UTF-8">
-<title>Agent Dashboard</title>
+<title>Knowledge Hub</title>
 
 <link rel="stylesheet" href="dashboard.css">
+
+<style>
+
+body{
+font-family:Arial;
+background:#f4f7fb;
+margin:0;
+}
+
+header{
+background:#2e5aac;
+color:white;
+padding:15px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.container{
+padding:40px;
+}
+
+.tool{
+background:white;
+padding:20px;
+margin-bottom:20px;
+border-radius:8px;
+box-shadow:0 2px 8px rgba(0,0,0,0.08);
+}
+
+.logo{
+font-size:18px;
+}
+
+.profileArea{
+display:flex;
+align-items:center;
+gap:20px;
+position:relative;
+}
+
+.profile{
+display:flex;
+align-items:center;
+gap:10px;
+cursor:pointer;
+}
+
+.profile img{
+width:38px;
+height:38px;
+border-radius:50%;
+object-fit:cover;
+}
+
+.profileInfo{
+font-size:13px;
+}
+
+.role{
+font-size:11px;
+color:#ddd;
+}
+
+.dropdown{
+position:absolute;
+right:0;
+top:60px;
+background:white;
+border-radius:8px;
+box-shadow:0 6px 20px rgba(0,0,0,0.15);
+padding:15px;
+display:none;
+min-width:200px;
+color:black;
+}
+
+.dropdown button{
+width:100%;
+margin-top:10px;
+padding:8px;
+border:none;
+background:#1e4fa1;
+color:white;
+border-radius:6px;
+cursor:pointer;
+}
+
+.dropdown.show{
+display:block;
+}
+
+.dark{
+background:#1f1f1f;
+color:white;
+}
+
+.dark .tool{
+background:#2c2c2c;
+}
+
+.switch{
+position:relative;
+display:inline-block;
+width:44px;
+height:24px;
+}
+
+.switch input{
+opacity:0;
+width:0;
+height:0;
+}
+
+.slider{
+position:absolute;
+cursor:pointer;
+top:0;
+left:0;
+right:0;
+bottom:0;
+background:#ccc;
+border-radius:24px;
+transition:.3s;
+}
+
+.slider:before{
+position:absolute;
+content:"";
+height:18px;
+width:18px;
+left:3px;
+bottom:3px;
+background:white;
+border-radius:50%;
+transition:.3s;
+}
+
+input:checked + .slider{
+background:#1e4fa1;
+}
+
+input:checked + .slider:before{
+transform:translateX(20px);
+}
+
+</style>
 
 </head>
 
 <body>
 
-<header class="topBar">
+<header>
 
 <div class="logo">
-Agent Tools
+<b>Knowledge Hub</b>
 </div>
 
-<div class="profileSection">
+<div class="profileArea">
 
-<img id="agentAvatar" class="avatar">
+<label class="switch">
+<input type="checkbox" id="darkToggle">
+<span class="slider"></span>
+</label>
+
+<div class="profile" id="profileBtn">
+
+<img id="agentAvatar" src="https://ui-avatars.com/api/?name=Agent&background=2e5aac&color=fff">
 
 <div class="profileInfo">
 <div id="agentName">Agent</div>
-<div id="agentEmail"></div>
+<div class="role" id="accessLevel">Agent</div>
 </div>
 
-<button id="profileBtn">☰</button>
+</div>
 
-<div id="profileDropdown" class="dropdown">
-<a href="profile.html">Edit Profile</a>
-<button id="logoutBtn">Logout</button>
+<div class="dropdown" id="profileDropdown">
+
+<div id="agentEmail"></div>
+
+<hr>
+
+<button type="button" onclick="location.href='profile.html'">Edit Profile</button>
+<button type="button" id="logoutBtn">Logout</button>
+
 </div>
 
 </div>
 
 </header>
 
+<div class="container">
 
-<div class="mainContainer">
+<div class="tabs">
+
+<div class="tab active" data-tab="home">Home</div>
+<div class="tab" data-tab="retention">Retention</div>
+<div class="tab" data-tab="updates">Updates</div>
+<div class="tab" data-tab="tools">Tools</div>
+<div class="tab" data-tab="evertrust">Evertrust</div>
+<div class="tab" data-tab="uw">UW Guidelines</div>
+<div class="tab" data-tab="payments">Payments</div>
+<div class="tab" data-tab="files">Files</div>
+<div class="tab" data-tab="contacts">Contacts</div>
+<div class="tab" data-tab="agents">Agents</div>
+
+</div>
+
+<!-- TAB TEMPLATE -->
+
+<div id="home" class="tabContent active">
+<div class="tool">
+<h3>Home</h3>
+
+<input class="postTitle" placeholder="Post title">
+<input class="postTags" placeholder="Tags">
+
+<label>
+<input type="checkbox" class="postPinned"> Pin post
+</label>
+
+<div class="postContent" contenteditable="true"
+style="border:1px solid #ccc;padding:10px;border-radius:6px;min-height:120px;margin-top:10px;">
+Write your post here...
+</div>
+
+<button class="createPostBtn">Publish Post</button>
+
+<input class="postSearch" placeholder="Search posts" style="margin-top:15px;width:100%;padding:8px;">
+
+<div class="postsContainer" data-section="home"></div>
+
+</div>
+</div>
+
+<div id="retention" class="tabContent">
+<div class="tool">
+<h3>Retention</h3>
+
+<input class="postTitle" placeholder="Post title">
+<input class="postTags" placeholder="Tags">
+<label><input type="checkbox" class="postPinned"> Pin post</label>
+
+<div class="postContent" contenteditable="true"
+style="border:1px solid #ccc;padding:10px;border-radius:6px;min-height:120px;margin-top:10px;"></div>
+
+<button class="createPostBtn">Publish Post</button>
+
+<input class="postSearch" placeholder="Search posts">
+
+<div class="postsContainer" data-section="retention"></div>
+
+</div>
+</div>
+
+<div id="updates" class="tabContent">
+<div class="tool">
+<h3>Updates</h3>
+
+<input class="postTitle" placeholder="Post title">
+<input class="postTags" placeholder="Tags">
+<label><input type="checkbox" class="postPinned"> Pin post</label>
+
+<div class="postContent" contenteditable="true"
+style="border:1px solid #ccc;padding:10px;border-radius:6px;min-height:120px;margin-top:10px;"></div>
+
+<button class="createPostBtn">Publish Post</button>
+
+<input class="postSearch" placeholder="Search posts">
+
+<div class="postsContainer" data-section="updates"></div>
+
+</div>
+</div>
+
+<div id="tools" class="tabContent">
+<div class="tool">
+<h3>Tools</h3>
+
+<input class="postTitle" placeholder="Post title">
+<input class="postTags" placeholder="Tags">
+<label><input type="checkbox" class="postPinned"> Pin post</label>
+
+<div class="postContent" contenteditable="true"
+style="border:1px solid #ccc;padding:10px;border-radius:6px;min-height:120px;margin-top:10px;"></div>
+
+<button class="createPostBtn">Publish Post</button>
+
+<input class="postSearch" placeholder="Search posts">
+
+<div class="postsContainer" data-section="tools"></div>
+
+</div>
+</div>
+
+<div id="evertrust" class="tabContent">
+<div class="tool">
+<h3>Evertrust</h3>
+
+<input class="postTitle" placeholder="Post title">
+<input class="postTags" placeholder="Tags">
+<label><input type="checkbox" class="postPinned"> Pin post</label>
+
+<div class="postContent" contenteditable="true"
+style="border:1px solid #ccc;padding:10px;border-radius:6px;min-height:120px;margin-top:10px;"></div>
+
+<button class="createPostBtn">Publish Post</button>
+
+<input class="postSearch" placeholder="Search posts">
+
+<div class="postsContainer" data-section="evertrust"></div>
+
+</div>
+</div>
+
+<div id="uw" class="tabContent">
+<div class="tool">
+<h3>UW Guidelines</h3>
+
+<input class="postTitle" placeholder="Post title">
+<input class="postTags" placeholder="Tags">
+<label><input type="checkbox" class="postPinned"> Pin post</label>
+
+<div class="postContent" contenteditable="true"
+style="border:1px solid #ccc;padding:10px;border-radius:6px;min-height:120px;margin-top:10px;"></div>
+
+<button class="createPostBtn">Publish Post</button>
+
+<input class="postSearch" placeholder="Search posts">
+
+<div class="postsContainer" data-section="uw"></div>
+
+</div>
+</div>
+
+<div id="payments" class="tabContent">
+<div class="tool">
+<h3>Payments</h3>
+
+<input class="postTitle" placeholder="Post title">
+<input class="postTags" placeholder="Tags">
+<label><input type="checkbox" class="postPinned"> Pin post</label>
+
+<div class="postContent" contenteditable="true"
+style="border:1px solid #ccc;padding:10px;border-radius:6px;min-height:120px;margin-top:10px;"></div>
+
+<button class="createPostBtn">Publish Post</button>
+
+<input class="postSearch" placeholder="Search posts">
+
+<div class="postsContainer" data-section="payments"></div>
+
+</div>
+</div>
+
+<div id="files" class="tabContent">
+<div class="tool">
+<h3>Files</h3>
+<div class="postsContainer" data-section="files"></div>
+</div>
+</div>
+
+<div id="contacts" class="tabContent">
+<div class="tool">
+<h3>Contacts</h3>
+<div class="postsContainer" data-section="contacts"></div>
+</div>
+</div>
 
 <div id="agents" class="tabContent">
-
 <div class="tool">
-
 <h3>Agent Directory</h3>
-
-<div id="agentDirectory">
-
-<div id="agentGrid"></div>
-
+<div id="agentDirectory"></div>
+</div>
 </div>
 
 </div>
 
-</div>
-
-</div>
-
+<script type="module" src="app.js"></script>
 <script type="module" src="dashboard.js"></script>
+
+<script>
+
+const profileBtn = document.getElementById("profileBtn");
+const dropdown = document.getElementById("profileDropdown");
+
+profileBtn.onclick = () => {
+dropdown.classList.toggle("show");
+};
+
+window.onclick = function(e){
+if(!profileBtn.contains(e.target)){
+dropdown.classList.remove("show");
+}
+};
+
+const darkToggle = document.getElementById("darkToggle");
+
+darkToggle.addEventListener("change", () => {
+document.body.classList.toggle("dark");
+});
+
+const tabs = document.querySelectorAll(".tab");
+const contents = document.querySelectorAll(".tabContent");
+
+tabs.forEach(tab => {
+
+tab.addEventListener("click", () => {
+
+tabs.forEach(t => t.classList.remove("active"));
+contents.forEach(c => c.classList.remove("active"));
+
+tab.classList.add("active");
+
+const target = document.getElementById(tab.dataset.tab);
+target.classList.add("active");
+
+});
+
+});
+
+</script>
 
 </body>
 </html>
