@@ -6,18 +6,21 @@
 
 <meta charset="UTF-8">
 
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0">
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0"
+>
 
 <title>Knowledge Hub</title>
 
-<link rel="stylesheet"
-href="dashboard.css">
+<link rel="stylesheet" href="dashboard.css">
 
 </head>
 
 <body>
 
+
+<!-- TOP BAR -->
 
 <header class="topBar">
 
@@ -27,8 +30,11 @@ Knowledge Hub
 
 <div class="profileSection">
 
-<img id="agentAvatar"
-class="avatar">
+<img
+id="agentAvatar"
+class="avatar"
+src=""
+>
 
 <div class="profileInfo">
 
@@ -36,9 +42,9 @@ class="avatar">
 Agent
 </div>
 
-<div id="agentEmail"></div>
-
-<div id="accessLevel"></div>
+<div id="accessLevel">
+Agent
+</div>
 
 </div>
 
@@ -51,23 +57,30 @@ Logout
 </header>
 
 
+<!-- MAIN -->
+
 <div class="mainContainer">
 
 
+<!-- ANNOUNCEMENTS -->
+
 <div class="tool">
 
-<h2>Announcements</h2>
+<h2>
+Announcements
+</h2>
 
-<div class="adminOnly">
+<div class="adminOnly postCreator">
 
 <input
 id="announcements-title"
-placeholder="Title"
+type="text"
+placeholder="Post title"
 >
 
 <textarea
 id="announcements-content"
-placeholder="Content"
+placeholder="Write announcement..."
 ></textarea>
 
 <button
@@ -80,28 +93,54 @@ Create Post
 
 </div>
 
+
 <div
 id="announcements-posts"
 class="posts"
-></div>
+>
+
+<!-- DEFAULT ANNOUNCEMENT -->
+
+<div class="postCard">
+
+<h3>
+Affiliate Distribution Update
+</h3>
+
+<div class="postMeta">
+Logan Diaz • Mar 3rd 2026
+</div>
+
+<p>
+Find updated affiliates distribution on contacts tab.
+</p>
+
+</div>
+
+</div>
 
 </div>
 
 
+<!-- RESOURCES -->
+
 <div class="tool">
 
-<h2>Resources</h2>
+<h2>
+Resources
+</h2>
 
-<div class="adminOnly">
+<div class="adminOnly postCreator">
 
 <input
 id="resources-title"
-placeholder="Title"
+type="text"
+placeholder="Resource title"
 >
 
 <textarea
 id="resources-content"
-placeholder="Content"
+placeholder="Write resource..."
 ></textarea>
 
 <button
@@ -122,9 +161,13 @@ class="posts"
 </div>
 
 
+<!-- DIRECTORY -->
+
 <div class="tool">
 
-<h2>Directory</h2>
+<h2>
+Agent Directory
+</h2>
 
 <div id="agentGrid"></div>
 
@@ -134,9 +177,14 @@ class="posts"
 </div>
 
 
-<script type="module"
-src="app.js"></script>
+<!-- APP -->
+
+<script
+type="module"
+src="app.js"
+></script>
 
 </body>
+
 </html>
 ```
