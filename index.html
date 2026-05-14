@@ -4,39 +4,96 @@
 <head>
 
 <meta charset="UTF-8">
-
-<meta
-name="viewport"
-content="width=device-width, initial-scale=1.0"
->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Knowledge Hub</title>
 
-<link
-rel="stylesheet"
-href="dashboard.css"
->
+<link rel="stylesheet" href="dashboard.css">
 
 </head>
 
 <body>
 
+<!-- TOP ALERT -->
 
-<!-- TOP BAR -->
+<div class="topAlert">
 
-<header class="topBar">
+<span>UW Guidelines Updated</span>
 
-<div class="logo">
-Knowledge Hub
+<button>
+Click Here
+</button>
+
+</div>
+
+<!-- HERO -->
+
+<header class="hero">
+
+<div class="heroOverlay">
+
+<!-- NAVBAR -->
+
+<nav class="navbar">
+
+<div class="logoArea">
+
+<div class="logoBox">C</div>
+
+<div class="logoText">
+Knowledge Centre
+</div>
+
+</div>
+
+<div class="navLinks">
+
+<button class="navBtn activeTab"
+onclick="showTab('home')">
+Home
+</button>
+
+<button class="navBtn"
+onclick="showTab('contacts')">
+Contacts and Links
+</button>
+
+<button class="navBtn"
+onclick="showTab('updates')">
+Updates
+</button>
+
+<button class="navBtn"
+onclick="showTab('guidelines')">
+UW and Guidelines
+</button>
+
+<button class="navBtn"
+onclick="showTab('payments')">
+Payment Changes
+</button>
+
+<button class="navBtn"
+onclick="showTab('retention')">
+Retention and Cancellation
+</button>
+
+<button class="navBtn"
+onclick="showTab('evertrust')">
+Evertrust Files
+</button>
+
+<button class="navBtn"
+onclick="showTab('tools')">
+Extra Tools
+</button>
+
 </div>
 
 <div class="profileSection">
 
-<img
-id="agentAvatar"
-class="avatar"
-src=""
->
+<img id="agentAvatar"
+class="avatar">
 
 <div class="profileInfo">
 
@@ -49,24 +106,21 @@ Loading...
 </div>
 
 <div id="accessLevel">
-Agent
+AGENT
 </div>
 
 </div>
-
 
 <button id="profileBtn">
 ☰
 </button>
 
+<div class="dropdown"
+id="profileDropdown">
 
-<div
-class="dropdown"
-id="profileDropdown"
->
-
-<a href="#">
-Profile</a>
+<a href="profile.html">
+Profile
+</a>
 
 <button id="logoutBtn">
 Logout
@@ -76,86 +130,230 @@ Logout
 
 </div>
 
-</header>
+</nav>
 
+<!-- HERO TEXT -->
 
-<!-- TABS -->
+<div class="heroCenter">
 
-<div class="tabs">
-
-<button
-class="tabBtn"
-onclick="showTab('announcements')"
->
-Announcements
-</button>
-
-<button
-class="tabBtn"
-onclick="showTab('resources')"
->
-Resources
-</button>
-
-<button
-class="tabBtn"
-onclick="showTab('directory')"
->
-Directory
-</button>
+<h1>
+How can we help you?
+</h1>
 
 </div>
 
+</div>
+
+</header>
+
+<!-- SUB HERO -->
+
+<div class="subHero">
+
+Everything that you need to know for Affiliate Relations
+
+</div>
 
 <!-- MAIN -->
 
-<div class="mainContainer">
+<div class="mainContent">
 
+<!-- HOME -->
 
-<!-- ANNOUNCEMENTS -->
+<div id="home"
+class="tabContent active">
 
-<div
-id="announcements"
-class="tabContent"
->
-
-<div class="tool">
-
-<h2>
-Announcements
+<h2 class="sectionTitle">
+🌍 Global Operations Time Zones
 </h2>
 
+<div class="timeGrid">
 
-<div class="adminOnly postCreator">
+<div class="timeCard east">
 
-<input
-id="announcements-title"
-type="text"
-placeholder="Post title"
->
+<div class="timeTop">
 
-<textarea
-id="announcements-content"
-placeholder="Write announcement..."
-></textarea>
+<span>
+EASTERN TIME
+</span>
 
-<button
-onclick="createPost('announcements')"
->
-
-Create Post
-
-</button>
+<div class="pill">
+USA
+</div>
 
 </div>
 
+<div class="timeValue"
+id="est">
+00:00
+</div>
 
-<div
-id="announcements-posts"
-class="posts"
->
+<div class="timeBottom">
+CT, DE, FL, GA, IN, KY...
+</div>
 
-<div class="postCard">
+</div>
+
+<div class="timeCard central">
+
+<div class="timeTop">
+
+<span>
+CENTRAL TIME
+</span>
+
+<div class="pill">
+USA
+</div>
+
+</div>
+
+<div class="timeValue"
+id="cst">
+00:00
+</div>
+
+<div class="timeBottom">
+AL, AR, IL, IA, KS...
+</div>
+
+</div>
+
+<div class="timeCard mountain">
+
+<div class="timeTop">
+
+<span>
+MOUNTAIN TIME
+</span>
+
+<div class="pill">
+USA
+</div>
+
+</div>
+
+<div class="timeValue"
+id="mst">
+00:00
+</div>
+
+<div class="timeBottom">
+AZ, CO, ID, MT...
+</div>
+
+</div>
+
+<div class="timeCard pacific">
+
+<div class="timeTop">
+
+<span>
+PACIFIC TIME
+</span>
+
+<div class="pill">
+USA
+</div>
+
+</div>
+
+<div class="timeValue"
+id="pst">
+00:00
+</div>
+
+<div class="timeBottom">
+CA, NV, OR, WA...
+</div>
+
+</div>
+
+<div class="timeCard dr">
+
+<div class="timeTop">
+
+<span>
+DOMINICAN REPUBLIC
+</span>
+
+<div class="pill">
+CARIBBEAN
+</div>
+
+</div>
+
+<div class="timeValue"
+id="dr">
+00:00
+</div>
+
+<div class="timeBottom">
+AST - No DST
+</div>
+
+</div>
+
+<div class="timeCard jordan">
+
+<div class="timeTop">
+
+<span>
+AMMAN - JORDAN
+</span>
+
+<div class="pill">
+MENA
+</div>
+
+</div>
+
+<div class="timeValue"
+id="amman">
+00:00
+</div>
+
+<div class="timeBottom">
+GMT +2 / +3 (DST)
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- CONTACTS -->
+
+<div id="contacts"
+class="tabContent">
+
+<div class="contentCard">
+
+<h2>
+Contacts and Links
+</h2>
+
+<p>
+Add affiliate contacts, escalation links, CRMs, phone lists and spreadsheets here.
+</p>
+
+</div>
+
+</div>
+
+<!-- UPDATES -->
+
+<div id="updates"
+class="tabContent">
+
+<div class="contentCard">
+
+<h2>
+Updates
+</h2>
+
+<div class="postBox">
 
 <h3>
 Affiliate Distribution Update
@@ -175,85 +373,108 @@ Find updated affiliates distribution on contacts tab.
 
 </div>
 
-</div>
+<!-- GUIDELINES -->
 
+<div id="guidelines"
+class="tabContent">
 
-<!-- RESOURCES -->
-
-<div
-id="resources"
-class="tabContent"
-style="display:none;"
->
-
-<div class="tool">
+<div class="contentCard">
 
 <h2>
-Resources
+UW and Guidelines
 </h2>
 
-
-<div class="adminOnly postCreator">
-
-<input
-id="resources-title"
-type="text"
-placeholder="Resource title"
->
-
-<textarea
-id="resources-content"
-placeholder="Write resource..."
-></textarea>
-
-<button
-onclick="createPost('resources')"
->
-
-Create Post
-
-</button>
-
-</div>
-
-
-<div
-id="resources-posts"
-class="posts"
-></div>
+<p>
+Internal underwriting policies and compliance guides.
+</p>
 
 </div>
 
 </div>
 
+<!-- PAYMENTS -->
 
-<!-- DIRECTORY -->
+<div id="payments"
+class="tabContent">
 
-<div
-id="directory"
-class="tabContent"
-style="display:none;"
->
-
-<div class="tool">
+<div class="contentCard">
 
 <h2>
-Agent Directory
+Payment Changes
 </h2>
 
-<div id="agentGrid"></div>
+<p>
+Payment processing updates and affiliate payout changes.
+</p>
 
 </div>
 
 </div>
 
+<!-- RETENTION -->
+
+<div id="retention"
+class="tabContent">
+
+<div class="contentCard">
+
+<h2>
+Retention and Cancellation
+</h2>
+
+<p>
+Retention strategies, rebuttals and cancellation handling resources.
+</p>
 
 </div>
 
+</div>
 
-<!-- TAB SCRIPT -->
+<!-- EVERTRUST -->
+
+<div id="evertrust"
+class="tabContent">
+
+<div class="contentCard">
+
+<h2>
+Evertrust Files
+</h2>
+
+<p>
+Evertrust forms and documentation.
+</p>
+
+</div>
+
+</div>
+
+<!-- TOOLS -->
+
+<div id="tools"
+class="tabContent">
+
+<div class="contentCard">
+
+<h2>
+Extra Tools
+</h2>
+
+<p>
+Internal calculators and utilities will appear here.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- SCRIPTS -->
 
 <script>
+
+/* TABS */
 
 function showTab(id){
 
@@ -261,17 +482,28 @@ document
 .querySelectorAll(".tabContent")
 .forEach(tab=>{
 
-tab.style.display = "none";
+tab.classList.remove("active");
 
 });
 
-document.getElementById(id)
-.style.display = "block";
+document
+.getElementById(id)
+.classList.add("active");
+
+
+document
+.querySelectorAll(".navBtn")
+.forEach(btn=>{
+
+btn.classList.remove("activeTab");
+
+});
+
+event.target.classList.add("activeTab");
 
 }
 
-
-/* PROFILE DROPDOWN */
+/* DROPDOWN */
 
 const profileBtn =
 document.getElementById("profileBtn");
@@ -285,15 +517,83 @@ dropdown.classList.toggle("show");
 
 };
 
+/* CLOCKS */
+
+function updateTimes(){
+
+const options = {
+hour:'2-digit',
+minute:'2-digit',
+second:'2-digit'
+};
+
+document.getElementById("est").innerText =
+new Date().toLocaleTimeString(
+'en-US',
+{
+...options,
+timeZone:'America/New_York'
+}
+);
+
+document.getElementById("cst").innerText =
+new Date().toLocaleTimeString(
+'en-US',
+{
+...options,
+timeZone:'America/Chicago'
+}
+);
+
+document.getElementById("mst").innerText =
+new Date().toLocaleTimeString(
+'en-US',
+{
+...options,
+timeZone:'America/Denver'
+}
+);
+
+document.getElementById("pst").innerText =
+new Date().toLocaleTimeString(
+'en-US',
+{
+...options,
+timeZone:'America/Los_Angeles'
+}
+);
+
+document.getElementById("dr").innerText =
+new Date().toLocaleTimeString(
+'en-US',
+{
+...options,
+timeZone:'America/Santo_Domingo'
+}
+);
+
+document.getElementById("amman").innerText =
+new Date().toLocaleTimeString(
+'en-US',
+{
+...options,
+timeZone:'Asia/Amman'
+}
+);
+
+}
+
+updateTimes();
+
+setInterval(updateTimes,1000);
+
 </script>
 
+<!-- FIREBASE -->
 
-<!-- APP -->
+<script type="module" src="app.js"></script>
 
-<script
-type="module"
-src="app.js"
-></script>
+<script type="module" src="dashboard.js"></script>
 
 </body>
 
