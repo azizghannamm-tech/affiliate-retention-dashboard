@@ -1,8 +1,11 @@
-// app.js
+// ==========================
+// FIREBASE IMPORTS
+// ==========================
 
-import { auth, db } from "./firebase.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
+getAuth,
 onAuthStateChanged,
 signInWithEmailAndPassword,
 createUserWithEmailAndPassword,
@@ -12,335 +15,255 @@ signOut
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import {
+getFirestore,
 doc,
 setDoc,
 getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
-const currentPage =
-window.location.pathname.split("/").pop();
+// ==========================
+// FIREBASE CONFIG
+// ==========================
+
+const firebaseConfig = {
+
+apiKey: "AIzaSyB8dDTnpPQVRAs7dkfc8QU3L5qUJtm-2jg",
+authDomain: "affiliate-relations-17687.firebaseapp.com",
+projectId: "affiliate-relations-17687",
+storageBucket: "affiliate-relations-17687.appspot.com",
+messagingSenderId: "642027131905",
+appId: "1:642027131905:web:5f0076ee7b34578b9f9c00"
+
+};
 
 
-/* =========================
-AUTH STATE
-========================= */
+// ==========================
+// INITIALIZE FIREBASE
+// ==========================
 
-onAuthStateChanged(auth, async (user)=>{
+const app = initializeApp(firebaseConfig);
 
-/* LOGIN PAGE */
+const auth = getAuth(app);
+
+const db = getFirestore(app);
+
+
+// ==========================
+// PAGE DETECTION
+// ==========================
+
+const currentPage = window.location.pathname.split("/").pop();
+
+
+// ==========================
+// AUTH STATE CHECK
+// ==========================
+
+onAuthStateChanged(auth, async (user) => {
 
 if(currentPage === "login.html"){
 
 if(user){
-
 window.location.href = "index.html";
-
 }
 
 return;
 
 }
-
-
-/* PROTECTED PAGES */
 
 if(!user){
-
 window.location.href = "login.html";
-
 return;
-
 }
 
 
-/* LOAD USER DATA */
+// ==========================
+// LOAD USER PROFILE
+// ==========================
 
-const nameEl =
-document.getElementById("agentName");
+const nameEl = document.getElementById("agentName");
+const emailEl = document.getElementById("agentEmail");
+const roleEl = document.getElementById("accessLevel");
+const avatarEl = document.getElementById("agentAvatar");
 
-const emailEl =
-document.getElementById("agentEmail");
+if(nameEl) nameEl.innerText = user.displayName || "Agent";
 
-const roleEl =
-document.getElementById("accessLevel");
+if(emailEl) emailEl.innerText = user.email;
 
-const avatarEl =
-document.getElementById("agentAvatar");
+if(avatarEl){
+avatarEl.src = user.photoURL || "https://i.imgur.com/6VBx3io.png";
+}
 
+
+// ==========================
+// LOAD ROLE FROM FIRESTORE
+// ==========================
 
 try{
 
-const userRef =
-doc(db,"users",user.uid);
+const userRef = doc(db,"users",user.uid);
+const userSnap = await getDoc(userRef);
 
-const userSnap =
-await getDoc(userRef);
+if(userSnap.exists()){
 
+const data = userSnap.data();
 
-/* CREATE USER IF DOESN'T EXIST */
+if(roleEl) roleEl.innerText = data.role || "agent";
 
-if(!userSnap.exists()){
+}else{
 
 await setDoc(userRef,{
-
-name:user.displayName || "Agent",
-
 email:user.email,
-
 role:"agent",
-
-bio:"",
-
-photo:user.photoURL || "",
-
 created:new Date()
-
 });
 
-}
-
-
-/* GET UPDATED DATA */
-
-const updatedSnap =
-await getDoc(userRef);
-
-const data =
-updatedSnap.data();
-
-
-/* TOP BAR */
-
-if(nameEl){
-
-nameEl.innerText =
-data.name || "Agent";
-
-}
-
-if(emailEl){
-
-emailEl.innerText =
-data.email || user.email;
-
-}
-
-if(roleEl){
-
-roleEl.innerText =
-data.role || "agent";
-
-}
-
-if(avatarEl){
-
-avatarEl.src =
-
-data.photo ||
-
-user.photoURL ||
-
-`https://ui-avatars.com/api/?name=${
-encodeURIComponent(data.name || "Agent")
-}&background=2e5aac&color=fff`;
+if(roleEl) roleEl.innerText = "agent";
 
 }
 
 }catch(err){
 
-console.error("User load error:", err);
+console.log("User role error:",err);
 
 }
 
 });
 
 
-/* =========================
-LOGIN
-========================= */
+// ==========================
+// BUTTON EVENT LISTENERS
+// ==========================
 
-const loginBtn =
-document.getElementById("loginBtn");
+const loginBtn = document.getElementById("loginBtn");
+const signupBtn = document.getElementById("signupBtn");
+const googleBtn = document.getElementById("googleBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+
+
+// ==========================
+// EMAIL LOGIN
+// ==========================
 
 if(loginBtn){
 
-loginBtn.onclick = async ()=>{
+loginBtn.addEventListener("click", async () => {
 
-const email =
-document.getElementById("email").value;
-
-const password =
-document.getElementById("password").value;
-
-const error =
-document.getElementById("error");
+const email = document.getElementById("email").value;
+const password = document.getElementById("password").value;
+const error = document.getElementById("error");
 
 try{
 
-await signInWithEmailAndPassword(
-auth,
-email,
-password
-);
+await signInWithEmailAndPassword(auth,email,password);
 
-window.location.href =
-"index.html";
+window.location.href = "index.html";
 
 }catch(err){
 
-error.innerText =
-err.message;
+if(error) error.innerText = err.message;
 
 }
 
-};
+});
 
 }
 
 
-/* =========================
-SIGNUP
-========================= */
-
-const signupBtn =
-document.getElementById("signupBtn");
+// ==========================
+// SIGN UP
+// ==========================
 
 if(signupBtn){
 
-signupBtn.onclick = async ()=>{
+signupBtn.addEventListener("click", async () => {
 
-const email =
-document.getElementById("email").value;
-
-const password =
-document.getElementById("password").value;
-
-const error =
-document.getElementById("error");
+const email = document.getElementById("email").value;
+const password = document.getElementById("password").value;
+const error = document.getElementById("error");
 
 try{
 
-const userCredential =
-await createUserWithEmailAndPassword(
-auth,
-email,
-password
-);
+const userCredential = await createUserWithEmailAndPassword(auth,email,password);
 
-await setDoc(
-
-doc(db,"users",userCredential.user.uid),
-
-{
-
-name:"Agent",
+await setDoc(doc(db,"users",userCredential.user.uid),{
 
 email:email,
-
 role:"agent",
-
-bio:"",
-
-photo:"",
-
 created:new Date()
 
-}
+});
 
-);
-
-window.location.href =
-"index.html";
+window.location.href="index.html";
 
 }catch(err){
 
-error.innerText =
-err.message;
+if(error) error.innerText = err.message;
 
 }
 
-};
+});
 
 }
 
 
-/* =========================
-GOOGLE LOGIN
-========================= */
-
-const googleBtn =
-document.getElementById("googleBtn");
+// ==========================
+// GOOGLE LOGIN
+// ==========================
 
 if(googleBtn){
 
-googleBtn.onclick = async ()=>{
+googleBtn.addEventListener("click", async () => {
 
 try{
 
-const provider =
-new GoogleAuthProvider();
+const provider = new GoogleAuthProvider();
 
-const result =
-await signInWithPopup(auth,provider);
+const result = await signInWithPopup(auth,provider);
 
-const user =
-result.user;
+const user = result.user;
 
-const userRef =
-doc(db,"users",user.uid);
+const userRef = doc(db,"users",user.uid);
+const snap = await getDoc(userRef);
 
-const userSnap =
-await getDoc(userRef);
-
-if(!userSnap.exists()){
+if(!snap.exists()){
 
 await setDoc(userRef,{
-
-name:user.displayName || "Agent",
-
 email:user.email,
-
 role:"agent",
-
-bio:"",
-
-photo:user.photoURL || "",
-
 created:new Date()
-
 });
 
 }
 
-window.location.href =
-"index.html";
+window.location.href="index.html";
 
 }catch(err){
 
-document.getElementById("error")
-.innerText = err.message;
+const error = document.getElementById("error");
 
-}
-
-};
-
-}
-
-
-/* =========================
-LOGOUT
-========================= */
-
-document.addEventListener("click", async (e)=>{
-
-if(e.target.id === "logoutBtn"){
-
-await signOut(auth);
-
-window.location.href =
-"login.html";
+if(error) error.innerText = err.message;
 
 }
 
 });
+
+}
+
+
+// ==========================
+// LOGOUT
+// ==========================
+
+if(logoutBtn){
+
+logoutBtn.addEventListener("click", async ()=>{
+
+await signOut(auth);
+
+window.location.href="login.html";
+
+});
+
+}
