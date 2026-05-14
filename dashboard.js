@@ -1,135 +1,483 @@
-<!DOCTYPE html>
-<html>
-<head>
+// ==========================
+// FIREBASE IMPORTS
+// ==========================
 
-<meta charset="UTF-8">
-<title>Agent Dashboard</title>
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 
-<link rel="stylesheet" href="dashboard.css">
+import {
+getAuth,
+onAuthStateChanged,
+signOut
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-</head>
-
-<body>
-
-<header class="topBar">
-
-<div class="logo">
-Agent Tools
-</div>
-
-<div class="profileSection">
-
-<img id="agentAvatar" class="avatar">
-
-<div class="profileInfo">
-<div id="agentName">Agent</div>
-<div id="agentEmail"></div>
-</div>
-
-<button id="profileBtn">☰</button>
-
-<div id="profileDropdown" class="dropdown">
-<a href="profile.html">Edit Profile</a>
-<button id="logoutBtn">Logout</button>
-</div>
-
-</div>
-
-</header>
+import {
+getFirestore,
+doc,
+getDoc,
+collection,
+getDocs,
+addDoc,
+updateDoc,
+deleteDoc,
+serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 
+// ==========================
+// FIREBASE CONFIG
+// ==========================
 
-<!-- TAB MENU -->
-
-<div class="tabs">
-
-<button class="tabBtn" onclick="openTab('tools')">Tools</button>
-<button class="tabBtn" onclick="openTab('agents')">Agent Directory</button>
-<button class="tabBtn" onclick="openTab('resources')">Resources</button>
-
-</div>
-
+const firebaseConfig = {
+apiKey: "AIzaSyB8dDTnpPQVRAs7dkfc8QU3L5qUJtm-2jg",
+authDomain: "affiliate-relations-17687.firebaseapp.com",
+projectId: "affiliate-relations-17687"
+};
 
 
-<div class="mainContainer">
+// ==========================
+// INITIALIZE FIREBASE
+// ==========================
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
 
-<!-- TOOLS TAB -->
+// ==========================
+// DOM ELEMENTS
+// ==========================
 
-<div id="tools" class="tabContent">
+const agentAvatar = document.getElementById("agentAvatar");
+const agentName = document.getElementById("agentName");
+const agentEmail = document.getElementById("agentEmail");
+const agentRole = document.getElementById("accessLevel");
 
-<div class="tool">
-
-<h3>Internal Tools</h3>
-
-<p>Your tools will appear here.</p>
-
-</div>
-
-</div>
-
+const profileBtn = document.getElementById("profileBtn");
+const dropdown = document.getElementById("profileDropdown");
+const logoutBtn = document.getElementById("logoutBtn");
 
 
-<!-- AGENT DIRECTORY -->
+// ==========================
+// PROFILE MENU
+// ==========================
 
-<div id="agents" class="tabContent">
+if(profileBtn){
+profileBtn.onclick = () => {
+dropdown.classList.toggle("show");
+};
+}
 
-<div class="tool">
-
-<h3>Agent Directory</h3>
-
-<div id="agentDirectory">
-
-<div id="agentGrid"></div>
-
-</div>
-
-</div>
-
-</div>
-
+if(logoutBtn){
+logoutBtn.onclick = () => {
+signOut(auth);
+window.location.href = "login.html";
+};
+}
 
 
-<!-- RESOURCES TAB -->
+// ==========================
+// AUTH CHECK
+// ==========================
 
-<div id="resources" class="tabContent">
+onAuthStateChanged(auth, async (user) => {
 
-<div class="tool">
+if(!user){
+window.location.href = "login.html";
+return;
+}
 
-<h3>Resources</h3>
+const ref = doc(db,"profiles",user.uid);
+const snap = await getDoc(ref);
 
-<p>Add scripts, training docs, or links here.</p>
+if(snap.exists()){
 
-</div>
+const data = snap.data();
 
-</div>
+if(agentName){
+agentName.textContent = data.name || "Agent";
+}
 
+if(agentEmail){
+agentEmail.textContent = user.email;
+}
 
-</div>
+if(agentAvatar){
 
+if(data.photo){
+agentAvatar.src = data.photo;
+}else{
 
+const name = data.name || "Agent";
 
-<script>
-
-function openTab(tabId){
-
-let tabs=document.querySelectorAll(".tabContent");
-
-tabs.forEach(tab=>{
-tab.style.display="none";
-});
-
-document.getElementById(tabId).style.display="block";
+agentAvatar.src =
+`https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=2e5aac&color=fff`;
 
 }
 
-// default tab
-openTab("tools");
+}
 
-</script>
+}
 
 
-<script type="module" src="dashboard.js"></script>
+// ==========================
+// ROLE SYSTEM
+// ==========================
 
-</body>
-</html>
+let userRole = "agent";
+
+try{
+
+const roleRef = doc(db,"users",user.uid);
+const roleSnap = await getDoc(roleRef);
+
+if(roleSnap.exists()){
+userRole = roleSnap.data().role || "agent";
+}
+
+applyRolePermissions(userRole);
+
+if(agentRole){
+agentRole.textContent = userRole.toUpperCase();
+}
+
+}catch(err){
+console.error("Role loading error:",err);
+}
+
+loadAgentDirectory();
+setupPostSystem();
+loadActivity();
+
+});
+
+
+// ==========================
+// ROLE PERMISSIONS
+// ==========================
+
+function applyRolePermissions(role){
+
+if(role === "agent"){
+
+document.querySelectorAll(".adminOnly").forEach(el=>{
+el.style.display="none";
+});
+
+document.querySelectorAll(".managerOnly").forEach(el=>{
+el.style.display="none";
+});
+
+}
+
+if(role === "manager"){
+
+document.querySelectorAll(".adminOnly").forEach(el=>{
+el.style.display="none";
+});
+
+}
+
+}
+
+
+// ==========================
+// AGENT DIRECTORY
+// ==========================
+
+async function loadAgentDirectory(){
+
+const container = document.getElementById("agentDirectory");
+if(!container) return;
+
+container.innerHTML = "Loading agents...";
+
+try{
+
+const querySnapshot = await getDocs(collection(db,"profiles"));
+
+const grid = document.createElement("div");
+grid.className = "agentGrid";
+
+querySnapshot.forEach((docSnap)=>{
+
+const data = docSnap.data();
+
+const name = data.name || "Agent";
+const role = data.role || "Agent";
+const bio = data.bio || "";
+
+const photo = data.photo ||
+`https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=2e5aac&color=fff`;
+
+const card = document.createElement("div");
+card.className = "agentCard";
+
+card.innerHTML = `
+<img src="${photo}">
+<h4>${name}</h4>
+<div class="agentRole">${role}</div>
+<div class="agentBio">${bio}</div>
+`;
+
+grid.appendChild(card);
+
+});
+
+container.innerHTML="";
+container.appendChild(grid);
+
+}catch(err){
+
+console.error(err);
+container.innerHTML="Failed to load agents.";
+
+}
+
+}
+
+
+// ==========================
+// POST SYSTEM
+// ==========================
+
+function setupPostSystem(){
+
+const sections = document.querySelectorAll(".tabContent");
+
+sections.forEach(section=>{
+
+const title = section.querySelector(".postTitle");
+const tags = section.querySelector(".postTags");
+const content = section.querySelector(".postContent");
+const pinned = section.querySelector(".postPinned");
+const button = section.querySelector(".createPostBtn");
+const container = section.querySelector(".postsContainer");
+const search = section.querySelector(".postSearch");
+
+if(button){
+
+button.onclick = async ()=>{
+
+if(!title || !content || !container) return;
+
+const sectionName = container.dataset.section;
+
+if(!title.value || !content.innerHTML){
+alert("Missing fields");
+return;
+}
+
+await addDoc(collection(db,"posts"),{
+
+title: title.value,
+content: content.innerHTML,
+tags: tags ? tags.value : "",
+pinned: pinned ? pinned.checked : false,
+section: sectionName,
+author: agentName.textContent,
+created: serverTimestamp()
+
+});
+
+logActivity("created post: "+title.value);
+
+title.value="";
+if(tags) tags.value="";
+content.innerHTML="";
+
+loadPosts(sectionName);
+
+};
+
+}
+
+if(search){
+
+search.oninput = ()=>{
+
+const term = search.value.toLowerCase();
+
+section.querySelectorAll(".postCard").forEach(post=>{
+
+post.style.display =
+post.innerText.toLowerCase().includes(term)
+? "block"
+: "none";
+
+});
+
+};
+
+}
+
+if(container){
+loadPosts(container.dataset.section);
+}
+
+});
+
+}
+
+
+// ==========================
+// LOAD POSTS
+// ==========================
+
+async function loadPosts(section){
+
+const container = document.querySelector(`.postsContainer[data-section="${section}"]`);
+if(!container) return;
+
+container.innerHTML="Loading posts...";
+
+const snapshot = await getDocs(collection(db,"posts"));
+
+container.innerHTML="";
+
+snapshot.forEach(docSnap=>{
+
+const data = docSnap.data();
+
+if(data.section !== section) return;
+
+const card = document.createElement("div");
+card.className="postCard";
+
+card.innerHTML=`
+
+${data.pinned ? "<div class='pinned'>📌 PINNED</div>" : ""}
+
+<h3>${data.title}</h3>
+
+<div class="postMeta">
+${data.author || ""} • ${data.tags || ""}
+</div>
+
+<div class="postContent">
+${data.content}
+</div>
+
+<div class="postActions">
+
+<button class="editPost" data-id="${docSnap.id}">Edit</button>
+
+<button class="deletePost" data-id="${docSnap.id}">Delete</button>
+
+</div>
+
+`;
+
+container.appendChild(card);
+
+});
+
+if(container.innerHTML===""){
+container.innerHTML="No posts yet.";
+}
+
+}
+
+
+// ==========================
+// DELETE POST
+// ==========================
+
+document.addEventListener("click",async(e)=>{
+
+if(e.target.classList.contains("deletePost")){
+
+const id = e.target.dataset.id;
+
+if(!confirm("Delete this post?")) return;
+
+await deleteDoc(doc(db,"posts",id));
+
+logActivity("deleted post");
+
+document.querySelectorAll(".postsContainer").forEach(c=>{
+loadPosts(c.dataset.section);
+});
+
+}
+
+});
+
+
+// ==========================
+// EDIT POST
+// ==========================
+
+document.addEventListener("click",async(e)=>{
+
+if(e.target.classList.contains("editPost")){
+
+const id = e.target.dataset.id;
+
+const newTitle = prompt("Edit title");
+const newContent = prompt("Edit content");
+
+if(!newTitle || !newContent) return;
+
+await updateDoc(doc(db,"posts",id),{
+
+title:newTitle,
+content:newContent
+
+});
+
+logActivity("edited post");
+
+document.querySelectorAll(".postsContainer").forEach(c=>{
+loadPosts(c.dataset.section);
+});
+
+}
+
+});
+
+
+// ==========================
+// ACTIVITY LOG
+// ==========================
+
+async function logActivity(action){
+
+await addDoc(collection(db,"activity"),{
+
+user: agentName.textContent,
+action: action,
+time: serverTimestamp()
+
+});
+
+}
+
+
+// ==========================
+// LOAD ACTIVITY FEED
+// ==========================
+
+async function loadActivity(){
+
+const container = document.getElementById("activityFeed");
+if(!container) return;
+
+const snapshot = await getDocs(collection(db,"activity"));
+
+container.innerHTML="";
+
+snapshot.forEach(doc=>{
+
+const data = doc.data();
+
+const item=document.createElement("div");
+
+item.innerHTML=`
+<strong>${data.user}</strong> ${data.action}
+`;
+
+container.appendChild(item);
+
+});
+
+}
