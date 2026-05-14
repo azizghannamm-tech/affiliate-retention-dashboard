@@ -26,7 +26,9 @@ let currentUser;
 let currentUserRole = "agent";
 
 
-/* AUTH */
+/* =========================
+AUTH
+========================= */
 
 onAuthStateChanged(auth, async (user)=>{
 
@@ -45,17 +47,22 @@ currentUser = user;
 
 try{
 
-const userRef = doc(db,"users",user.uid);
+const userRef =
+doc(db,"users",user.uid);
 
-const userSnap = await getDoc(userRef);
+const userSnap =
+await getDoc(userRef);
 
 if(userSnap.exists()){
 
-const userData = userSnap.data();
+const userData =
+userSnap.data();
 
-currentUserRole = userData.role || "agent";
+currentUserRole =
+userData.role || "agent";
 
-window.isAdmin = currentUserRole === "admin";
+window.isAdmin =
+currentUserRole === "admin";
 
 }else{
 
@@ -65,7 +72,10 @@ window.isAdmin = false;
 
 }catch(err){
 
-console.error("Role load error:", err);
+console.error(
+"Role load error:",
+err
+);
 
 window.isAdmin = false;
 
@@ -90,7 +100,8 @@ logoutBtn.onclick = async ()=>{
 
 await signOut(auth);
 
-window.location.href = "login.html";
+window.location.href =
+"login.html";
 
 };
 
@@ -99,7 +110,9 @@ window.location.href = "login.html";
 });
 
 
-/* DIRECTORY */
+/* =========================
+AGENT DIRECTORY
+========================= */
 
 async function loadAgentDirectory(){
 
@@ -108,27 +121,38 @@ document.getElementById("agentGrid");
 
 if(!grid) return;
 
-grid.innerHTML = "Loading...";
+grid.innerHTML =
+"Loading agents...";
+
+try{
 
 const snapshot =
-await getDocs(collection(db,"users"));
+await getDocs(
+collection(db,"users")
+);
 
 grid.innerHTML = "";
 
 snapshot.forEach((docSnap)=>{
 
-const data = docSnap.data();
+const data =
+docSnap.data();
 
 const card =
 document.createElement("div");
 
-card.className = "agentCard";
+card.className =
+"agentCard";
 
 card.innerHTML = `
 
 <img src="${
 data.photo ||
-'https://ui-avatars.com/api/?name=' + encodeURIComponent(data.name || "Agent")
+`https://ui-avatars.com/api/?name=${
+encodeURIComponent(
+data.name || "Agent"
+)
+}&background=2e5aac&color=fff`
 }">
 
 <div class="agentName">
@@ -136,7 +160,11 @@ ${data.name || "Agent"}
 </div>
 
 <div class="agentRole">
-${data.role || "agent"}
+${
+data.role === "admin"
+? "Administrator"
+: "Agent"
+}
 </div>
 
 <div class="agentBio">
@@ -149,10 +177,24 @@ grid.appendChild(card);
 
 });
 
+}catch(err){
+
+console.error(
+"Directory load error:",
+err
+);
+
+grid.innerHTML =
+"Failed to load agents";
+
+}
+
 }
 
 
-/* POSTS */
+/* =========================
+POST SYSTEM
+========================= */
 
 function setupPostSystem(){
 
@@ -171,7 +213,7 @@ container.closest(".tool");
 if(!parent) return;
 
 
-/* POST ELEMENTS */
+/* ELEMENTS */
 
 const title =
 parent.querySelector(".postTitle");
@@ -191,32 +233,45 @@ parent.querySelector(".createPostBtn");
 const search =
 parent.querySelector(".postSearch");
 
+const toolbar =
+parent.querySelector(".editorToolbar");
 
-/* HIDE ADMIN FEATURES */
+
+/* =========================
+ADMIN ONLY UI
+========================= */
 
 if(!window.isAdmin){
 
-if(title) title.style.display = "none";
+if(title)
+title.style.display = "none";
 
-if(tags) tags.style.display = "none";
+if(tags)
+tags.style.display = "none";
 
-if(content) content.style.display = "none";
+if(content)
+content.style.display = "none";
 
-if(pinned)
-pinned.parentElement.style.display = "none";
-
-if(button) button.style.display = "none";
-
-const toolbar =
-parent.querySelector(".editorToolbar");
+if(button)
+button.style.display = "none";
 
 if(toolbar)
 toolbar.style.display = "none";
 
+if(pinned &&
+pinned.parentElement){
+
+pinned.parentElement.style.display =
+"none";
+
+}
+
 }
 
 
-/* CREATE POST */
+/* =========================
+CREATE POST
+========================= */
 
 if(button){
 
@@ -230,7 +285,10 @@ return;
 
 }
 
-if(!title.value || !content.innerHTML){
+if(
+!title.value.trim() ||
+!content.innerHTML.trim()
+){
 
 alert("Fill all fields");
 
@@ -238,13 +296,20 @@ return;
 
 }
 
-await addDoc(collection(db,"posts"),{
+try{
+
+await addDoc(
+collection(db,"posts"),
+{
 
 title:title.value,
 
-content:DOMPurify.sanitize(
+content:
+window.DOMPurify
+? DOMPurify.sanitize(
 content.innerHTML
-),
+)
+: content.innerHTML,
 
 tags:tags.value,
 
@@ -256,7 +321,8 @@ author:currentUser.email,
 
 created:serverTimestamp()
 
-});
+}
+);
 
 title.value = "";
 
@@ -266,12 +332,27 @@ content.innerHTML = "";
 
 loadPosts(section);
 
+}catch(err){
+
+console.error(
+"Post create error:",
+err
+);
+
+alert(
+"Failed to create post"
+);
+
+}
+
 };
 
 }
 
 
-/* SEARCH */
+/* =========================
+SEARCH
+========================= */
 
 if(search){
 
@@ -285,10 +366,13 @@ container
 .forEach((card)=>{
 
 card.style.display =
+
 card.innerText
 .toLowerCase()
 .includes(term)
+
 ? "block"
+
 : "none";
 
 });
@@ -302,50 +386,72 @@ card.innerText
 }
 
 
-/* LOAD POSTS */
+/* =========================
+LOAD POSTS
+========================= */
 
 async function loadPosts(section){
 
 const container =
 document.querySelector(
+
 `.postsContainer[data-section="${section}"]`
+
 );
 
 if(!container) return;
 
-container.innerHTML = "Loading posts...";
+container.innerHTML =
+"Loading posts...";
+
+try{
 
 const snapshot =
-await getDocs(collection(db,"posts"));
+await getDocs(
+collection(db,"posts")
+);
 
 container.innerHTML = "";
 
 snapshot.forEach((docSnap)=>{
 
-const data = docSnap.data();
+const data =
+docSnap.data();
 
-if(data.section !== section) return;
+if(data.section !== section)
+return;
 
 const card =
 document.createElement("div");
 
-card.className = "postCard";
+card.className =
+"postCard";
 
 card.innerHTML = `
 
 ${data.pinned
-? "<div class='pinned'>📌 PINNED</div>"
+? `
+<div class="pinned">
+📌 PINNED
+</div>
+`
 : ""
 }
 
-<h3>${data.title}</h3>
+<h3>
+${data.title}
+</h3>
 
 <div class="postMeta">
+
 ${data.author || ""}
+
 </div>
 
-<div>
+<div class="postBody">
+
 ${data.content}
+
 </div>
 
 ${
@@ -373,14 +479,41 @@ container.appendChild(card);
 
 });
 
+if(container.innerHTML === ""){
+
+container.innerHTML =
+"<p>No posts yet</p>";
+
+}
+
+}catch(err){
+
+console.error(
+"Load posts error:",
+err
+);
+
+container.innerHTML =
+"Failed to load posts";
+
+}
+
 }
 
 
-/* DELETE POSTS */
+/* =========================
+DELETE POSTS
+========================= */
 
-document.addEventListener("click",async(e)=>{
+document.addEventListener(
+"click",
+async(e)=>{
 
-if(e.target.classList.contains("deletePost")){
+if(
+e.target.classList.contains(
+"deletePost"
+)
+){
 
 if(!window.isAdmin){
 
@@ -390,16 +523,38 @@ return;
 
 }
 
-if(!confirm("Delete post?")) return;
+if(
+!confirm("Delete post?")
+) return;
+
+try{
 
 await deleteDoc(
 
-doc(db,"posts",e.target.dataset.id)
+doc(
+db,
+"posts",
+e.target.dataset.id
+)
 
 );
 
 location.reload();
 
+}catch(err){
+
+console.error(
+"Delete error:",
+err
+);
+
+alert(
+"Failed to delete"
+);
+
 }
 
-});
+}
+
+}
+);
