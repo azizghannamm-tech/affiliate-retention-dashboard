@@ -1,65 +1,428 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Knowledge Hub</title>
+
+<link rel="stylesheet" href="dashboard.css">
+
+</head>
+
+<body>
+
+<!-- TOP BAR -->
+
+<header class="topBar">
+
+<div class="logo">
+Knowledge Hub
+</div>
+
+<div class="profileSection">
+
+<img id="agentAvatar" class="avatar">
+
+<div class="profileInfo">
+
+<div id="agentName">Agent</div>
+
+<div id="agentEmail"></div>
+
+<div id="accessLevel"></div>
+
+</div>
+
+<button id="profileBtn">☰</button>
+
+<div class="dropdown" id="profileDropdown">
+
+<a href="profile.html">
+My Profile
+</a>
+
+<button id="logoutBtn">
+Logout
+</button>
+
+</div>
+
+</div>
+
+</header>
+
+
+<!-- TABS -->
+
+<div class="tabs">
+
+<button class="tabBtn" onclick="showTab('home')">
+Home
+</button>
+
+<button class="tabBtn" onclick="showTab('announcements')">
+Announcements
+</button>
+
+<button class="tabBtn" onclick="showTab('resources')">
+Resources
+</button>
+
+<button class="tabBtn" onclick="showTab('tools')">
+Tools
+</button>
+
+<button class="tabBtn" onclick="showTab('directory')">
+Agent Directory
+</button>
+
+</div>
+
+
+<!-- MAIN CONTENT -->
+
+<div class="mainContainer" id="mainContent"></div>
+
+
+<!-- DOMPURIFY -->
+
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.5/dist/purify.min.js"></script>
+
+
+<!-- TAB SYSTEM -->
+
 <script>
+
+const mainContent = document.getElementById("mainContent");
+
+
 function createTab(section,title){
 
-let widget=""
+let widget = "";
 
-if(section==="home"){
-widget=`
-<div class="map">
-<div class="zone-card east"><div class="tag">USA</div><div class="zone-name">Eastern Time</div><div class="time" id="est"></div></div>
-<div class="zone-card central"><div class="tag">USA</div><div class="zone-name">Central Time</div><div class="time" id="cst"></div></div>
-<div class="zone-card mountain"><div class="tag">USA</div><div class="zone-name">Mountain Time</div><div class="time" id="mst"></div></div>
-<div class="zone-card pacific"><div class="tag">USA</div><div class="zone-name">Pacific Time</div><div class="time" id="pst"></div></div>
-<div class="zone-card dr"><div class="tag">CARIBBEAN</div><div class="zone-name">Dominican Republic</div><div class="time" id="dr"></div></div>
-<div class="zone-card jordan"><div class="tag">MENA</div><div class="zone-name">Amman · Jordan</div><div class="time" id="amman"></div></div>
+
+/* HOME WIDGET */
+
+if(section === "home"){
+
+widget = `
+
+<div class="timeWidget">
+
+<div class="title">
+Global Time Zones
 </div>
-`
+
+<div class="map">
+
+<div class="zone-card east">
+<div class="tag">USA</div>
+<div class="zone-name">Eastern Time</div>
+<div class="time" id="est"></div>
+</div>
+
+<div class="zone-card central">
+<div class="tag">USA</div>
+<div class="zone-name">Central Time</div>
+<div class="time" id="cst"></div>
+</div>
+
+<div class="zone-card mountain">
+<div class="tag">USA</div>
+<div class="zone-name">Mountain Time</div>
+<div class="time" id="mst"></div>
+</div>
+
+<div class="zone-card pacific">
+<div class="tag">USA</div>
+<div class="zone-name">Pacific Time</div>
+<div class="time" id="pst"></div>
+</div>
+
+<div class="zone-card dr">
+<div class="tag">CARIBBEAN</div>
+<div class="zone-name">Dominican Republic</div>
+<div class="time" id="dr"></div>
+</div>
+
+<div class="zone-card jordan">
+<div class="tag">MENA</div>
+<div class="zone-name">Amman · Jordan</div>
+<div class="time" id="amman"></div>
+</div>
+
+</div>
+
+</div>
+
+`;
+
 }
 
-/* 👉 ADD TOOL ONLY TO TOOLS TAB */
-if(section==="tools"){
-widget+=`
+
+/* TOOLS WIDGET */
+
+if(section === "tools"){
+
+widget += `
+
 <div class="tool">
+
 <h3>Text Box Builder</h3>
 
-<button onclick="addBox('${section}')">Add Text Box</button>
-<button onclick="saveBoxes('${section}')">Save Layout</button>
+<button onclick="addBox('${section}')">
+Add Text Box
+</button>
 
-<div class="canvas" id="canvas-${section}" style="position:relative;height:400px;margin-top:15px;border:2px dashed #ccc;border-radius:10px;"></div>
+<button onclick="saveBoxes('${section}')">
+Save Layout
+</button>
+
+<div
+class="canvas"
+id="canvas-${section}"
+style="
+position:relative;
+height:400px;
+margin-top:15px;
+border:2px dashed #ccc;
+border-radius:10px;
+">
 </div>
-`
+
+</div>
+
+`;
+
 }
 
-return `
-<div id="${section}" class="tabContent">
-${widget}
+
+/* DIRECTORY */
+
+if(section === "directory"){
+
+widget += `
 
 <div class="tool">
+
+<h3>Agent Directory</h3>
+
+<div id="agentGrid"></div>
+
+</div>
+
+`;
+
+}
+
+
+/* POSTS SYSTEM */
+
+return `
+
+<div id="${section}" class="tabContent">
+
+${widget}
+
+${section !== "directory" ? `
+
+<div class="tool">
+
 <h3>${title}</h3>
 
-<input class="postTitle" placeholder="Post title">
-<input class="postTags" placeholder="Tags">
+<input
+class="postTitle"
+placeholder="Post title"
+>
+
+<input
+class="postTags"
+placeholder="Tags"
+>
 
 <label>
-<input type="checkbox" class="postPinned"> Pin post
+
+<input type="checkbox" class="postPinned">
+
+Pin post
+
 </label>
 
+
 <div class="editorToolbar">
-<button data-format="bold"><b>B</b></button>
-<button data-format="italic"><i>I</i></button>
-<button data-format="underline"><u>U</u></button>
+
+<button data-format="bold">
+<b>B</b>
+</button>
+
+<button data-format="italic">
+<i>I</i>
+</button>
+
+<button data-format="underline">
+<u>U</u>
+</button>
+
 </div>
 
-<div class="postContent" contenteditable="true"></div>
 
-<button class="createPostBtn">Publish Post</button>
+<div
+class="postContent"
+contenteditable="true"
+></div>
 
-<input class="postSearch" placeholder="Search posts" style="margin-top:15px;width:100%;padding:8px;">
 
-<div class="postsContainer" data-section="${section}"></div>
+<button class="createPostBtn">
+Publish Post
+</button>
+
+
+<input
+class="postSearch"
+placeholder="Search posts"
+style="
+margin-top:15px;
+width:100%;
+padding:8px;
+"
+>
+
+
+<div
+class="postsContainer"
+data-section="${section}"
+></div>
 
 </div>
+
+` : ""}
+
 </div>
-`
+
+`;
+
 }
+
+
+/* RENDER TABS */
+
+mainContent.innerHTML =
+
+createTab("home","Home Feed") +
+
+createTab("announcements","Announcements") +
+
+createTab("resources","Resources") +
+
+createTab("tools","Tools Center") +
+
+createTab("directory","Directory");
+
+
+/* SHOW TAB */
+
+function showTab(id){
+
+document.querySelectorAll(".tabContent").forEach(tab=>{
+
+tab.style.display = "none";
+
+});
+
+document.getElementById(id).style.display = "block";
+
+}
+
+
+/* DEFAULT TAB */
+
+showTab("home");
+
+
+/* PROFILE DROPDOWN */
+
+const profileBtn = document.getElementById("profileBtn");
+
+const dropdown = document.getElementById("profileDropdown");
+
+profileBtn.onclick = ()=>{
+
+dropdown.classList.toggle("show");
+
+};
+
+
+/* RICH TEXT EDITOR */
+
+document.addEventListener("click",(e)=>{
+
+if(e.target.dataset.format){
+
+document.execCommand(
+e.target.dataset.format,
+false,
+null
+);
+
+}
+
+});
+
+
+/* GLOBAL TIMES */
+
+function updateTimes(){
+
+document.getElementById("est").innerText =
+new Date().toLocaleTimeString("en-US",{
+timeZone:"America/New_York"
+});
+
+document.getElementById("cst").innerText =
+new Date().toLocaleTimeString("en-US",{
+timeZone:"America/Chicago"
+});
+
+document.getElementById("mst").innerText =
+new Date().toLocaleTimeString("en-US",{
+timeZone:"America/Denver"
+});
+
+document.getElementById("pst").innerText =
+new Date().toLocaleTimeString("en-US",{
+timeZone:"America/Los_Angeles"
+});
+
+document.getElementById("dr").innerText =
+new Date().toLocaleTimeString("en-US",{
+timeZone:"America/Santo_Domingo"
+});
+
+document.getElementById("amman").innerText =
+new Date().toLocaleTimeString("en-US",{
+timeZone:"Asia/Amman"
+});
+
+}
+
+updateTimes();
+
+setInterval(updateTimes,1000);
+
 </script>
+
+
+<!-- DASHBOARD LOGIC -->
+
+<script type="module" src="dashboard.js"></script>
+
+<script type="module" src="app.js"></script>
+
+</body>
+
+</html>
+```
