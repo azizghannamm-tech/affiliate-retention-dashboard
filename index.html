@@ -13,7 +13,10 @@ content="width=device-width, initial-scale=1.0"
 
 <title>Knowledge Hub</title>
 
-<link rel="stylesheet" href="dashboard.css">
+<link
+rel="stylesheet"
+href="dashboard.css"
+>
 
 </head>
 
@@ -42,11 +45,29 @@ src=""
 Agent
 </div>
 
+<div id="agentEmail">
+Loading...
+</div>
+
 <div id="accessLevel">
 Agent
 </div>
 
 </div>
+
+
+<button id="profileBtn">
+☰
+</button>
+
+
+<div
+class="dropdown"
+id="profileDropdown"
+>
+
+<a href="#">
+Profile</a>
 
 <button id="logoutBtn">
 Logout
@@ -54,7 +75,37 @@ Logout
 
 </div>
 
+</div>
+
 </header>
+
+
+<!-- TABS -->
+
+<div class="tabs">
+
+<button
+class="tabBtn"
+onclick="showTab('announcements')"
+>
+Announcements
+</button>
+
+<button
+class="tabBtn"
+onclick="showTab('resources')"
+>
+Resources
+</button>
+
+<button
+class="tabBtn"
+onclick="showTab('directory')"
+>
+Directory
+</button>
+
+</div>
 
 
 <!-- MAIN -->
@@ -64,11 +115,17 @@ Logout
 
 <!-- ANNOUNCEMENTS -->
 
+<div
+id="announcements"
+class="tabContent"
+>
+
 <div class="tool">
 
 <h2>
 Announcements
 </h2>
+
 
 <div class="adminOnly postCreator">
 
@@ -99,8 +156,6 @@ id="announcements-posts"
 class="posts"
 >
 
-<!-- DEFAULT ANNOUNCEMENT -->
-
 <div class="postCard">
 
 <h3>
@@ -121,14 +176,23 @@ Find updated affiliates distribution on contacts tab.
 
 </div>
 
+</div>
+
 
 <!-- RESOURCES -->
+
+<div
+id="resources"
+class="tabContent"
+style="display:none;"
+>
 
 <div class="tool">
 
 <h2>
 Resources
 </h2>
+
 
 <div class="adminOnly postCreator">
 
@@ -153,6 +217,7 @@ Create Post
 
 </div>
 
+
 <div
 id="resources-posts"
 class="posts"
@@ -160,8 +225,16 @@ class="posts"
 
 </div>
 
+</div>
+
 
 <!-- DIRECTORY -->
+
+<div
+id="directory"
+class="tabContent"
+style="display:none;"
+>
 
 <div class="tool">
 
@@ -173,8 +246,47 @@ Agent Directory
 
 </div>
 
+</div>
+
 
 </div>
+
+
+<!-- TAB SCRIPT -->
+
+<script>
+
+function showTab(id){
+
+document
+.querySelectorAll(".tabContent")
+.forEach(tab=>{
+
+tab.style.display = "none";
+
+});
+
+document.getElementById(id)
+.style.display = "block";
+
+}
+
+
+/* PROFILE DROPDOWN */
+
+const profileBtn =
+document.getElementById("profileBtn");
+
+const dropdown =
+document.getElementById("profileDropdown");
+
+profileBtn.onclick = ()=>{
+
+dropdown.classList.toggle("show");
+
+};
+
+</script>
 
 
 <!-- APP -->
