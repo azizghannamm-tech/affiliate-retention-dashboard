@@ -1,45 +1,29 @@
-/* dashboard.css */
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-}
-
 body{
-font-family:Arial, Helvetica, sans-serif;
-background:#f4f7fb;
-color:#111827;
+margin:0;
+font-family:Arial, sans-serif;
+background:#eef2f7;
 }
-
 
 /* TOP BAR */
 
 .topBar{
 background:#2e5aac;
 color:white;
-padding:14px 25px;
+padding:14px 22px;
 display:flex;
 justify-content:space-between;
 align-items:center;
-box-shadow:0 2px 10px rgba(0,0,0,0.08);
-position:sticky;
-top:0;
-z-index:100;
 }
 
 .logo{
-font-size:22px;
-font-weight:700;
+font-size:30px;
+font-weight:bold;
 }
-
-
-/* PROFILE SECTION */
 
 .profileSection{
 display:flex;
 align-items:center;
-gap:12px;
+gap:14px;
 position:relative;
 }
 
@@ -49,46 +33,29 @@ height:42px;
 border-radius:50%;
 object-fit:cover;
 background:white;
-border:2px solid rgba(255,255,255,0.4);
 }
 
 .profileInfo{
-display:flex;
-flex-direction:column;
 font-size:13px;
-line-height:1.4;
-}
-
-#agentName{
-font-weight:700;
-}
-
-#agentEmail{
-opacity:0.9;
-font-size:12px;
+line-height:1.3;
 }
 
 #accessLevel{
 font-size:11px;
-background:rgba(255,255,255,0.2);
-padding:2px 8px;
-border-radius:999px;
-margin-top:2px;
-width:max-content;
-text-transform:uppercase;
+background:rgba(255,255,255,.2);
+display:inline-block;
+padding:3px 8px;
+border-radius:20px;
+margin-top:3px;
 }
 
 #profileBtn{
 background:none;
 border:none;
 color:white;
-font-size:22px;
+font-size:24px;
 cursor:pointer;
-padding:4px 8px;
 }
-
-
-/* DROPDOWN */
 
 .dropdown{
 display:none;
@@ -98,9 +65,9 @@ right:0;
 background:white;
 border-radius:10px;
 overflow:hidden;
-min-width:180px;
-box-shadow:0 10px 25px rgba(0,0,0,0.15);
-z-index:999;
+min-width:160px;
+box-shadow:0 8px 20px rgba(0,0,0,.15);
+z-index:100;
 }
 
 .dropdown.show{
@@ -111,162 +78,108 @@ display:block;
 .dropdown button{
 display:block;
 width:100%;
-padding:12px 15px;
+padding:12px 16px;
 border:none;
-background:white;
+background:none;
 text-align:left;
 cursor:pointer;
-font-size:14px;
 text-decoration:none;
-color:#111827;
-transition:0.2s;
+color:#111;
+font-size:14px;
 }
 
 .dropdown a:hover,
 .dropdown button:hover{
-background:#eef2ff;
+background:#f4f4f4;
 }
-
 
 /* TABS */
 
 .tabs{
 display:flex;
-gap:10px;
-padding:18px 25px;
+gap:12px;
+padding:18px 22px;
 background:white;
-border-bottom:1px solid #dbe2ea;
-flex-wrap:wrap;
+border-bottom:1px solid #ddd;
 }
 
 .tabBtn{
-padding:10px 18px;
 border:none;
+padding:12px 18px;
+border-radius:10px;
 background:#e5e7eb;
-border-radius:8px;
 cursor:pointer;
 font-weight:600;
-transition:0.2s;
+transition:.2s;
 }
 
 .tabBtn:hover{
-background:#d4d8de;
+background:#d7dbe2;
 }
-
-.tabBtn.active{
-background:#2e5aac;
-color:white;
-}
-
-
-/* MAIN */
 
 .mainContainer{
-max-width:1200px;
+max-width:1000px;
 margin:30px auto;
 padding:0 20px;
 }
 
-
-/* TAB CONTENT */
-
 .tabContent{
 display:none;
-animation:fadeIn 0.2s ease;
 }
-
-.tabContent.active{
-display:block;
-}
-
-@keyframes fadeIn{
-
-from{
-opacity:0;
-transform:translateY(5px);
-}
-
-to{
-opacity:1;
-transform:translateY(0);
-}
-
-}
-
-
-/* TOOL CARDS */
 
 .tool{
 background:white;
-padding:25px;
-border-radius:14px;
-margin-bottom:25px;
-box-shadow:0 4px 18px rgba(0,0,0,0.06);
+padding:24px;
+border-radius:18px;
+box-shadow:0 5px 20px rgba(0,0,0,.06);
 }
-
-.tool h2,
-.tool h3{
-margin-bottom:18px;
-color:#111827;
-}
-
 
 /* POSTS */
 
-.postInput{
+.postInput,
+.postTextarea{
 width:100%;
-padding:12px;
-border:1px solid #d1d5db;
-border-radius:8px;
-margin-bottom:12px;
+padding:14px;
+border:1px solid #d9dce3;
+border-radius:12px;
 font-size:14px;
+margin-bottom:14px;
+box-sizing:border-box;
 }
 
-.postContent{
-width:100%;
+.postTextarea{
 min-height:120px;
-border:1px solid #d1d5db;
-border-radius:8px;
-padding:12px;
-margin-bottom:12px;
-background:white;
-overflow:auto;
-}
-
-.postContent:focus{
-outline:none;
-border-color:#2e5aac;
+resize:vertical;
 }
 
 .createPostBtn{
+width:100%;
+border:none;
 background:#2e5aac;
 color:white;
-border:none;
-padding:12px 18px;
-border-radius:8px;
+padding:14px;
+border-radius:12px;
+font-size:15px;
+font-weight:bold;
 cursor:pointer;
-font-weight:600;
-transition:0.2s;
+margin-bottom:20px;
 }
 
 .createPostBtn:hover{
 background:#24478a;
 }
 
-
-/* POST CARD */
-
 .postCard{
-background:#f9fbff;
-border:1px solid #dbe5f0;
+border:1px solid #dde3ec;
+border-radius:14px;
 padding:18px;
-border-radius:12px;
-margin-top:15px;
+margin-top:16px;
+background:#f9fbff;
 }
 
 .postCard h3{
-margin-bottom:10px;
-font-size:20px;
+margin:0 0 10px;
+font-size:18px;
 }
 
 .postMeta{
@@ -275,149 +188,54 @@ color:#6b7280;
 margin-bottom:12px;
 }
 
-.postActions{
-margin-top:15px;
-}
-
-.deletePost{
+.deleteBtn{
+margin-top:14px;
 background:#dc2626;
 color:white;
 border:none;
-padding:8px 12px;
-border-radius:6px;
+padding:8px 14px;
+border-radius:8px;
 cursor:pointer;
 }
-
-.deletePost:hover{
-background:#b91c1c;
-}
-
-.pinned{
-display:inline-block;
-background:#facc15;
-color:#111827;
-padding:4px 10px;
-border-radius:999px;
-font-size:12px;
-font-weight:700;
-margin-bottom:10px;
-}
-
 
 /* DIRECTORY */
 
 #agentGrid{
 display:grid;
-grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
-gap:20px;
+grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+gap:18px;
 margin-top:20px;
 }
 
 .agentCard{
 background:white;
-border-radius:14px;
 padding:20px;
+border-radius:16px;
 text-align:center;
-box-shadow:0 4px 15px rgba(0,0,0,0.06);
-transition:0.2s;
-}
-
-.agentCard:hover{
-transform:translateY(-4px);
+box-shadow:0 4px 14px rgba(0,0,0,.08);
 }
 
 .agentCard img{
-width:90px;
-height:90px;
+width:85px;
+height:85px;
 border-radius:50%;
 object-fit:cover;
-margin-bottom:15px;
-border:4px solid #eef2ff;
+margin-bottom:12px;
 }
 
 .agentName{
 font-size:18px;
-font-weight:700;
-margin-bottom:5px;
+font-weight:bold;
+margin-bottom:6px;
 }
 
 .agentRole{
-font-size:13px;
 color:#2e5aac;
-font-weight:700;
+font-size:13px;
 margin-bottom:10px;
-text-transform:uppercase;
 }
 
 .agentBio{
-font-size:14px;
-color:#4b5563;
-line-height:1.5;
-}
-
-
-/* SEARCH */
-
-.postSearch{
-width:100%;
-padding:12px;
-border:1px solid #d1d5db;
-border-radius:8px;
-margin-top:15px;
-margin-bottom:10px;
-}
-
-
-/* EDITOR TOOLBAR */
-
-.editorToolbar{
-display:flex;
-gap:8px;
-margin-bottom:10px;
-}
-
-.editorToolbar button{
-padding:8px 12px;
-border:none;
-background:#e5e7eb;
-border-radius:6px;
-cursor:pointer;
-font-weight:700;
-}
-
-.editorToolbar button:hover{
-background:#d1d5db;
-}
-
-
-/* MOBILE */
-
-@media(max-width:768px){
-
-.topBar{
-padding:14px 15px;
-}
-
-.profileInfo{
-display:none;
-}
-
-.tabs{
-padding:15px;
-gap:8px;
-}
-
-.tabBtn{
-flex:1;
-min-width:120px;
-}
-
-.mainContainer{
-padding:0 12px;
-}
-
-.tool{
-padding:18px;
-}
-
+font-size:13px;
+color:#666;
 }
